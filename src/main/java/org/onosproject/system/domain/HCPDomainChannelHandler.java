@@ -52,6 +52,7 @@ public class HCPDomainChannelHandler extends IdleStateAwareChannelHandler {
                 if (m.getVersion().wireVersion==h.getHCPVersion().wireVersion){
                     h.hcpVersion=HCPVersion.HCP_10;
                     h.hcpFactory=HCPFactories.getFactory(h.hcpVersion);
+                    log.info("DomainController  Received HCPhello message {} {}",m.getVersion(),m.getXid());
                 }else{
                     log.error("Received Hello of version {} from HCPSuperController at {}, but this DomainController " +
                             "work with HCP1.0. OxpSuperController disconnected ...", m.getVersion(), h.channel.getRemoteAddress());
@@ -67,7 +68,8 @@ public class HCPDomainChannelHandler extends IdleStateAwareChannelHandler {
         },
         WAIT_FEATURES_REQUEST(false){
             @Override
-            void processHCPEchoRequest(HCPDomainChannelHandler h, HCPEchoRequest m) throws IOException {
+            void processHCPFeatureRequest(HCPDomainChannelHandler h, HCPFeaturesRequest m) throws IOException {
+                log.info("DomainController  Received HCPFeaturesRequest message {} {}",m.getVersion(),m.getXid());
                 h.sendFeaturesReply();
                 h.setState(WAIT_CONFIG_REQUEST);
             }
@@ -75,12 +77,14 @@ public class HCPDomainChannelHandler extends IdleStateAwareChannelHandler {
         WAIT_CONFIG_REQUEST(false){
             @Override
             void processHCPGetConfigRequest(HCPDomainChannelHandler h, HCPGetConfigRequest m) throws IOException {
+                log.info("DomainController  Received HCPGetConfigRequest message {} {}",m.getVersion(),m.getXid());
                 h.sendGetConfigReply();
                 h.hcPsuper=new HCPSuper10(h.domainController);
                 h.hcPsuper.setChannel(h.channel);
                 h.hcPsuper.setConnected(true);
                 h.domainController.connectToSuperController(h.hcPsuper);
                 h.setState(ACTIVE);
+                log.info("=================Process GetConfigRequest successful=============");
                 }
         },
         ACTIVE(true){
@@ -146,10 +150,13 @@ public class HCPDomainChannelHandler extends IdleStateAwareChannelHandler {
                     break;
                 case HCP_ERROR:
                     processHCPError(h,(HCPErrorMessage)m);
+                    break;
                 case HCP_ECHO_REQUEST:
                     processHCPEchoRequest(h,(HCPEchoRequest)m);
+                    break;
                 case HCP_ECHO_REPLY:
                     processHCPEchoReply(h,(HCPEchoReply)m);
+                    break;
                 case HCP_FEATURES_REQUEST:
                     processHCPFeatureRequest(h, (HCPFeaturesRequest) m);
                     break;
@@ -231,6 +238,8 @@ public class HCPDomainChannelHandler extends IdleStateAwareChannelHandler {
                 .setSbpVersion(domainController.getSbpVersion())
                 .setXid(this.handshakeTransactionIds--)
                 .build();
+        log.info("FeaturesReply message ");
+        log.info("Sending HCP_10 FeatursReply to Super: {}", channel.getRemoteAddress());
         channel.write(Collections.singletonList(m));
     }
 
@@ -240,6 +249,7 @@ public class HCPDomainChannelHandler extends IdleStateAwareChannelHandler {
                 .setPeriod((byte) domainController.getPeriod())
                 .setMissSendLength((short) domainController.getMissSendLength())
                 .build();
+        log.info("Sending HCP_10 SendGetConfigReply to Super: {}", channel.getRemoteAddress());
         channel.write(Collections.singletonList(m));
     }
 
@@ -264,6 +274,7 @@ public class HCPDomainChannelHandler extends IdleStateAwareChannelHandler {
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        log.info("MessageEvent {}",e.getMessage());
         if (e.getMessage() instanceof List) {
             List<HCPMessage> msgList = (List<HCPMessage>) e.getMessage();
 

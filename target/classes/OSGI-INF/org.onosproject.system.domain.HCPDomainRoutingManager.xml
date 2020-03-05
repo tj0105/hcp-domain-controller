@@ -4,7 +4,7 @@
     <property name="service.pid" value="org.onosproject.system.domain.HCPDomainRoutingManager"/>
     <reference name="linkService" interface="org.onosproject.net.link.LinkService" cardinality="1..1" policy="static" bind="bindLinkService" unbind="unbindLinkService"/>
     <reference name="packetService" interface="org.onosproject.net.packet.PacketService" cardinality="1..1" policy="static" bind="bindPacketService" unbind="unbindPacketService"/>
-    <reference name="hostServices" interface="javafx.application.HostServices" cardinality="1..1" policy="static" bind="bindHostServices" unbind="unbindHostServices"/>
+    <reference name="hostServices" interface="org.onosproject.net.host.HostService" cardinality="1..1" policy="static" bind="bindHostServices" unbind="unbindHostServices"/>
     <reference name="domainController" interface="org.onosproject.api.domain.HCPDomainController" cardinality="1..1" policy="static" bind="bindDomainController" unbind="unbindDomainController"/>
     <reference name="hcpDomainTopoService" interface="org.onosproject.api.domain.HCPDomainTopoService" cardinality="1..1" policy="static" bind="bindHcpDomainTopoService" unbind="unbindHcpDomainTopoService"/>
     <reference name="edgePortService" interface="org.onosproject.net.edge.EdgePortService" cardinality="1..1" policy="static" bind="bindEdgePortService" unbind="unbindEdgePortService"/>

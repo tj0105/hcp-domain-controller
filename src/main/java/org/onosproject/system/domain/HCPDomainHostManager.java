@@ -144,7 +144,7 @@ public class HCPDomainHostManager {
         public void handleIncommingMessage(HCPMessage message) {
                 if (message.getType()!=HCPType.HCP_HOST_REQUEST)
                     return;
-                updateExisHosts((HCPHostRequest)message);
+//                updateExisHosts((HCPHostRequest)message);
         }
 
         @Override
@@ -157,7 +157,8 @@ public class HCPDomainHostManager {
 
         @Override
         public void connectToSuperController(HCPSuper hcpSuper) {
-            updateExisHosts(null);
+//            updateExisHosts(null);
+            return ;
         }
 
         @Override

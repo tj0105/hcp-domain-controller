@@ -2,10 +2,7 @@ package org.onosproject.hcp.protocol.ver10;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.onosproject.hcp.exceptions.HCPParseError;
-import org.onosproject.hcp.protocol.HCPGetConfigRequest;
-import org.onosproject.hcp.protocol.HCPHostReply;
-import org.onosproject.hcp.protocol.HCPMessage;
-import org.onosproject.hcp.protocol.HCPMessageReader;
+import org.onosproject.hcp.protocol.*;
 
 /**
  * @Author ldy
@@ -60,7 +57,7 @@ public final class HCPMessageVer10 {
                     return HCPGetConfigRequestVer10.READER.readFrom(bb);
                 case (byte)0x7:
                     // discriminator value HCPType=7 for class HCPGetConfigReplyVer10
-                    return HCPGetConfigRequestVer10.READER.readFrom(bb);
+                    return HCPGetConfigReplyVer10.READER.readFrom(bb);
                 case (byte)0x8:
                     // discriminator value HCPType=8 for class HCPSetConfigVer10
                     return HCPSetConfigVer10.READER.readFrom(bb);

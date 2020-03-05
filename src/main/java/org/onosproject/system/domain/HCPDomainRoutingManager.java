@@ -1,12 +1,14 @@
 package org.onosproject.system.domain;
 
-import javafx.application.HostServices;
+
+
 import org.apache.felix.scr.annotations.*;
 import org.onosproject.api.HCPSuperMessageListener;
 import org.onosproject.api.domain.HCPDomainController;
 import org.onosproject.api.domain.HCPDomainTopoService;
 import org.onosproject.hcp.protocol.*;
 import org.onosproject.net.edge.EdgePortService;
+import org.onosproject.net.host.HostService;
 import org.onosproject.net.link.LinkService;
 import org.onosproject.net.packet.PacketContext;
 import org.onosproject.net.packet.PacketProcessor;
@@ -38,7 +40,7 @@ public class HCPDomainRoutingManager {
     protected PacketService packetService;
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
-    protected HostServices hostServices;
+    protected HostService hostServices;
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected HCPDomainController domainController;

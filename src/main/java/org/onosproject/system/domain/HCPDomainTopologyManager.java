@@ -163,7 +163,8 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService{
 
         @Override
         public void handleIncommingMessage(HCPMessage message) {
-            //
+            if (message.getType()!=HCPType.HCP_TOPO_REQUEST)
+                return ;
         }
 
         @Override
@@ -176,7 +177,7 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService{
 
         @Override
         public void connectToSuperController(HCPSuper hcpSuper) {
-
+            return ;
         }
 
         @Override
