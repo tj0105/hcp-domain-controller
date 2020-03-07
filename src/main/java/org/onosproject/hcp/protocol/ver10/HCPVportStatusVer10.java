@@ -18,7 +18,7 @@ public class HCPVportStatusVer10 implements HCPVportStatus{
 
     //version
     static final byte WIRE_VERSION=1;
-    static final int LENGTH=21;
+    static final int LENGTH=24;
 
     //hcp vport status message field;
     private final long xid;
@@ -57,7 +57,7 @@ public class HCPVportStatusVer10 implements HCPVportStatus{
 
     @Override
     public void writeTo(ChannelBuffer bb) {
-
+        WRITER.write(bb,this);
     }
 
     static final Writer WRITER=new Writer();
@@ -97,7 +97,7 @@ public class HCPVportStatusVer10 implements HCPVportStatus{
             //type
             byte type=bb.readByte();
             if (type!=(byte)0xe)
-                throw new HCPParseError("Wrong type:Expected=HCPType.HCP_SET_CONFIG(8),got="+type);
+                throw new HCPParseError("Wrong type:Expected=HCPType.HCP_VPORT_STATUS(14),got="+type);
             //length
             int length=bb.readShort();
             if (bb.readableBytes() + (bb.readableBytes() - startIndex) < length) {

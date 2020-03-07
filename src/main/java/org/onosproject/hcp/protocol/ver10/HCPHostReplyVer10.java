@@ -63,7 +63,7 @@ public class HCPHostReplyVer10 implements HCPHostReply {
     }
 
     @Override
-    public DomainId getId() {
+    public DomainId getDomainId() {
         return domainId;
     }
 
@@ -186,7 +186,7 @@ public class HCPHostReplyVer10 implements HCPHostReply {
         }
 
         @Override
-        public DomainId getId() {
+        public DomainId getDomainId() {
             return domainId;
         }
 

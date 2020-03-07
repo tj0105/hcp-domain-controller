@@ -66,6 +66,9 @@ public class HCPDomainHostManager {
         List<HCPHost> hcpHosts=new ArrayList<>();
         for (Host host:hostService.getHosts())
             hcpHosts.addAll(toHCPHosts(host,HCPHostState.ACTIVE));
+        if (hcpHosts.isEmpty()){
+            return ;
+        }
         sendHostChangeMessage(hcpHosts,hcpHostRequest);
     }
 

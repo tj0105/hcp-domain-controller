@@ -16,7 +16,7 @@ public interface HCPHostReply extends HCPObject,HCPMessage {
     HCPVersion getVersion();
     HCPType getType();
     long getXid();
-    DomainId getId();
+    DomainId getDomainId();
     List<HCPHost> getHosts();
 
     void writeTo(ChannelBuffer bb);
@@ -31,7 +31,7 @@ public interface HCPHostReply extends HCPObject,HCPMessage {
         Builder setXid(long xid);
         List<HCPHost> getHosts();
         Builder setHosts(List<HCPHost> hostList);
-        DomainId getId();
+        DomainId getDomainId();
         Builder setDomainId(DomainId domainId);
 
     }

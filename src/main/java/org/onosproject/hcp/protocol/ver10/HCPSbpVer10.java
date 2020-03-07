@@ -94,7 +94,7 @@ public class HCPSbpVer10  implements HCPSbp{
 
     @Override
     public void writeTo(ChannelBuffer bb) {
-
+        WRITER.write(bb,this);
     }
 
     static final Writer WRITER=new Writer();
@@ -192,7 +192,7 @@ public class HCPSbpVer10  implements HCPSbp{
                     sbpCmpData=HCPForwardingRequestVer10.read(bb,dataLength);
                     break;
                 case PACKET_IN:
-                    sbpCmpData=HCPPacketInVer10.read(bb,length);
+                    sbpCmpData=HCPPacketInVer10.read(bb,dataLength);
                     break;
                 case PACKET_OUT:
                     sbpCmpData=HCPPacketOutVer10.read(bb,dataLength);

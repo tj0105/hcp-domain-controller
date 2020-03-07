@@ -1,5 +1,6 @@
 package org.onosproject.system.domain;
 
+import jline.internal.Preconditions;
 import org.apache.felix.scr.annotations.*;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -18,6 +19,7 @@ import org.onosproject.hcp.protocol.ver10.HCPVportDescriptionVer10;
 import org.onosproject.hcp.types.HCPVport;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
+import org.onosproject.net.Port;
 import org.onosproject.net.PortNumber;
 import org.onosproject.net.host.HostService;
 import org.onosproject.net.link.LinkEvent;
@@ -72,6 +74,7 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService{
 
     private AtomicLong vportNumber =new AtomicLong(1);
     private Map<ConnectPoint,PortNumber> vportMap=new HashMap<>();
+    private Map<ConnectPoint,PortNumber> vportNumAllocateCache=new HashMap<>();
 
     private final static int LLDP_VPORT_LOCAL=0xffff;
 
@@ -93,32 +96,16 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService{
         domainController.removeHCPSuperControllerListener(hcpSuperControllerListener);
         packetService.removeProcessor(hcplldpPacketProcesser);
         vportMap.clear();
+        vportNumAllocateCache.clear();
         log.info("==============Domain Topology Manager Stopped===================");
 
     }
 
-    private void addOrUpdateVport(ConnectPoint connectPoint){
-        if (vportMap.containsKey(connectPoint)){
-            return ;
-        }
-        else{
-            long alllocatedVportNumber=vportNumber.getAndIncrement();
-            vportMap.put(connectPoint,PortNumber.portNumber(alllocatedVportNumber));
-            HCPVport vport=HCPVport.ofShort((short)alllocatedVportNumber);
-            Set<HCPVportState> state=new HashSet<>();
-            state.add(HCPVportState.LINK_UP);
-            HCPVportDescribtion vportDescribtion=new HCPVportDescriptionVer10
-                    .Builder().setPortNo(vport)
-                    .setState(state).build();
-            HCPVportStatus message=hcpFactory.buildVportStatus()
-                    .setReson(HCPVportReason.ADD)
-                    .setVportDescribtion(vportDescribtion)
-                    .build();
-            domainController.write(message);
-        }
-    }
-
-
+    /**
+     * check whether the connectPoint has already VportNumber
+     * @param connectPoint
+     * @return the Vport number
+     */
 
     @Override
     public PortNumber getLogicalVportNumber(ConnectPoint connectPoint) {
@@ -130,6 +117,9 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService{
         return vportMap.containsKey(connectPoint);
     }
 
+    private PortNumber getVportNum(ConnectPoint edgeConnectPoint) {
+        return vportMap.get(edgeConnectPoint);
+    }
     @Override
     public ConnectPoint getLocationByVport(PortNumber portNumber) {
         for (ConnectPoint connectPoint:vportMap.keySet()){
@@ -150,6 +140,54 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService{
         log.trace("Generate MAC Address {}",srcMac);
         return srcMac;
     }
+
+
+    private PortNumber AllocateVPortNumber(ConnectPoint connectPoint){
+        if (vportNumAllocateCache.containsKey(connectPoint)){
+            return vportNumAllocateCache.get(connectPoint);
+        }
+        else{
+            PortNumber number=PortNumber.portNumber(vportNumber.getAndIncrement());
+            vportNumAllocateCache.put(connectPoint,number);
+            return number;
+        }
+    }
+
+    private void addOrUpdateVport(ConnectPoint connectPoint,HCPVportState vportState,HCPVportReason vportReason){
+        Preconditions.checkNotNull(connectPoint);
+        //if vportmap have connectPoint and vportState is add return
+        if (vportMap.containsKey(connectPoint)&&vportReason.equals(HCPVportReason.ADD)){
+            return ;
+        }
+        if (!vportMap.containsKey(connectPoint)&&vportReason.equals(HCPVportReason.ADD)){
+            //add vport to vportmap
+            //给这个Connectpoint分配一个Vport端口号，并记录下来
+            PortNumber portNumber=AllocateVPortNumber(connectPoint);
+            vportMap.put(connectPoint,portNumber);
+        }
+        PortNumber portNumber=vportMap.get(connectPoint);
+        if (vportReason.equals(HCPVportReason.DELETE)){
+            ConnectPoint connect=getLocationByVport(portNumber);
+            vportMap.remove(connect) ;
+        }
+        //构造VportStatus数据包，告知SuperController边界端口信息
+        HCPVport vport = HCPVport.ofShort((short) portNumber.toLong());
+        Set<HCPVportState> state = new HashSet<>();
+        state.add(HCPVportState.LINK_UP);
+        HCPVportDescribtion vportDesc = new HCPVportDescriptionVer10.Builder()
+                .setPortNo(vport)
+                .setState(state)
+                .build();
+        HCPVportStatus vportStatus = hcpFactory
+                .buildVportStatus()
+                .setReson(HCPVportReason.ADD)
+                .setVportDescribtion(vportDesc)
+                .build();
+        domainController.write(vportStatus);
+        }
+
+
+
 
     private class InternalLinkListener implements LinkListener{
 
@@ -193,31 +231,38 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService{
             if (packetContext.isHandled()){
                 return;
             }
+
             Ethernet eth=packetContext.inPacket().parsed();
             if (eth==null ||(eth.getEtherType()!=Ethernet.TYPE_LLDP)){
                 return ;
             }
-            if (!domainController.isConnectToSuper()){
-                return ;
-            }
+//            if (!domainController.isConnectToSuper()){
+//                return ;
+//            }
             HCPLLDP hcplldp=HCPLLDP.parseHCPLLDP(eth);
+            log.info("=============hcp lldp domainId:{},deviceId:{},portID:{},Vport:{}",
+                    hcplldp.getDomianId(),hcplldp.getDpid(),hcplldp.getPortNum(),hcplldp.getVportNum());
             if (hcplldp==null){
                 return ;
             }
             PortNumber srcPort=PortNumber.portNumber(hcplldp.getPortNum());
             PortNumber dstPort=packetContext.inPacket().receivedFrom().port();
-            DeviceId srcDeviceId=DeviceId.deviceId("of:"+hcplldp.getDpid());
+            DeviceId srcDeviceId=DeviceId.deviceId("pof:"+hcplldp.getDpid());
             DeviceId dstDeviceId=packetContext.inPacket().receivedFrom().deviceId();
             ConnectPoint edgeConnectPoint=new ConnectPoint(dstDeviceId,dstPort);
 
+            //如果收到LLDP数据包中域ID和控制器的域ID相同，说明是在同一个域的设备
             if (hcplldp.getDomianId()==domainController.getDomainId().getLong()){
                 packetContext.block();
                 return;
             }
-
+            log.info("=========================================================");
+            //
+            //如果Vport号是初始的oxffff，则说明对面控制器并没有发现Vport，则需要控制器重新构造
+            //LLDP数据包发送给对端，让对端发现其是Vport（表示边界对外端口），并且上报给SuperController
             if (LLDP_VPORT_LOCAL==hcplldp.getVportNum()){
-                addOrUpdateVport(edgeConnectPoint);
-                HCPLLDP replyhcplldp=HCPLLDP.hcplldp(Long.valueOf(dstDeviceId.toString().substring("of:".length())),
+                addOrUpdateVport(edgeConnectPoint,HCPVportState.LINK_UP,HCPVportReason.ADD);
+                HCPLLDP replyhcplldp=HCPLLDP.hcplldp(Long.valueOf(dstDeviceId.toString().substring("pof:".length())),
                         Long.valueOf(dstPort.toLong()).intValue(),
                         domainController.getDomainId().getLong(),
                         Long.valueOf(getLogicalVportNumber(edgeConnectPoint).toLong()).intValue());
@@ -232,6 +277,15 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService{
                 packetService.emit(outboundPacket);
                 packetContext.block();
             }else{
+                //如果lldp携带了Vport号，则说明对端控制器已经发现自己域的这个对外端口，
+                // 则需要将LLDP数据包上报给SuperController，让SuperController发现域间链路
+                PortNumber exitVportNumber=getVportNum(edgeConnectPoint) ;
+                if (exitVportNumber==null){
+                    addOrUpdateVport(edgeConnectPoint,HCPVportState.LINK_UP,HCPVportReason.ADD);
+                }
+
+                //构造LLDP数据包，通过Sbp数据包中的的SbpCmpType中的PACKET_IN模式
+                // 封装到Sbp数据吧中发送给SuperController
                 HCPLLDP sbpHCPlldp=HCPLLDP.hcplldp(hcplldp.getDomianId(),
                         hcplldp.getVportNum(),domainController.getDomainId().getLong(),
                         hcplldp.getVportNum());
@@ -241,16 +295,15 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService{
                 ethpacket.setPad(true);
                 ethpacket.setSourceMACAddress(buildSrcMac());
                 ethpacket.setPayload(sbpHCPlldp);
-
                 byte [] frame=ethpacket.serialize();
-                HCPPacketIn hcpPacketIn= HCPPacketInVer10.of((int)getLogicalVportNumber(edgeConnectPoint).toLong(),frame);
-
-                ChannelBuffer buffer= ChannelBuffers.dynamicBuffer();
-                hcpPacketIn.writeTo(buffer);
-                byte []data=new byte[buffer.readableBytes()];
-                buffer.readBytes(data,0,buffer.readableBytes());
+                HCPPacketIn hcpPacketIn= HCPPacketInVer10.of((int)getVportNum(edgeConnectPoint).toLong(),frame);
+                Set<HCPSbpFlags> flagsSet=new HashSet<>();
+                flagsSet.add(HCPSbpFlags.DATA_EXITS);
                 HCPSbp hcpSbp=hcpFactory.buildSbp()
                         .setSbpCmpType(HCPSbpCmpType.PACKET_IN)
+                        .setFlags(flagsSet)
+                        .setDataLength((short)hcpPacketIn.getData().length)
+                        .setSbpXid(1)
                         .setSbpCmpData(hcpPacketIn)
                         .build();
                 domainController.write(hcpSbp);
