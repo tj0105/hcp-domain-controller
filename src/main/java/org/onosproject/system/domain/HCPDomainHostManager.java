@@ -2,6 +2,7 @@ package org.onosproject.system.domain;
 
 import org.apache.felix.scr.annotations.*;
 import org.onlab.packet.IpAddress;
+import org.onlab.util.Tools;
 import org.onosproject.api.HCPSuper;
 import org.onosproject.api.HCPSuperMessageListener;
 import org.onosproject.api.domain.HCPDomainController;
@@ -19,6 +20,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author ldy
@@ -42,25 +47,43 @@ public class HCPDomainHostManager {
     private HCPSuperMessageListener hcpSuperMessageListener=new InternalHCPSuperMessageListener();
     private HCPSuperControllerListener hcpSuperControllerListener=new InternalHCPSuperControllerListener();
 
+    private ScheduledExecutorService executorService;
+    //判断是否 connect SuperController
+    private boolean flag=false;
+
     @Activate
-    public void activate(){
-        hcpVersion=domainController.getHCPVersion();
-        hcpFactory= HCPFactories.getFactory(hcpVersion);
-        domainController.addMessageListener(hcpSuperMessageListener);
+    public void activate() {
         domainController.addHCPSuperControllerListener(hcpSuperControllerListener);
-        hostService.addListener(hostListener);
-        log.info("domainController: superIp:{} superPort{}",domainController.getHCPSuperIp(),domainController.getHCPSuperPort());
+        log.info("============Domain HostManager started===========");
+
     }
 
 
     @Deactivate
     public void deactivate(){
-        hostService.removeListener(hostListener);
-        domainController.removeMessageListener(hcpSuperMessageListener);
         domainController.removeHCPSuperControllerListener(hcpSuperControllerListener);
-        log.info("hostmanager stoped");
+        if (!flag){
+            return ;
+        }
+        if (executorService!=null){
+            executorService.shutdown();
+        }
+        domainController.removeMessageListener(hcpSuperMessageListener);
+        hostService.removeListener(hostListener);
+        log.info("============Domain HostManager stoped===========");
     }
 
+    public void init(){
+        flag=true;
+        hcpVersion=domainController.getHCPVersion();
+        hcpFactory=HCPFactories.getFactory(hcpVersion);
+        executorService= Executors.newSingleThreadScheduledExecutor
+                (Tools.groupedThreads("hcp/hostupdate", "hcp-hostupdate-%d", log));
+        executorService.scheduleAtFixedRate(new HostUpdateTesk(),domainController.getPeriod(),domainController.getPeriod(), TimeUnit.SECONDS);
+        domainController.addMessageListener(hcpSuperMessageListener);
+        hostService.addListener(hostListener);
+        log.info("Host Manager have successful activate");
+    }
 
     private void updateExisHosts(HCPHostRequest hcpHostRequest){
         List<HCPHost> hcpHosts=new ArrayList<>();
@@ -147,7 +170,7 @@ public class HCPDomainHostManager {
         public void handleIncommingMessage(HCPMessage message) {
                 if (message.getType()!=HCPType.HCP_HOST_REQUEST)
                     return;
-//                updateExisHosts((HCPHostRequest)message);
+                updateExisHosts((HCPHostRequest)message);
         }
 
         @Override
@@ -160,13 +183,21 @@ public class HCPDomainHostManager {
 
         @Override
         public void connectToSuperController(HCPSuper hcpSuper) {
-//            updateExisHosts(null);
-            return ;
+            init();
+            updateExisHosts(null);
         }
 
         @Override
         public void disconnectSuperController(HCPSuper hcpSuper) {
 
+        }
+    }
+
+    class HostUpdateTesk implements Runnable{
+
+        @Override
+        public void run() {
+            updateExisHosts(null);
         }
     }
 }

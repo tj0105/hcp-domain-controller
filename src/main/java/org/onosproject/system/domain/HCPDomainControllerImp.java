@@ -49,15 +49,13 @@ public class HCPDomainControllerImp implements HCPDomainController{
    private Set<HCPSuperControllerListener> hcpSuperControllerListeners=new CopyOnWriteArraySet<>();
    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
    protected CoreService coreService;
+
   @Activate
   public void activate(){
       this.setHCPVersion(HCPVersion.HCP_10);
       this.setDomainId(DomainId.of(1111));
-
       this.setHCPSuperIp("192.168.109.112");
-
       this.setHCPSuperPort(8899);
-
       this.setHCPSbpType(HCPSbpType.POF);
       this.setHCPSbpVersion((HCPSbpVersion.of((byte)4,HCPVersion.HCP_10)));
       Set<HCPCapabilities> capabilitie=new HashSet<>();
@@ -69,17 +67,16 @@ public class HCPDomainControllerImp implements HCPDomainController{
       capabilitie.add(HCPCapabilities.FLOW_STATS);
       capabilitie.add(HCPCapabilities.TABLE_STATS);
       this.SetCapabilities(capabilitie);
-
       Set<HCPConfigFlags> flags=new HashSet<>();
       flags.add(HCPConfigFlags.CAPABILITIES_BW);
       this.setFlags(flags);
       this.setPeriod(5);
       this.setMissSendLength(128);
-      try {
-          Thread.sleep(1500);
-      } catch (InterruptedException e) {
-          e.printStackTrace();
-      }
+//      try {
+//          Thread.sleep(1500);
+//      } catch (InterruptedException e) {
+//          e.printStackTrace();
+//      }
       domainConnector.start();
       log.info("domain controller started");
 

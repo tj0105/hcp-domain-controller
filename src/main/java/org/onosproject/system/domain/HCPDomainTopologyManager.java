@@ -236,12 +236,12 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService{
             if (eth==null ||(eth.getEtherType()!=Ethernet.TYPE_LLDP)){
                 return ;
             }
-//            if (!domainController.isConnectToSuper()){
-//                return ;
-//            }
+            if (!domainController.isConnectToSuper()){
+                return ;
+            }
             HCPLLDP hcplldp=HCPLLDP.parseHCPLLDP(eth);
-            log.info("=============hcp lldp domainId:{},deviceId:{},portID:{},Vport:{}",
-                    hcplldp.getDomianId(),hcplldp.getDpid(),hcplldp.getPortNum(),hcplldp.getVportNum());
+//            log.info("=============hcp lldp domainId:{},deviceId:{},portID:{},Vport:{}",
+//                    hcplldp.getDomianId(),hcplldp.getDpid(),hcplldp.getPortNum(),hcplldp.getVportNum());
             if (hcplldp==null){
                 return ;
             }
