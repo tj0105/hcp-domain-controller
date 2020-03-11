@@ -58,7 +58,7 @@ public class HCPVportDescriptionVer10 implements HCPVportDescribtion {
 
         @Override
         public void write(ChannelBuffer bb, HCPVportDescriptionVer10 message){
-            message.portNo.writeTo(bb);
+            bb.writeShort(message.portNo.getPortNumber());
             HCPVportStateSerializerVer10.writeTo(bb,message.state);
             bb.writeZero(2);
         }

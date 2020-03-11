@@ -109,6 +109,8 @@ public class HCPVportStatusVer10 implements HCPVportStatus{
             //reason
             HCPVportReason reason=HCPVportReasonSerializerVer10.readFrom(bb);
             //vport description
+            bb.skipBytes(7);
+
             HCPVportDescribtion describtion=HCPVportDescriptionVer10.READER.readFrom(bb);
             return new HCPVportStatusVer10(xid,reason,describtion);
         }
@@ -202,12 +204,12 @@ public class HCPVportStatusVer10 implements HCPVportStatus{
         if (this.reason==null){
             if (other.reason!=null)
                 return false;
-        }else if(this.reason.equals(other.reason))
+        }else if(!this.reason.equals(other.reason))
             return false;
         if (this.describtion==null)
-            if (other.describtion==null)
+            if (other.describtion!=null)
                 return false;
-        else if(this.describtion.equals(other.describtion))
+        else if(!describtion.equals(other.describtion))
             return false;
         return true;
     }

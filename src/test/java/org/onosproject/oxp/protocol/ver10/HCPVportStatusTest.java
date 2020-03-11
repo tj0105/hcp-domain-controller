@@ -45,13 +45,14 @@ public class HCPVportStatusTest {
         HCPMessage message = getMessageReader().readFrom(buffer);
         assertThat(message, instanceOf(vportStatus.getClass()));
 
-        HCPVportStatus messageRev =  vportStatus;
+        HCPVportStatus messageRev =  (HCPVportStatus)message;
         System.out.println(messageRev.getType());
+        System.out.println(messageRev.getVersion());
         System.out.println(messageRev.getXid());
         System.out.println(messageRev.getReason());
         System.out.println(messageRev.getVportDescribtion().getState()+""
                 +messageRev.getVportDescribtion().getPortNo().getPortNumber());
         System.out.println(messageRev.getXid());
-        assertThat(vportStatus, is(messageRev));
+        assertThat(messageRev, is(vportStatus));
     }
 }

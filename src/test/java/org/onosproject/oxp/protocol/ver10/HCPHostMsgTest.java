@@ -19,7 +19,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static sun.misc.Version.print;
 
 /**
  * @Author ldy
@@ -65,6 +64,7 @@ public class HCPHostMsgTest {
         System.out.println(hcpMessage.getXid());
         assertThat(hcpMessage,instanceOf(hcpHostReply.getClass()));
         HCPHostReply hcpHostReply1=(HCPHostReply)hcpMessage;
+
         System.out.println(hcpHostReply1.getDomainId().getLong());
         System.out.println(hcpHostReply1.getHosts().get(0).getiPv4Address());
         System.out.println(hcpHostReply1.getHosts().get(0).getHostState());

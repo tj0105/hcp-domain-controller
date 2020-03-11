@@ -1,6 +1,5 @@
 package org.onosproject.oxp.protocol.ver10;
 
-import com.sun.xml.internal.ws.api.model.MEP;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;

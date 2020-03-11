@@ -2,41 +2,25 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="66e4ae61-4829-4151-8f8b-e017633e7982" name="Default Changelist" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPFeaturesTest.java" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainControllerImp.java" afterPath="$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainControllerImp.java" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainHostManager.java" afterPath="$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainHostManager.java" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportDescriptionVer10.java" afterPath="$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportDescriptionVer10.java" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportStateSerializerVer10.java" afterPath="$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportStateSerializerVer10.java" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportStatusVer10.java" afterPath="$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportStatusVer10.java" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainTopologyManager.java" afterPath="$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainTopologyManager.java" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPFeaturesTest.java" afterPath="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPFeaturesTest.java" />
       <change beforePath="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPHostMsgTest.java" afterPath="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPHostMsgTest.java" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HexTest.java" afterPath="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HexTest.java" />
-      <change beforePath="$PROJECT_DIR$/target/classes/META-INF/MANIFEST.MF" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainControllerImp.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainControllerImp.class" />
-      <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainHostManager$1.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainHostManager$1.class" />
-      <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainHostManager$InternalHCPSuperControllerListener.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainHostManager$InternalHCPSuperControllerListener.class" />
-      <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainHostManager$InternalHCPSuperMessageListener.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainHostManager$InternalHCPSuperMessageListener.class" />
-      <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainHostManager$InternalHostListener.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainHostManager$InternalHostListener.class" />
-      <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainHostManager.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainHostManager.class" />
-      <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainRoutingManager.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainRoutingManager.class" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPVportStatusTest.java" afterPath="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPVportStatusTest.java" />
+      <change beforePath="$PROJECT_DIR$/target/classes/OSGI-INF/org.onosproject.system.domain.HCPDomainTopologyManager.xml" afterPath="$PROJECT_DIR$/target/classes/OSGI-INF/org.onosproject.system.domain.HCPDomainTopologyManager.xml" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/hcp/protocol/ver10/HCPVportDescriptionVer10$Writer.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/hcp/protocol/ver10/HCPVportDescriptionVer10$Writer.class" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/hcp/protocol/ver10/HCPVportStateSerializerVer10.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/hcp/protocol/ver10/HCPVportStateSerializerVer10.class" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/hcp/protocol/ver10/HCPVportStatusVer10$Builder.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/hcp/protocol/ver10/HCPVportStatusVer10$Builder.class" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/hcp/protocol/ver10/HCPVportStatusVer10$Reader.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/hcp/protocol/ver10/HCPVportStatusVer10$Reader.class" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/hcp/protocol/ver10/HCPVportStatusVer10.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/hcp/protocol/ver10/HCPVportStatusVer10.class" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainTopologyManager$InternalHCPSuperControllerListener.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainTopologyManager$InternalHCPSuperControllerListener.class" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainTopologyManager$InternalHCPSuperMessageListener.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainTopologyManager$InternalHCPSuperMessageListener.class" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainTopologyManager$InternalLinkListener.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainTopologyManager$InternalLinkListener.class" />
       <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainTopologyManager$InternalPacketProcessor.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainTopologyManager$InternalPacketProcessor.class" />
       <change beforePath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainTopologyManager.class" afterPath="$PROJECT_DIR$/target/classes/org/onosproject/system/domain/HCPDomainTopologyManager.class" />
-      <change beforePath="$PROJECT_DIR$/target/hcp-domain-system-1.0-SNAPSHOT.jar" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/hcp-domain-system-1.0-SNAPSHOT.oar" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/oar/app.xml" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/oar/m2/org/onosproject/hcp-domain-system/1.0-SNAPSHOT/hcp-domain-system-1.0-SNAPSHOT-features.xml" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/oar/m2/org/onosproject/hcp-domain-system/1.0-SNAPSHOT/hcp-domain-system-1.0-SNAPSHOT.jar" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-org.onosproject.oxp.protocol.ver10.HCPConfigMsgTest.xml" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-org.onosproject.oxp.protocol.ver10.HCPLLDPTest.xml" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-org.onosproject.oxp.protocol.ver10.HexTest.xml" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/org.onosproject.oxp.protocol.ver10.HCPConfigMsgTest.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/org.onosproject.oxp.protocol.ver10.HCPLLDPTest.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/org.onosproject.oxp.protocol.ver10.HexTest.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/org/onosproject/oxp/protocol/ver10/HCPConfigMsgTest.class" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/org/onosproject/oxp/protocol/ver10/HCPHostMsgTest.class" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/org/onosproject/oxp/protocol/ver10/HCPLLDPTest.class" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/org/onosproject/oxp/protocol/ver10/HCPSbpMessageTest.class" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/org/onosproject/oxp/protocol/ver10/HCPVportStatusTest.class" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/org/onosproject/oxp/protocol/ver10/HexTest.class" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/org/onosproject/oxp/protocol/ver10/TestBaseVer10.class" afterPath="" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -84,83 +68,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="HCPDomainControllerImp.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainControllerImp.java">
+      <file leaf-file-name="HCPDomainTopologyManager.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainTopologyManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="68" column="40" lean-forward="false" selection-start-line="60" selection-start-column="5" selection-end-line="68" selection-end-column="40" />
+            <state relative-caret-position="4469">
+              <caret line="354" column="0" lean-forward="false" selection-start-line="354" selection-start-column="0" selection-end-line="354" selection-end-column="0" />
               <folding>
-                <element signature="e#4043#4044#0" expanded="true" />
-                <element signature="e#4097#4098#0" expanded="true" />
-                <element signature="e#4186#4187#0" expanded="true" />
-                <element signature="e#4243#4244#0" expanded="true" />
-                <element signature="e#4863#4864#0" expanded="true" />
-                <element signature="e#4896#4897#0" expanded="true" />
-                <element signature="e#4965#4966#0" expanded="true" />
-                <element signature="e#4997#4998#0" expanded="true" />
-                <element signature="e#5041#5042#0" expanded="true" />
-                <element signature="e#5070#5071#0" expanded="true" />
-                <element signature="e#5125#5126#0" expanded="true" />
-                <element signature="e#5159#5160#0" expanded="true" />
-                <element signature="e#5212#5213#0" expanded="true" />
-                <element signature="e#5249#5250#0" expanded="true" />
+                <element signature="e#5268#5269#0" expanded="true" />
                 <element signature="e#5321#5322#0" expanded="true" />
-                <element signature="e#5371#5372#0" expanded="true" />
-                <element signature="e#5438#5439#0" expanded="true" />
-                <element signature="e#5478#5479#0" expanded="true" />
-                <element signature="e#5562#5563#0" expanded="true" />
-                <element signature="e#5608#5609#0" expanded="true" />
-                <element signature="e#5659#5660#0" expanded="true" />
-                <element signature="e#5690#5691#0" expanded="true" />
-                <element signature="e#5754#5755#0" expanded="true" />
-                <element signature="e#5792#5793#0" expanded="true" />
-                <element signature="e#5847#5848#0" expanded="true" />
-                <element signature="e#5880#5881#0" expanded="true" />
-                <element signature="e#5950#5951#0" expanded="true" />
-                <element signature="e#5992#5993#0" expanded="true" />
-                <element signature="e#6050#6051#0" expanded="true" />
-                <element signature="e#6086#6087#0" expanded="true" />
-                <element signature="e#6165#6166#0" expanded="true" />
-                <element signature="e#6213#6214#0" expanded="true" />
-                <element signature="e#6263#6264#0" expanded="true" />
-                <element signature="e#6298#6299#0" expanded="true" />
-                <element signature="e#6365#6366#0" expanded="true" />
-                <element signature="e#6411#6412#0" expanded="true" />
-                <element signature="e#6462#6463#0" expanded="true" />
-                <element signature="e#6495#6496#0" expanded="true" />
-                <element signature="e#6561#6562#0" expanded="true" />
-                <element signature="e#6603#6604#0" expanded="true" />
-                <element signature="e#6658#6659#0" expanded="true" />
-                <element signature="e#6691#6692#0" expanded="true" />
-                <element signature="e#6761#6762#0" expanded="true" />
-                <element signature="e#6803#6804#0" expanded="true" />
+                <element signature="e#8219#8220#0" expanded="true" />
+                <element signature="e#8248#8249#0" expanded="true" />
+                <element signature="e#8317#8318#0" expanded="true" />
+                <element signature="e#8344#8345#0" expanded="true" />
+                <element signature="e#10940#10941#0" expanded="true" />
+                <element signature="e#10974#10975#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HCPHostMsgTest.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPHostMsgTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="162">
-              <caret line="42" column="50" lean-forward="false" selection-start-line="41" selection-start-column="8" selection-end-line="42" selection-end-column="50" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HCPDomainHostManager.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="HCPDomainHostManager.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainHostManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="559">
-              <caret line="87" column="0" lean-forward="false" selection-start-line="87" selection-start-column="0" selection-end-line="88" selection-end-column="0" />
+            <state relative-caret-position="0">
+              <caret line="90" column="28" lean-forward="false" selection-start-line="90" selection-start-column="28" selection-end-line="90" selection-end-column="28" />
               <folding>
-                <element signature="e#3585#3586#0" expanded="true" />
-                <element signature="e#3665#3666#0" expanded="true" />
-                <element signature="e#3706#3707#0" expanded="true" />
-                <element signature="e#3786#3787#0" expanded="true" />
                 <element signature="e#6979#6980#0" expanded="true" />
                 <element signature="e#7024#7025#0" expanded="true" />
               </folding>
@@ -168,79 +100,95 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HCPHost.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/types/HCPHost.java">
+      <file leaf-file-name="HCPVportStatusTest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPVportStatusTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="54">
-              <caret line="37" column="54" lean-forward="false" selection-start-line="37" selection-start-column="54" selection-end-line="37" selection-end-column="54" />
+            <state relative-caret-position="468">
+              <caret line="51" column="13" lean-forward="false" selection-start-line="51" selection-start-column="13" selection-end-line="51" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HCPTopologyRequestVer10.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPTopologyRequestVer10.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1691">
+              <caret line="15" column="13" lean-forward="false" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HCPTopologyReplyVer10.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPTopologyReplyVer10.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-2393">
+              <caret line="20" column="13" lean-forward="false" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HCPVportDescriptionVer10.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportDescriptionVer10.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="165">
+              <caret line="60" column="58" lean-forward="false" selection-start-line="60" selection-start-column="12" selection-end-line="60" selection-end-column="58" />
               <folding>
-                <element signature="e#829#830#0" expanded="true" />
-                <element signature="e#863#864#0" expanded="true" />
+                <element signature="e#1469#1470#0" expanded="true" />
+                <element signature="e#1506#1507#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HCPDomainChannelHandler.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainChannelHandler.java">
+      <file leaf-file-name="HCPVportStateSerializerVer10.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportStateSerializerVer10.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="188">
-              <caret line="239" column="25" lean-forward="false" selection-start-line="233" selection-start-column="7" selection-end-line="239" selection-end-column="25" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HCPFeaturesTest.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPFeaturesTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="61" column="62" lean-forward="false" selection-start-line="61" selection-start-column="62" selection-end-line="61" selection-end-column="62" />
+            <state relative-caret-position="-216">
+              <caret line="46" column="10" lean-forward="false" selection-start-line="46" selection-start-column="10" selection-end-line="46" selection-end-column="10" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#901#902#0" expanded="true" />
+                <element signature="e#946#947#0" expanded="true" />
+                <element signature="e#1020#1021#0" expanded="true" />
+                <element signature="e#1065#1066#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HCPFeaturesReplyVer10.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPFeaturesReplyVer10.java">
+      <file leaf-file-name="HCPSbpVer10.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPSbpVer10.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="145">
-              <caret line="184" column="0" lean-forward="false" selection-start-line="184" selection-start-column="0" selection-end-line="184" selection-end-column="0" />
+            <state relative-caret-position="-5057">
+              <caret line="19" column="13" lean-forward="false" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HCPConfigMsgTest.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPConfigMsgTest.java">
+      <file leaf-file-name="HCPVportStatusVer10.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportStatusVer10.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="106">
-              <caret line="24" column="13" lean-forward="false" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HCPDomainController.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/api/domain/HCPDomainController.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="84">
-              <caret line="58" column="25" lean-forward="false" selection-start-line="58" selection-start-column="25" selection-end-line="58" selection-end-column="25" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HCPDomainTopologyManager.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainTopologyManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="260">
-              <caret line="244" column="0" lean-forward="false" selection-start-line="244" selection-start-column="0" selection-end-line="245" selection-end-column="0" />
+            <state relative-caret-position="-1908">
+              <caret line="75" column="30" lean-forward="false" selection-start-line="75" selection-start-column="30" selection-end-line="75" selection-end-column="30" />
               <folding>
-                <element signature="e#4586#4587#0" expanded="true" />
-                <element signature="e#4639#4640#0" expanded="true" />
+                <element signature="e#1471#1472#0" expanded="true" />
+                <element signature="e#1508#1509#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Object.java" pinned="false" current-in-tab="false">
+        <entry file="jar:///usr/lib/jvm/java-8-oracle/src.zip!/java/lang/Object.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="93">
+              <caret line="147" column="19" lean-forward="false" selection-start-line="147" selection-start-column="19" selection-end-line="147" selection-end-column="19" />
+              <folding>
+                <element signature="e#5748#5749#0" expanded="true" />
+                <element signature="e#5784#5785#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -280,7 +228,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/org/onosproject/cli/Command.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/onosproject/cli/test.java" />
         <option value="$PROJECT_DIR$/src/main/resources/blueprint/shell-config.xml" />
         <option value="$PROJECT_DIR$/src/main/java/org/onosproject/cliSSS/test.java" />
@@ -317,9 +264,6 @@
         <option value="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPConfigMsgTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPMessageVer10.java" />
         <option value="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPLLDPTest.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportDescriptionVer10.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportStatusVer10.java" />
-        <option value="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPVportStatusTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPSbpVer10.java" />
         <option value="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPSbpMessageTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/HCPHostReply.java" />
@@ -327,10 +271,14 @@
         <option value="$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainRoutingManager.java" />
         <option value="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HexTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainControllerImp.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainHostManager.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainTopologyManager.java" />
-        <option value="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPHostMsgTest.java" />
         <option value="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPFeaturesTest.java" />
+        <option value="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPHostMsgTest.java" />
+        <option value="$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPVportStatusTest.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportDescriptionVer10.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportStateSerializerVer10.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportStatusVer10.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainTopologyManager.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainHostManager.java" />
       </list>
     </option>
   </component>
@@ -346,7 +294,7 @@
       <select />
     </treeState>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="1">
     <option name="width" value="1360" />
     <option name="height" value="728" />
   </component>
@@ -366,9 +314,10 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
+      <pane id="Scratches" />
       <pane id="Scope" />
       <pane id="AndroidView" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -418,6 +367,27 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="onosproject" type="462c0819:PsiDirectoryNode" />
+              <item name="hcp" type="462c0819:PsiDirectoryNode" />
+              <item name="protocol" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hcp-domain-controller" type="b2602c69:ProjectViewProjectNode" />
+              <item name="hcp-domain-controller" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="onosproject" type="462c0819:PsiDirectoryNode" />
+              <item name="hcp" type="462c0819:PsiDirectoryNode" />
+              <item name="protocol" type="462c0819:PsiDirectoryNode" />
+              <item name="ver10" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hcp-domain-controller" type="b2602c69:ProjectViewProjectNode" />
+              <item name="hcp-domain-controller" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="onosproject" type="462c0819:PsiDirectoryNode" />
               <item name="system" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -459,7 +429,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -505,7 +474,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.HCPFeaturesTest.HCPFeaturesReplyTest">
+  <component name="RunManager" selected="JUnit.HCPVportStatusTest.testVPortStatus">
     <configuration default="true" type="Applet" factoryName="Applet">
       <option name="HTML_USED" value="false" />
       <option name="WIDTH" value="400" />
@@ -577,7 +546,7 @@
       <envs />
       <patterns />
     </configuration>
-    <configuration name="HCPHostMsgTest.HCPHostRequestTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="HCPLLDPTest.HCPLLDPTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
           <option name="PATTERN" value="org.onosproject.oxp.protocol.ver10.*" />
@@ -588,8 +557,8 @@
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <option name="PACKAGE_NAME" value="org.onosproject.oxp.protocol.ver10" />
-      <option name="MAIN_CLASS_NAME" value="org.onosproject.oxp.protocol.ver10.HCPHostMsgTest" />
-      <option name="METHOD_NAME" value="HCPHostRequestTest" />
+      <option name="MAIN_CLASS_NAME" value="org.onosproject.oxp.protocol.ver10.HCPLLDPTest" />
+      <option name="METHOD_NAME" value="HCPLLDPTest" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="PARAMETERS" />
@@ -602,7 +571,7 @@
       <envs />
       <patterns />
     </configuration>
-    <configuration name="HCPHostMsgTest.HCPHostUpdateTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="HCPSbpMessageTest.SbpCmpPacketInTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
           <option name="PATTERN" value="org.onosproject.oxp.protocol.ver10.*" />
@@ -613,8 +582,8 @@
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <option name="PACKAGE_NAME" value="org.onosproject.oxp.protocol.ver10" />
-      <option name="MAIN_CLASS_NAME" value="org.onosproject.oxp.protocol.ver10.HCPHostMsgTest" />
-      <option name="METHOD_NAME" value="HCPHostUpdateTest" />
+      <option name="MAIN_CLASS_NAME" value="org.onosproject.oxp.protocol.ver10.HCPSbpMessageTest" />
+      <option name="METHOD_NAME" value="SbpCmpPacketInTest" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="PARAMETERS" />
@@ -627,7 +596,7 @@
       <envs />
       <patterns />
     </configuration>
-    <configuration name="HexTest.MapTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="HCPVportStatusTest.testVPortStatus" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
           <option name="PATTERN" value="org.onosproject.oxp.protocol.ver10.*" />
@@ -638,8 +607,8 @@
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <option name="PACKAGE_NAME" value="org.onosproject.oxp.protocol.ver10" />
-      <option name="MAIN_CLASS_NAME" value="org.onosproject.oxp.protocol.ver10.HexTest" />
-      <option name="METHOD_NAME" value="MapTest" />
+      <option name="MAIN_CLASS_NAME" value="org.onosproject.oxp.protocol.ver10.HCPVportStatusTest" />
+      <option name="METHOD_NAME" value="testVPortStatus" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="PARAMETERS" />
@@ -725,19 +694,19 @@
     </configuration>
     <list size="6">
       <item index="0" class="java.lang.String" itemvalue="Remote.Unnamed" />
-      <item index="1" class="java.lang.String" itemvalue="JUnit.HCPHostMsgTest.HCPHostRequestTest" />
-      <item index="2" class="java.lang.String" itemvalue="JUnit.HCPHostMsgTest.HCPHostReply" />
-      <item index="3" class="java.lang.String" itemvalue="JUnit.HCPHostMsgTest.HCPHostUpdateTest" />
-      <item index="4" class="java.lang.String" itemvalue="JUnit.HexTest.MapTest" />
-      <item index="5" class="java.lang.String" itemvalue="JUnit.HCPFeaturesTest.HCPFeaturesReplyTest" />
+      <item index="1" class="java.lang.String" itemvalue="JUnit.HCPHostMsgTest.HCPHostReply" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.HCPFeaturesTest.HCPFeaturesReplyTest" />
+      <item index="3" class="java.lang.String" itemvalue="JUnit.HCPLLDPTest.HCPLLDPTest" />
+      <item index="4" class="java.lang.String" itemvalue="JUnit.HCPSbpMessageTest.SbpCmpPacketInTest" />
+      <item index="5" class="java.lang.String" itemvalue="JUnit.HCPVportStatusTest.testVPortStatus" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="JUnit.HCPFeaturesTest.HCPFeaturesReplyTest" />
+        <item index="0" class="java.lang.String" itemvalue="JUnit.HCPVportStatusTest.testVPortStatus" />
         <item index="1" class="java.lang.String" itemvalue="JUnit.HCPHostMsgTest.HCPHostReply" />
-        <item index="2" class="java.lang.String" itemvalue="JUnit.HexTest.MapTest" />
-        <item index="3" class="java.lang.String" itemvalue="JUnit.HCPHostMsgTest.HCPHostUpdateTest" />
-        <item index="4" class="java.lang.String" itemvalue="JUnit.HCPHostMsgTest.HCPHostRequestTest" />
+        <item index="2" class="java.lang.String" itemvalue="JUnit.HCPSbpMessageTest.SbpCmpPacketInTest" />
+        <item index="3" class="java.lang.String" itemvalue="JUnit.HCPFeaturesTest.HCPFeaturesReplyTest" />
+        <item index="4" class="java.lang.String" itemvalue="JUnit.HCPLLDPTest.HCPLLDPTest" />
       </list>
     </recent_temporary>
   </component>
@@ -762,44 +731,45 @@
       <workItem from="1583169820872" duration="595000" />
       <workItem from="1583211917536" duration="55353000" />
       <workItem from="1583511610908" duration="2463000" />
-      <workItem from="1583515357724" duration="37855000" />
+      <workItem from="1583515357724" duration="55048000" />
+      <workItem from="1583921992123" duration="9160000" />
     </task>
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="HCPFeaturesTest_HCPFeaturesReplyTest - 2020.03.10 at 00h 06m 13s.xml">
-      <configuration name="HCPFeaturesTest.HCPFeaturesReplyTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="HCPFeaturesTest_HCPFeaturesReplyTest - 2020.03.10 at 00h 07m 40s.xml">
-      <configuration name="HCPFeaturesTest.HCPFeaturesReplyTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="HCPFeaturesTest_HCPFeaturesReplyTest - 2020.03.10 at 00h 08m 58s.xml">
-      <configuration name="HCPFeaturesTest.HCPFeaturesReplyTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="HCPFeaturesTest_HCPFeaturesReplyTest - 2020.03.10 at 00h 09m 45s.xml">
-      <configuration name="HCPFeaturesTest.HCPFeaturesReplyTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="HCPFeaturesTest_HCPFeaturesReplyTest - 2020.03.10 at 00h 10m 01s.xml">
-      <configuration name="HCPFeaturesTest.HCPFeaturesReplyTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="HCPHostMsgTest_HCPHostReply - 2020.03.09 at 21h 26m 28s.xml">
+    <history-entry file="HCPHostMsgTest_HCPHostReply - 2020.03.11 at 18h 31m 45s.xml">
       <configuration name="HCPHostMsgTest.HCPHostReply" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="HexTest_MapTest - 2020.03.08 at 12h 29m 00s.xml">
-      <configuration name="HexTest.MapTest" configurationId="JUnit" />
+    <history-entry file="HCPVportStatusTest_testVPortStatus - 2020.03.11 at 18h 30m 39s.xml">
+      <configuration name="HCPVportStatusTest.testVPortStatus" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="HexTest_MapTest - 2020.03.08 at 12h 31m 36s.xml">
-      <configuration name="HexTest.MapTest" configurationId="JUnit" />
+    <history-entry file="HCPVportStatusTest_testVPortStatus - 2020.03.11 at 18h 32m 33s.xml">
+      <configuration name="HCPVportStatusTest.testVPortStatus" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="HexTest_MapTest - 2020.03.08 at 12h 32m 29s.xml">
-      <configuration name="HexTest.MapTest" configurationId="JUnit" />
+    <history-entry file="HCPVportStatusTest_testVPortStatus - 2020.03.11 at 18h 48m 13s.xml">
+      <configuration name="HCPVportStatusTest.testVPortStatus" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="HexTest_MapTest - 2020.03.09 at 21h 53m 31s.xml">
-      <configuration name="HexTest.MapTest" configurationId="JUnit" />
+    <history-entry file="HCPVportStatusTest_testVPortStatus - 2020.03.11 at 18h 56m 03s.xml">
+      <configuration name="HCPVportStatusTest.testVPortStatus" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="HCPVportStatusTest_testVPortStatus - 2020.03.11 at 18h 57m 22s.xml">
+      <configuration name="HCPVportStatusTest.testVPortStatus" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="HCPVportStatusTest_testVPortStatus - 2020.03.11 at 18h 57m 34s.xml">
+      <configuration name="HCPVportStatusTest.testVPortStatus" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="HCPVportStatusTest_testVPortStatus - 2020.03.11 at 18h 59m 49s.xml">
+      <configuration name="HCPVportStatusTest.testVPortStatus" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="HCPVportStatusTest_testVPortStatus - 2020.03.11 at 19h 01m 17s.xml">
+      <configuration name="HCPVportStatusTest.testVPortStatus" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="HCPVportStatusTest_testVPortStatus - 2020.03.11 at 19h 02m 30s.xml">
+      <configuration name="HCPVportStatusTest.testVPortStatus" configurationId="JUnit" />
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="356220000" />
+    <option name="totallyTimeSpent" value="382573000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -811,32 +781,33 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1360" height="728" extended-state="0" />
+    <frame x="0" y="0" width="1360" height="728" extended-state="1" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32879046" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.30381945" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34235978" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32921812" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3850085" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.56388414" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41226575" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4173765" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.36797273" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26403642" sideWeight="0.4882353" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24203338" sideWeight="0.4882353" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32991013" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24903722" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4695652" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20209974" sideWeight="0.5117647" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.48040885" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -882,7 +853,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportStatusVer10.java</url>
-          <line>151</line>
+          <line>153</line>
           <properties class="org.onosproject.hcp.protocol.ver10.HCPVportStatusVer10.Builder" method="getReason">
             <option name="EMULATED" value="true" />
           </properties>
@@ -908,8 +879,20 @@
           <properties />
           <option name="timeStamp" value="26" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPSbpMessageTest.java</url>
+          <line>77</line>
+          <properties />
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPHostMsgTest.java</url>
+          <line>71</line>
+          <properties />
+          <option name="timeStamp" value="35" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="27" />
+      <option name="time" value="40" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -918,268 +901,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$MAVEN_REPOSITORY$/org/onosproject/onlab-misc/1.11.0-SNAPSHOT/onlab-misc-1.11.0-SNAPSHOT.jar!/org/onlab/packet/Ethernet.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="80" column="22" lean-forward="false" selection-start-line="80" selection-start-column="22" selection-end-line="80" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/onosproject/onlab-misc/1.11.0-SNAPSHOT/onlab-misc-1.11.0-SNAPSHOT.jar!/org/onlab/packet/HCPLLDP.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-19">
-          <caret line="109" column="18" lean-forward="false" selection-start-line="109" selection-start-column="18" selection-end-line="109" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/lib/jvm/java-8-oracle/src.zip!/java/util/HashSet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="184">
-          <caret line="103" column="11" lean-forward="false" selection-start-line="103" selection-start-column="11" selection-end-line="103" selection-end-column="11" />
-          <folding>
-            <element signature="e#3709#3710#0" expanded="false" />
-            <element signature="e#3746#3747#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportStateSerializerVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="16" column="13" lean-forward="false" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportReasonSerializerVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="12" column="13" lean-forward="false" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportDescriptionVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="26" column="4" lean-forward="false" selection-start-line="26" selection-start-column="4" selection-end-line="26" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPTopologyRequestVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-54">
-          <caret line="15" column="13" lean-forward="false" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPTopologyReplyVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="20" column="13" lean-forward="false" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPSetConfigVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPSbpTypeSerializerVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="12" column="13" lean-forward="false" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPSbpFlagsSerializerVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="15" column="13" lean-forward="false" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPSbpCmpTypeSerializerVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="22" column="26" lean-forward="false" selection-start-line="22" selection-start-column="26" selection-end-line="22" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPPacketOutVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="15" column="13" lean-forward="false" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPPacketInVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="468">
-          <caret line="31" column="0" lean-forward="false" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
-          <folding>
-            <element signature="e#630#631#0" expanded="false" />
-            <element signature="e#692#693#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPMessageVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1404">
-          <caret line="80" column="34" lean-forward="false" selection-start-line="80" selection-start-column="34" selection-end-line="80" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPInternalLinkVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="13" column="15" lean-forward="false" selection-start-line="13" selection-start-column="15" selection-end-line="13" selection-end-column="15" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPHostVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="18" column="16" lean-forward="false" selection-start-line="18" selection-start-column="16" selection-end-line="18" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/22.0/guava-22.0.jar!/com/google/common/collect/ImmutableList.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="32" column="22" lean-forward="false" selection-start-line="32" selection-start-column="22" selection-end-line="32" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPHostUpdateVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-220">
-          <caret line="38" column="28" lean-forward="true" selection-start-line="38" selection-start-column="28" selection-end-line="38" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/system/HCPMessageEncoder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="19" column="13" lean-forward="false" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/onosproject/onos-api/1.11.0-SNAPSHOT/onos-api-1.11.0-SNAPSHOT.jar!/org/onosproject/net/packet/PacketService.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="394">
-          <caret line="30" column="9" lean-forward="false" selection-start-line="30" selection-start-column="9" selection-end-line="30" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPSbpVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="93">
-          <caret line="194" column="0" lean-forward="false" selection-start-line="194" selection-start-column="0" selection-end-line="194" selection-end-column="0" />
-          <folding>
-            <element signature="e#2385#2386#0" expanded="false" />
-            <element signature="e#2422#2423#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportStatusVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-58">
-          <caret line="59" column="0" lean-forward="false" selection-start-line="59" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
-          <folding>
-            <element signature="e#1508#1509#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPLLDPTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="9" column="23" lean-forward="false" selection-start-line="9" selection-start-column="23" selection-end-line="9" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPSbpMessageTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-74">
-          <caret line="54" column="58" lean-forward="false" selection-start-line="54" selection-start-column="58" selection-end-line="54" selection-end-column="58" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPVportStatusTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="29" column="33" lean-forward="true" selection-start-line="27" selection-start-column="33" selection-end-line="29" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPHostRequestVer10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="61">
-          <caret line="74" column="30" lean-forward="false" selection-start-line="74" selection-start-column="30" selection-end-line="74" selection-end-column="30" />
-          <folding>
-            <element signature="e#1209#1210#0" expanded="false" />
-            <element signature="e#1246#1247#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/HCPMessageReader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="6" lean-forward="false" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/types/IPv4Address.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="15" column="13" lean-forward="false" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/onosproject/onlab-misc/1.11.0-SNAPSHOT/onlab-misc-1.11.0-SNAPSHOT.jar!/org/onlab/packet/MacAddress.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="17" column="35" lean-forward="false" selection-start-line="17" selection-start-column="35" selection-end-line="17" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/HCPFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="282">
-          <caret line="28" column="21" lean-forward="false" selection-start-line="28" selection-start-column="21" selection-end-line="28" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/HCPHostUpdate.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="54">
@@ -1228,36 +949,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="333">
           <caret line="33" column="13" lean-forward="false" selection-start-line="33" selection-start-column="13" selection-end-line="33" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/api/HCPSuper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="257">
-          <caret line="24" column="12" lean-forward="false" selection-start-line="24" selection-start-column="12" selection-end-line="24" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/system/HCPSuper10.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="62" column="21" lean-forward="false" selection-start-line="62" selection-start-column="21" selection-end-line="62" selection-end-column="21" />
-          <folding>
-            <element signature="e#1731#1732#0" expanded="false" />
-            <element signature="e#1773#1774#0" expanded="false" />
-            <element signature="e#1823#1824#0" expanded="false" />
-            <element signature="e#1855#1856#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainPipeLineFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="19" column="13" lean-forward="false" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1273,21 +964,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="54">
           <caret line="37" column="54" lean-forward="false" selection-start-line="37" selection-start-column="54" selection-end-line="37" selection-end-column="54" />
-          <folding>
-            <element signature="e#829#830#0" expanded="true" />
-            <element signature="e#863#864#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainTopologyManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="244" column="0" lean-forward="false" selection-start-line="244" selection-start-column="0" selection-end-line="245" selection-end-column="0" />
-          <folding>
-            <element signature="e#4586#4587#0" expanded="true" />
-            <element signature="e#4639#4640#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1295,14 +971,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="188">
           <caret line="239" column="25" lean-forward="false" selection-start-line="233" selection-start-column="7" selection-end-line="239" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPConfigMsgTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="106">
-          <caret line="24" column="13" lean-forward="false" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
           <folding />
         </state>
       </provider>
@@ -1315,98 +983,370 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/api/domain/HCPDomainController.java">
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/Test.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
-          <caret line="58" column="25" lean-forward="false" selection-start-line="58" selection-start-column="25" selection-end-line="58" selection-end-column="25" />
+        <state relative-caret-position="107">
+          <caret line="14" column="18" lean-forward="false" selection-start-line="14" selection-start-column="18" selection-end-line="14" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPLLDPTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" column="18" lean-forward="false" selection-start-line="2" selection-start-column="18" selection-end-line="2" selection-end-column="18" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPHostMsgTest.java">
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPConfigMsgTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="42" column="50" lean-forward="false" selection-start-line="41" selection-start-column="8" selection-end-line="42" selection-end-column="50" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state relative-caret-position="106">
+          <caret line="24" column="13" lean-forward="false" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPFeaturesTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="61" column="62" lean-forward="false" selection-start-line="61" selection-start-column="62" selection-end-line="61" selection-end-column="62" />
+        <state relative-caret-position="-496">
+          <caret line="24" column="13" lean-forward="false" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/types/HCPInternalLink.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="324">
+          <caret line="25" column="31" lean-forward="false" selection-start-line="25" selection-start-column="31" selection-end-line="25" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/onosproject/onos-api/1.11.0-SNAPSHOT/onos-api-1.11.0-SNAPSHOT.jar!/org/onosproject/net/topology/PathService.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="16" column="14" lean-forward="false" selection-start-line="16" selection-start-column="14" selection-end-line="16" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainPipeLineFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="19" column="13" lean-forward="false" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/io/netty/netty/3.10.5.Final/netty-3.10.5.Final.jar!/org/jboss/netty/channel/Channel.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="35" column="18" lean-forward="false" selection-start-line="35" selection-start-column="18" selection-end-line="35" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/system/HCPSuper10.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="205">
+          <caret line="43" column="20" lean-forward="true" selection-start-line="43" selection-start-column="20" selection-end-line="43" selection-end-column="20" />
+          <folding>
+            <element signature="e#1233#1234#0" expanded="false" />
+            <element signature="e#1310#1311#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/api/HCPSuper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="14" column="9" lean-forward="false" selection-start-line="14" selection-start-column="9" selection-end-line="14" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainControllerImp.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="223">
+          <caret line="145" column="24" lean-forward="true" selection-start-line="145" selection-start-column="24" selection-end-line="145" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/api/domain/HCPDomainController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="45" column="9" lean-forward="false" selection-start-line="45" selection-start-column="9" selection-end-line="45" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/HCPFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="486">
+          <caret line="30" column="27" lean-forward="false" selection-start-line="30" selection-start-column="27" selection-end-line="30" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPSbpMessageTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1044">
+          <caret line="77" column="0" lean-forward="false" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/types/HCPVport.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="80" column="17" lean-forward="false" selection-start-line="80" selection-start-column="17" selection-end-line="80" selection-end-column="17" />
+          <folding>
+            <element signature="e#2423#2424#0" expanded="false" />
+            <element signature="e#2478#2479#0" expanded="false" />
+            <element signature="e#2887#2888#0" expanded="false" />
+            <element signature="e#2920#2921#0" expanded="false" />
+            <element signature="e#3373#3374#0" expanded="false" />
+            <element signature="e#3414#3415#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPHostMsgTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="365">
+          <caret line="65" column="34" lean-forward="false" selection-start-line="65" selection-start-column="21" selection-end-line="65" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/HCPVportStatus.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="173">
+          <caret line="17" column="9" lean-forward="false" selection-start-line="17" selection-start-column="9" selection-end-line="17" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/HCPVportDescribtion.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="17" column="9" lean-forward="false" selection-start-line="17" selection-start-column="9" selection-end-line="17" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportReasonSerializerVer10.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="109">
+          <caret line="26" column="25" lean-forward="true" selection-start-line="26" selection-start-column="25" selection-end-line="26" selection-end-column="25" />
+          <folding>
+            <element signature="e#793#794#0" expanded="false" />
+            <element signature="e#842#843#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/runners/model/FrameworkMethod.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="91">
+          <caret line="29" column="0" lean-forward="false" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/internal/runners/statements/InvokeMethod.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="99">
+          <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/runners/BlockJUnit4ClassRunner.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="56" column="0" lean-forward="false" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/runners/ParentRunner.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="289" column="0" lean-forward="false" selection-start-line="289" selection-start-column="0" selection-end-line="289" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/TestBaseVer10.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="141">
+          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+          <folding>
+            <element signature="e#562#563#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPFactoryVer10.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="93">
+          <caret line="106" column="0" lean-forward="false" selection-start-line="106" selection-start-column="0" selection-end-line="106" selection-end-column="0" />
+          <folding>
+            <element signature="e#3022#3023#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPMessageVer10.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="86">
+          <caret line="80" column="0" lean-forward="false" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/HCPFactories.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="158">
+          <caret line="41" column="0" lean-forward="false" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/internal/runners/model/ReflectiveCallable.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar!/org/hamcrest/MatcherAssert.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="77">
+          <caret line="16" column="0" lean-forward="false" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar!/org/hamcrest/core/Is.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="77">
+          <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar!/org/hamcrest/core/IsEqual.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="131">
+          <caret line="34" column="0" lean-forward="false" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-8-oracle/src.zip!/java/lang/Object.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="93">
+          <caret line="147" column="19" lean-forward="false" selection-start-line="147" selection-start-column="19" selection-end-line="147" selection-end-column="19" />
+          <folding>
+            <element signature="e#5748#5749#0" expanded="true" />
+            <element signature="e#5784#5785#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPTopologyRequestVer10.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1691">
+          <caret line="15" column="13" lean-forward="false" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPTopologyReplyVer10.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2393">
+          <caret line="20" column="13" lean-forward="false" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPSbpVer10.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-5057">
+          <caret line="19" column="13" lean-forward="false" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/onosproject/oxp/protocol/ver10/HCPVportStatusTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="468">
+          <caret line="51" column="13" lean-forward="false" selection-start-line="51" selection-start-column="13" selection-end-line="51" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportDescriptionVer10.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="60" column="58" lean-forward="false" selection-start-line="60" selection-start-column="12" selection-end-line="60" selection-end-column="58" />
+          <folding>
+            <element signature="e#1469#1470#0" expanded="true" />
+            <element signature="e#1506#1507#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportStateSerializerVer10.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-216">
+          <caret line="46" column="10" lean-forward="false" selection-start-line="46" selection-start-column="10" selection-end-line="46" selection-end-column="10" />
+          <folding>
+            <element signature="e#901#902#0" expanded="true" />
+            <element signature="e#946#947#0" expanded="true" />
+            <element signature="e#1020#1021#0" expanded="true" />
+            <element signature="e#1065#1066#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/hcp/protocol/ver10/HCPVportStatusVer10.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1908">
+          <caret line="75" column="30" lean-forward="false" selection-start-line="75" selection-start-column="30" selection-end-line="75" selection-end-column="30" />
+          <folding>
+            <element signature="e#1471#1472#0" expanded="true" />
+            <element signature="e#1508#1509#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainTopologyManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4469">
+          <caret line="354" column="0" lean-forward="false" selection-start-line="354" selection-start-column="0" selection-end-line="354" selection-end-column="0" />
+          <folding>
+            <element signature="e#5268#5269#0" expanded="true" />
+            <element signature="e#5321#5322#0" expanded="true" />
+            <element signature="e#8219#8220#0" expanded="true" />
+            <element signature="e#8248#8249#0" expanded="true" />
+            <element signature="e#8317#8318#0" expanded="true" />
+            <element signature="e#8344#8345#0" expanded="true" />
+            <element signature="e#10940#10941#0" expanded="true" />
+            <element signature="e#10974#10975#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainHostManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="559">
-          <caret line="87" column="0" lean-forward="false" selection-start-line="87" selection-start-column="0" selection-end-line="88" selection-end-column="0" />
+        <state relative-caret-position="0">
+          <caret line="90" column="28" lean-forward="false" selection-start-line="90" selection-start-column="28" selection-end-line="90" selection-end-column="28" />
           <folding>
-            <element signature="e#3585#3586#0" expanded="true" />
-            <element signature="e#3665#3666#0" expanded="true" />
-            <element signature="e#3706#3707#0" expanded="true" />
-            <element signature="e#3786#3787#0" expanded="true" />
             <element signature="e#6979#6980#0" expanded="true" />
             <element signature="e#7024#7025#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/onosproject/system/domain/HCPDomainControllerImp.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="68" column="40" lean-forward="false" selection-start-line="60" selection-start-column="5" selection-end-line="68" selection-end-column="40" />
-          <folding>
-            <element signature="e#4043#4044#0" expanded="true" />
-            <element signature="e#4097#4098#0" expanded="true" />
-            <element signature="e#4186#4187#0" expanded="true" />
-            <element signature="e#4243#4244#0" expanded="true" />
-            <element signature="e#4863#4864#0" expanded="true" />
-            <element signature="e#4896#4897#0" expanded="true" />
-            <element signature="e#4965#4966#0" expanded="true" />
-            <element signature="e#4997#4998#0" expanded="true" />
-            <element signature="e#5041#5042#0" expanded="true" />
-            <element signature="e#5070#5071#0" expanded="true" />
-            <element signature="e#5125#5126#0" expanded="true" />
-            <element signature="e#5159#5160#0" expanded="true" />
-            <element signature="e#5212#5213#0" expanded="true" />
-            <element signature="e#5249#5250#0" expanded="true" />
-            <element signature="e#5321#5322#0" expanded="true" />
-            <element signature="e#5371#5372#0" expanded="true" />
-            <element signature="e#5438#5439#0" expanded="true" />
-            <element signature="e#5478#5479#0" expanded="true" />
-            <element signature="e#5562#5563#0" expanded="true" />
-            <element signature="e#5608#5609#0" expanded="true" />
-            <element signature="e#5659#5660#0" expanded="true" />
-            <element signature="e#5690#5691#0" expanded="true" />
-            <element signature="e#5754#5755#0" expanded="true" />
-            <element signature="e#5792#5793#0" expanded="true" />
-            <element signature="e#5847#5848#0" expanded="true" />
-            <element signature="e#5880#5881#0" expanded="true" />
-            <element signature="e#5950#5951#0" expanded="true" />
-            <element signature="e#5992#5993#0" expanded="true" />
-            <element signature="e#6050#6051#0" expanded="true" />
-            <element signature="e#6086#6087#0" expanded="true" />
-            <element signature="e#6165#6166#0" expanded="true" />
-            <element signature="e#6213#6214#0" expanded="true" />
-            <element signature="e#6263#6264#0" expanded="true" />
-            <element signature="e#6298#6299#0" expanded="true" />
-            <element signature="e#6365#6366#0" expanded="true" />
-            <element signature="e#6411#6412#0" expanded="true" />
-            <element signature="e#6462#6463#0" expanded="true" />
-            <element signature="e#6495#6496#0" expanded="true" />
-            <element signature="e#6561#6562#0" expanded="true" />
-            <element signature="e#6603#6604#0" expanded="true" />
-            <element signature="e#6658#6659#0" expanded="true" />
-            <element signature="e#6691#6692#0" expanded="true" />
-            <element signature="e#6761#6762#0" expanded="true" />
-            <element signature="e#6803#6804#0" expanded="true" />
           </folding>
         </state>
       </provider>

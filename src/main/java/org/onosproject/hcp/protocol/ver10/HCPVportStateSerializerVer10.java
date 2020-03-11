@@ -15,27 +15,27 @@ import java.util.Set;
  * @Version 1.0
  */
 public class HCPVportStateSerializerVer10 {
-    public final static byte LINK_DOWN_VAL=1<<0;
-    public final static byte BLOCKED_VAL=1<<1;
-    public final static byte LINK_UP_VAL=1<<2;
+    public final static int LINK_DOWN_VAL=1<<0;
+    public final static int BLOCKED_VAL=1<<1;
+    public final static int LINK_UP_VAL=1<<2;
 
     public static Set<HCPVportState> readFrom(ChannelBuffer bb)throws HCPParseError{
         try {
-            return ofWireValue(bb.readByte());
+            return ofWireValue(bb.readInt());
         }catch (IllegalArgumentException e){
             throw new HCPParseError(e);
         }
     }
 
     public static void writeTo(ChannelBuffer bb, Set<HCPVportState> set){
-        bb.writeByte(toWireValue(set));
+        bb.writeInt(toWireValue(set));
     }
 
     public static void putTo(PrimitiveSink sink,Set<HCPVportState> set){
-        sink.putByte(toWireValue(set));
+        sink.putInt(toWireValue(set));
     }
 
-    public static Set<HCPVportState> ofWireValue(byte value){
+    public static Set<HCPVportState> ofWireValue( int value){
         EnumSet<HCPVportState> set=EnumSet.noneOf(HCPVportState.class);
 
         if ((value & LINK_DOWN_VAL)!=0)
@@ -47,8 +47,8 @@ public class HCPVportStateSerializerVer10 {
         return set;
     }
 
-    public static byte toWireValue(Set<HCPVportState> set){
-        byte wireValue=0;
+    public static int toWireValue(Set<HCPVportState> set){
+        int wireValue=0;
         for (HCPVportState state:set) {
             switch (state) {
                 case LINK_DOWN:
