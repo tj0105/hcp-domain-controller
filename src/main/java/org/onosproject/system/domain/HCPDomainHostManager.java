@@ -183,6 +183,7 @@ public class HCPDomainHostManager {
 
         @Override
         public void connectToSuperController(HCPSuper hcpSuper) {
+            log.info("2222222222222222222222222222");
             init();
             updateExisHosts(null);
         }

@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1583942932808
+Bnd-LastModified: 1584012776259
 Build-Jdk: 1.8.0_131
 Built-By: ldy
 Bundle-Blueprint: OSGI-INF/blueprint/shell-config.xml
@@ -36,18 +36,19 @@ Export-Package: org.onosproject.hcp.types;version="1.0.0";uses:="com.goo
  nel,org.jboss.netty.handler.timeout,org.jboss.netty.util,org.onosprojec
  t.api,org.onosproject.api.Super,org.onosproject.api.domain,org.onosproj
  ect.cluster,org.onosproject.core,org.onosproject.hcp.protocol,org.onosp
- roject.hcp.types,org.onosproject.net,org.onosproject.net.edge,org.onosp
- roject.net.host,org.onosproject.net.link,org.onosproject.net.packet,org
- .onosproject.net.topology,org.slf4j",org.onosproject.system;version="1.
- 0.0";uses:="org.jboss.netty.buffer,org.jboss.netty.channel,org.jboss.ne
- tty.handler.codec.frame,org.jboss.netty.handler.codec.oneone,org.onospr
- oject.api,org.onosproject.api.Super,org.onosproject.api.domain,org.onos
- project.core,org.onosproject.hcp.protocol,org.onosproject.hcp.types,org
- .onosproject.net,org.onosproject.net.behaviour,org.slf4j",org.onosproje
- ct.system.Super;version="1.0.0";uses:="org.jboss.netty.channel,org.jbos
- s.netty.handler.timeout,org.jboss.netty.util,org.onosproject.api,org.on
- osproject.api.Super,org.onosproject.api.domain,org.onosproject.hcp.prot
- ocol,org.onosproject.hcp.types,org.slf4j"
+ roject.hcp.types,org.onosproject.mastership,org.onosproject.net,org.ono
+ sproject.net.device,org.onosproject.net.flow,org.onosproject.net.host,o
+ rg.onosproject.net.link,org.onosproject.net.packet,org.onosproject.net.
+ table,org.onosproject.net.topology,org.slf4j",org.onosproject.system;ve
+ rsion="1.0.0";uses:="org.jboss.netty.buffer,org.jboss.netty.channel,org
+ .jboss.netty.handler.codec.frame,org.jboss.netty.handler.codec.oneone,o
+ rg.onosproject.api,org.onosproject.api.Super,org.onosproject.api.domain
+ ,org.onosproject.core,org.onosproject.hcp.protocol,org.onosproject.hcp.
+ types,org.onosproject.net,org.onosproject.net.behaviour,org.slf4j",org.
+ onosproject.system.Super;version="1.0.0";uses:="org.jboss.netty.channel
+ ,org.jboss.netty.handler.timeout,org.jboss.netty.util,org.onosproject.a
+ pi,org.onosproject.api.Super,org.onosproject.api.domain,org.onosproject
+ .hcp.protocol,org.onosproject.hcp.types,org.slf4j"
 Import-Package: com.google.common.base;version="[22.0,23)",com.google.co
  mmon.collect;version="[22.0,23)",com.google.common.hash;version="[22.0,
  23)",com.google.common.primitives;version="[22.0,23)",io.netty.buffer;v
@@ -67,15 +68,18 @@ Import-Package: com.google.common.base;version="[22.0,23)",com.google.co
  g.onosproject.api.domain;version="[1.0,2)",org.onosproject.cli;version=
  "[1.11,2)",org.onosproject.cluster;version="[1.11,2)",org.onosproject.c
  ore;version="[1.11,2)",org.onosproject.event;version="[1.11,2)",org.ono
- sproject.hcp.exceptions;version="[1.0,2)",org.onosproject.hcp.protocol;
- version="[1.0,2)",org.onosproject.hcp.protocol.errormsg;version="[1.0,2
- )",org.onosproject.hcp.protocol.ver10;version="[1.0,2)",org.onosproject
- .hcp.types;version="[1.0,2)",org.onosproject.hcp.util;version="[1.0,2)"
- ,org.onosproject.net;version="[1.11,2)",org.onosproject.net.behaviour;v
- ersion="[1.11,2)",org.onosproject.net.edge;version="[1.11,2)",org.onosp
- roject.net.flow;version="[1.11,2)",org.onosproject.net.host;version="[1
- .11,2)",org.onosproject.net.link;version="[1.11,2)",org.onosproject.net
- .packet;version="[1.11,2)",org.onosproject.net.topology;version="[1.11,
+ sproject.floodlightpof.protocol;version="[1.0,2)",org.onosproject.flood
+ lightpof.protocol.table;version="[1.0,2)",org.onosproject.hcp.exception
+ s;version="[1.0,2)",org.onosproject.hcp.protocol;version="[1.0,2)",org.
+ onosproject.hcp.protocol.errormsg;version="[1.0,2)",org.onosproject.hcp
+ .protocol.ver10;version="[1.0,2)",org.onosproject.hcp.types;version="[1
+ .0,2)",org.onosproject.hcp.util;version="[1.0,2)",org.onosproject.maste
+ rship;version="[1.11,2)",org.onosproject.net;version="[1.11,2)",org.ono
+ sproject.net.behaviour;version="[1.11,2)",org.onosproject.net.device;ve
+ rsion="[1.11,2)",org.onosproject.net.flow;version="[1.11,2)",org.onospr
+ oject.net.host;version="[1.11,2)",org.onosproject.net.link;version="[1.
+ 11,2)",org.onosproject.net.packet;version="[1.11,2)",org.onosproject.ne
+ t.table;version="[1.11,2)",org.onosproject.net.topology;version="[1.11,
  2)",org.onosproject.system;version="[1.0,2)",org.onosproject.system.dom
  ain;version="[1.0,2)",org.osgi.service.blueprint;version="[1.0.0,2.0.0)
  ",org.slf4j;version="[1.7,2)"

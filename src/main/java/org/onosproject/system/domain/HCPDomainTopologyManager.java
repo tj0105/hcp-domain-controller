@@ -274,6 +274,7 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService{
 
         @Override
         public void connectToSuperController(HCPSuper hcpSuper) {
+            log.info("333333333333333333333333333333");
                 init();
         }
 

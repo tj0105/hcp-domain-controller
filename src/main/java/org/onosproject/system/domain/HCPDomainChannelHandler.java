@@ -257,8 +257,10 @@ public class HCPDomainChannelHandler extends IdleStateAwareChannelHandler {
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         channel=e.getChannel();
         log.info("Connecetd to hcp super controller");
+        Thread.sleep(1000);
         sendHandShakeHelloMessage();
         setState(ChannelState.WAIT_HELLO) ;
+
     }
 
     @Override
