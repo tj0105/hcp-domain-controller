@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1584012776259
+Bnd-LastModified: 1584018351094
 Build-Jdk: 1.8.0_131
 Built-By: ldy
 Bundle-Blueprint: OSGI-INF/blueprint/shell-config.xml
