@@ -1,5 +1,6 @@
 package org.onosproject.api.Super;
 
+import org.onlab.packet.Ethernet;
 import org.onosproject.api.HCPDomain;
 import org.onosproject.api.HCPDomainMessageListener;
 import org.onosproject.api.domain.HCPDomainListener;
@@ -40,5 +41,7 @@ public interface HCPSuperController {
     void processMessage(DomainId domainId,HCPMessage message);
 
     HCPDomain getHCPDomain(DomainId domainId);
+
+
 
 }

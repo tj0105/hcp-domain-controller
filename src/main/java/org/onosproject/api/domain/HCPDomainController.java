@@ -1,5 +1,6 @@
 package org.onosproject.api.domain;
 
+import org.onlab.packet.Ethernet;
 import org.onosproject.api.HCPSuper;
 import org.onosproject.api.Super.HCPSuperControllerListener;
 import org.onosproject.api.HCPSuperMessageListener;
@@ -76,4 +77,7 @@ public interface HCPDomainController {
 
     HCPVersion getHCPVersion();
     void setHCPVersion(HCPVersion hcpVersion);
+
+    Ethernet parseEthernet(byte []data);
+
 }

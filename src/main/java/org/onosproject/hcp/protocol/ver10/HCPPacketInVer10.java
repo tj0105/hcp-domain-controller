@@ -27,10 +27,10 @@ public class HCPPacketInVer10 implements HCPPacketIn {
     }
 
     public static HCPPacketIn read(ChannelBuffer bb,int length){
-        int outPort=bb.readInt();
+        int inPort=bb.readInt();
         byte data[]=new byte[length];
         bb.readBytes(data);
-        return of(outPort,data);
+        return of(inPort,data);
     }
     @Override
     public long getInport() {

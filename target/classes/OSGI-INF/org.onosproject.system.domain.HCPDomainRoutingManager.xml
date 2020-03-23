@@ -5,10 +5,14 @@
     <reference name="packetService" interface="org.onosproject.net.packet.PacketService" cardinality="1..1" policy="static" bind="bindPacketService" unbind="unbindPacketService"/>
     <reference name="coreService" interface="org.onosproject.core.CoreService" cardinality="1..1" policy="static" bind="bindCoreService" unbind="unbindCoreService"/>
     <reference name="domainController" interface="org.onosproject.api.domain.HCPDomainController" cardinality="1..1" policy="static" bind="bindDomainController" unbind="unbindDomainController"/>
+    <reference name="domainTopoService" interface="org.onosproject.api.domain.HCPDomainTopoService" cardinality="1..1" policy="static" bind="bindDomainTopoService" unbind="unbindDomainTopoService"/>
+    <reference name="hostService" interface="org.onosproject.net.host.HostService" cardinality="1..1" policy="static" bind="bindHostService" unbind="unbindHostService"/>
     <reference name="tableStore" interface="org.onosproject.net.table.FlowTableStore" cardinality="1..1" policy="static" bind="bindTableStore" unbind="unbindTableStore"/>
     <reference name="flowTableService" interface="org.onosproject.net.table.FlowTableService" cardinality="1..1" policy="static" bind="bindFlowTableService" unbind="unbindFlowTableService"/>
     <reference name="deviceService" interface="org.onosproject.net.device.DeviceAdminService" cardinality="1..1" policy="static" bind="bindDeviceService" unbind="unbindDeviceService"/>
+    <reference name="edgeService" interface="org.onosproject.net.edge.EdgePortService" cardinality="1..1" policy="static" bind="bindEdgeService" unbind="unbindEdgeService"/>
     <reference name="clusterService" interface="org.onosproject.cluster.ClusterService" cardinality="1..1" policy="static" bind="bindClusterService" unbind="unbindClusterService"/>
     <reference name="mastershipService" interface="org.onosproject.mastership.MastershipService" cardinality="1..1" policy="static" bind="bindMastershipService" unbind="unbindMastershipService"/>
     <reference name="flowRuleService" interface="org.onosproject.net.flow.FlowRuleService" cardinality="1..1" policy="static" bind="bindFlowRuleService" unbind="unbindFlowRuleService"/>
+    <reference name="pofController" interface="org.onosproject.pof.controller.PofController" cardinality="1..1" policy="static" bind="bindPofController" unbind="unbindPofController"/>
 </scr:component>

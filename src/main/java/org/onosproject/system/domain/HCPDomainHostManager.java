@@ -120,7 +120,7 @@ public class HCPDomainHostManager {
         if (!domainController.isConnectToSuper()){
             return;
         }
-        log.info("DomainId: {} host update, num:{}",domainController.getDomainId(),hcpHosts.size());
+//        log.info("DomainId: {} host update, num:{}",domainController.getDomainId(),hcpHosts.size());
         domainController.write(hcpMessage);
     }
 

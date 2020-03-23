@@ -25,7 +25,7 @@ public class HCPMessageDecoder extends FrameDecoder {
         }
         HCPMessageReader<HCPMessage> reader= HCPFactories.getGenericReader();
         HCPMessage message=reader.readFrom(channelBuffer);
-        log.info("===============Decode Message========={}==========",message.getType());
+//        log.info("===============Decode Message========={}==========",message.getType());
         return message;
     }
 }

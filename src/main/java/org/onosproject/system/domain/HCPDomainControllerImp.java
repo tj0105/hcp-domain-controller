@@ -1,6 +1,10 @@
 package org.onosproject.system.domain;
 
 import org.apache.felix.scr.annotations.*;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.onlab.packet.DeserializationException;
+import org.onlab.packet.Ethernet;
 import org.onosproject.api.HCPSuper;
 import org.onosproject.api.HCPSuperMessageListener;
 import org.onosproject.api.domain.HCPDomainController;
@@ -250,5 +254,17 @@ public class HCPDomainControllerImp implements HCPDomainController{
     @Override
     public void setHCPVersion(HCPVersion hcpVersion) {
         this.hcpVersion=hcpVersion;
+    }
+
+    @Override
+    public Ethernet parseEthernet(byte[] data) {
+        ChannelBuffer buffer = ChannelBuffers.copiedBuffer(data);
+        Ethernet eth = null;
+        try {
+            eth = Ethernet.deserializer().deserialize(buffer.array(), 0, buffer.readableBytes());
+        } catch (DeserializationException e) {
+            return null;
+        }
+        return eth;
     }
 }

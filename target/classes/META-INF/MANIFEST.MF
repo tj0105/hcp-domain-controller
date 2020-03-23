@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1584018351094
+Bnd-LastModified: 1584954787577
 Build-Jdk: 1.8.0_131
 Built-By: ldy
 Bundle-Blueprint: OSGI-INF/blueprint/shell-config.xml
@@ -25,30 +25,31 @@ Export-Package: org.onosproject.hcp.types;version="1.0.0";uses:="com.goo
  col.errormsg,org.onosproject.hcp.types,org.slf4j",org.onosproject.api;v
  ersion="1.0.0";uses:="org.jboss.netty.channel,org.onosproject.hcp.proto
  col,org.onosproject.hcp.types,org.onosproject.net",org.onosproject.api.
- domain;version="1.0.0";uses:="org.onosproject.api,org.onosproject.api.S
- uper,org.onosproject.hcp.protocol,org.onosproject.hcp.types,org.onospro
- ject.net",org.onosproject.api.Super;version="1.0.0";uses:="org.jboss.ne
- tty.channel,org.onosproject.api,org.onosproject.api.domain,org.onosproj
- ect.hcp.protocol,org.onosproject.hcp.types",org.onosproject.command;ver
- sion="1.0.0";uses:="org.apache.karaf.shell.commands,org.onosproject.cli
- ",org.onosproject.system.domain;version="1.0.0";uses:="io.netty.channel
- ,io.netty.channel.socket,org.jboss.netty.bootstrap,org.jboss.netty.chan
- nel,org.jboss.netty.handler.timeout,org.jboss.netty.util,org.onosprojec
- t.api,org.onosproject.api.Super,org.onosproject.api.domain,org.onosproj
- ect.cluster,org.onosproject.core,org.onosproject.hcp.protocol,org.onosp
- roject.hcp.types,org.onosproject.mastership,org.onosproject.net,org.ono
- sproject.net.device,org.onosproject.net.flow,org.onosproject.net.host,o
- rg.onosproject.net.link,org.onosproject.net.packet,org.onosproject.net.
- table,org.onosproject.net.topology,org.slf4j",org.onosproject.system;ve
- rsion="1.0.0";uses:="org.jboss.netty.buffer,org.jboss.netty.channel,org
- .jboss.netty.handler.codec.frame,org.jboss.netty.handler.codec.oneone,o
- rg.onosproject.api,org.onosproject.api.Super,org.onosproject.api.domain
- ,org.onosproject.core,org.onosproject.hcp.protocol,org.onosproject.hcp.
- types,org.onosproject.net,org.onosproject.net.behaviour,org.slf4j",org.
- onosproject.system.Super;version="1.0.0";uses:="org.jboss.netty.channel
- ,org.jboss.netty.handler.timeout,org.jboss.netty.util,org.onosproject.a
- pi,org.onosproject.api.Super,org.onosproject.api.domain,org.onosproject
- .hcp.protocol,org.onosproject.hcp.types,org.slf4j"
+ domain;version="1.0.0";uses:="org.onlab.packet,org.onosproject.api,org.
+ onosproject.api.Super,org.onosproject.hcp.protocol,org.onosproject.hcp.
+ types,org.onosproject.net",org.onosproject.api.Super;version="1.0.0";us
+ es:="org.jboss.netty.channel,org.onosproject.api,org.onosproject.api.do
+ main,org.onosproject.hcp.protocol,org.onosproject.hcp.types",org.onospr
+ oject.command;version="1.0.0";uses:="org.apache.karaf.shell.commands,or
+ g.onosproject.cli",org.onosproject.system.domain;version="1.0.0";uses:=
+ "io.netty.channel,io.netty.channel.socket,org.jboss.netty.bootstrap,org
+ .jboss.netty.channel,org.jboss.netty.handler.timeout,org.jboss.netty.ut
+ il,org.onlab.packet,org.onosproject.api,org.onosproject.api.Super,org.o
+ nosproject.api.domain,org.onosproject.cluster,org.onosproject.core,org.
+ onosproject.hcp.protocol,org.onosproject.hcp.types,org.onosproject.mast
+ ership,org.onosproject.net,org.onosproject.net.device,org.onosproject.n
+ et.edge,org.onosproject.net.flow,org.onosproject.net.host,org.onosproje
+ ct.net.link,org.onosproject.net.packet,org.onosproject.net.table,org.on
+ osproject.net.topology,org.onosproject.pof.controller,org.slf4j",org.on
+ osproject.system;version="1.0.0";uses:="org.jboss.netty.buffer,org.jbos
+ s.netty.channel,org.jboss.netty.handler.codec.frame,org.jboss.netty.han
+ dler.codec.oneone,org.onosproject.api,org.onosproject.api.Super,org.ono
+ sproject.api.domain,org.onosproject.core,org.onosproject.hcp.protocol,o
+ rg.onosproject.hcp.types,org.onosproject.net,org.onosproject.net.behavi
+ our,org.slf4j",org.onosproject.system.Super;version="1.0.0";uses:="org.
+ jboss.netty.channel,org.jboss.netty.handler.timeout,org.jboss.netty.uti
+ l,org.onosproject.api,org.onosproject.api.Super,org.onosproject.api.dom
+ ain,org.onosproject.hcp.protocol,org.onosproject.hcp.types,org.slf4j"
 Import-Package: com.google.common.base;version="[22.0,23)",com.google.co
  mmon.collect;version="[22.0,23)",com.google.common.hash;version="[22.0,
  23)",com.google.common.primitives;version="[22.0,23)",io.netty.buffer;v
@@ -76,13 +77,14 @@ Import-Package: com.google.common.base;version="[22.0,23)",com.google.co
  .0,2)",org.onosproject.hcp.util;version="[1.0,2)",org.onosproject.maste
  rship;version="[1.11,2)",org.onosproject.net;version="[1.11,2)",org.ono
  sproject.net.behaviour;version="[1.11,2)",org.onosproject.net.device;ve
- rsion="[1.11,2)",org.onosproject.net.flow;version="[1.11,2)",org.onospr
- oject.net.host;version="[1.11,2)",org.onosproject.net.link;version="[1.
- 11,2)",org.onosproject.net.packet;version="[1.11,2)",org.onosproject.ne
- t.table;version="[1.11,2)",org.onosproject.net.topology;version="[1.11,
- 2)",org.onosproject.system;version="[1.0,2)",org.onosproject.system.dom
- ain;version="[1.0,2)",org.osgi.service.blueprint;version="[1.0.0,2.0.0)
- ",org.slf4j;version="[1.7,2)"
+ rsion="[1.11,2)",org.onosproject.net.edge;version="[1.11,2)",org.onospr
+ oject.net.flow;version="[1.11,2)",org.onosproject.net.host;version="[1.
+ 11,2)",org.onosproject.net.link;version="[1.11,2)",org.onosproject.net.
+ packet;version="[1.11,2)",org.onosproject.net.table;version="[1.11,2)",
+ org.onosproject.net.topology;version="[1.11,2)",org.onosproject.pof.con
+ troller;version="[1.6,2)",org.onosproject.system;version="[1.0,2)",org.
+ onosproject.system.domain;version="[1.0,2)",org.osgi.service.blueprint;
+ version="[1.0.0,2.0.0)",org.slf4j;version="[1.7,2)"
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
 Service-Component: OSGI-INF/org.onosproject.system.domain.HCPDomainRouti
  ngManager.xml,OSGI-INF/org.onosproject.system.domain.HCPDomainControlle
