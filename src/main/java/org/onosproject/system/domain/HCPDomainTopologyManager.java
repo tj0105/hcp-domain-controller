@@ -33,10 +33,14 @@ import org.onosproject.net.topology.PathService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.onlab.util.Tools.groupedThreads;
 import static org.onosproject.net.flow.DefaultTrafficTreatment.builder;
 
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 
 
@@ -80,7 +84,11 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
     private AtomicLong vportNumber = new AtomicLong(1);
     private Map<ConnectPoint, PortNumber> vportMap = new HashMap<>();
     private Map<ConnectPoint, PortNumber> vportNumAllocateCache = new HashMap<>();
+    private Map<PortNumber,Long> VportTimeMap=new HashMap<>();
 
+    private ScheduledExecutorService executor;
+
+    private long STATE_VPORT_TIME=10000;
     private final static int LLDP_VPORT_LOCAL = 0xffff;
     private boolean flag = false;
 
@@ -96,11 +104,15 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         if (!flag) {
             return;
         }
+        if (executor!=null){
+            executor.shutdown();
+        }
         linkService.removeListener(linkListener);
         domainController.removeMessageListener(hcpSuperMessageListener);
         packetService.removeProcessor(hcplldpPacketProcesser);
         vportMap.clear();
         vportNumAllocateCache.clear();
+        VportTimeMap.clear();
         log.info("==============Domain Topology Manager Stopped===================");
 
     }
@@ -113,6 +125,9 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         domainController.addMessageListener(hcpSuperMessageListener);
         linkService.addListener(linkListener);
         packetService.addProcessor(hcplldpPacketProcesser, PacketProcessor.director(0));
+        executor = newSingleThreadScheduledExecutor(groupedThreads("hcp/topologyupdate", "hcp-topologyupdate-%d", log));
+        executor.scheduleAtFixedRate(new TopoUpdateTask(),
+                domainController.getPeriod(), domainController.getPeriod(), SECONDS);
 //        try {
 //            Thread.sleep(1000);
 ////            addOrUpdateVport(null,HCPVportState.LINK_UP,HCPVportReason.ADD);
@@ -173,17 +188,28 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
             return number;
         }
     }
+    private void StoreVPortTime(PortNumber portNumber) {
+        VportTimeMap.put(portNumber,System.currentTimeMillis());
 
+    }
+    private void removeVport(PortNumber portNumber){
+        ConnectPoint connectPoint=getLocationByVport(portNumber);
+        if (connectPoint!=null){
+            addOrUpdateVport(connectPoint, HCPVportState.LINK_DOWN,HCPVportReason.DELETE);
+        }
+    }
     private void addOrUpdateVport(ConnectPoint connectPoint, HCPVportState vportState, HCPVportReason vportReason) {
         Preconditions.checkNotNull(connectPoint);
         //if vportmap have connectPoint and vportState is add return
         if (vportMap.containsKey(connectPoint) && vportReason.equals(HCPVportReason.ADD)) {
+            StoreVPortTime(connectPoint.port());
             return;
         }
         if (!vportMap.containsKey(connectPoint) && vportReason.equals(HCPVportReason.ADD)) {
             //add vport to vportmap
             //给这个Connectpoint分配一个Vport端口号，并记录下来
             PortNumber portNumber = AllocateVPortNumber(connectPoint);
+            StoreVPortTime(portNumber);
             vportMap.put(connectPoint, portNumber);
         }
         PortNumber portNumber = vportMap.get(connectPoint);
@@ -220,6 +246,11 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
                 .setVportDescribtion(vportDesc)
                 .build();
         domainController.write(vportStatus);
+    }
+    private void UpdateVportsToSuper(){
+        for (PortNumber portNumber:vportMap.values()){
+                 UpdateVPortToSuper(portNumber,HCPVportState.LINK_UP,HCPVportReason.ADD);
+        }
     }
 
     private void UpdateTopology() {
@@ -380,6 +411,36 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         @Override
         public void event(LinkEvent linkEvent) {
             //TODO
+        }
+    }
+
+    class TopoUpdateTask implements Runnable {
+        @Override
+        public void run() {
+            // update vport
+            UpdateVportsToSuper();
+            // update intra_links
+            UpdateTopology();
+        }
+    }
+
+    class VportUpdateTask implements Runnable{
+
+        @Override
+        public void run() {
+            Set<PortNumber> removePorts=new HashSet<>();
+            for (ConnectPoint connectPoint:vportMap.keySet()){
+                PortNumber portNumber=vportMap.get(connectPoint);
+                if (isState(VportTimeMap.get(portNumber))){
+                    removePorts.add(portNumber);
+                }
+            }
+            for(PortNumber portNumber:removePorts){
+                removeVport(portNumber);
+            }
+        }
+        private boolean isState(long lastTime){
+            return (System.currentTimeMillis()-lastTime)>STATE_VPORT_TIME?false:true;
         }
     }
 }
