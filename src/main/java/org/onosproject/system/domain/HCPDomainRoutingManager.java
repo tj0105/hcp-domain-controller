@@ -29,6 +29,8 @@ import org.onosproject.hcp.types.IPv4Address;
 import org.onosproject.mastership.MastershipService;
 import org.onosproject.net.*;
 import org.onosproject.net.device.DeviceAdminService;
+import org.onosproject.net.device.DeviceEvent;
+import org.onosproject.net.device.DeviceListener;
 import org.onosproject.net.edge.EdgePortService;
 import org.onosproject.net.flow.DefaultTrafficTreatment;
 import org.onosproject.net.flow.FlowRuleService;
@@ -101,6 +103,7 @@ public class HCPDomainRoutingManager {
     private HCPSuperMessageListener hcpSuperMessageListener=new InternalHCPSuperMessageListener();
     private HCPSuperControllerListener hcpSuperControllerListener=new InternalHCPSuperControllerListener();
     private PofSwitchListener pofSwitchListener=new InternalDeviceListener();
+    private DeviceListener deviceListener=new InternalListener();
     public final short SIP=12;
 
 
@@ -115,7 +118,8 @@ public class HCPDomainRoutingManager {
     public void activate(){
         applicationId=coreService.registerApplication("org.onosproject.domain.system");
         domainController.addHCPSuperControllerListener(hcpSuperControllerListener);
-        pofController.addListener(pofSwitchListener);
+//        pofController.addListener(pofSwitchListener);
+        deviceService.addListener(deviceListener);
         init();
 
         log.info("=======================HCP Domain Routing Manager================");
@@ -130,7 +134,8 @@ public class HCPDomainRoutingManager {
         if (!flag){
             return;
         }
-        pofController.removeListener(pofSwitchListener);
+        deviceService.removeListener(deviceListener);
+//        pofController.removeListener(pofSwitchListener);
         domainController.removeHCPSuperControllerListener(hcpSuperControllerListener);
         packetService.removeProcessor(packetProcessor);
         domainController.removeMessageListener(hcpSuperMessageListener);
@@ -335,6 +340,7 @@ public class HCPDomainRoutingManager {
 
     private class InternalDeviceListener implements PofSwitchListener{
 
+
         @Override
         public void switchAdded(Dpid dpid) {
 
@@ -342,16 +348,12 @@ public class HCPDomainRoutingManager {
 
         @Override
         public void hanndleConnectionUp(Dpid dpid) {
-            DeviceId deviceId=DeviceId.deviceId(Dpid.uri(dpid));
-            int tableId=sendPofFlowTables(deviceId,"FirstEntryTable");
-            TableIDMap.put(deviceId,tableId);
+
         }
 
         @Override
         public void switchRemoved(Dpid dpid) {
-            DeviceId deviceId=DeviceId.deviceId(Dpid.uri(dpid));
-            log.info("=================Dpid name======{}========",deviceId);
-            TableIDMap.remove(deviceId);
+
         }
 
         @Override
@@ -372,6 +374,35 @@ public class HCPDomainRoutingManager {
         @Override
         public void receivedRoleReply(Dpid dpid, RoleState roleState, RoleState roleState1) {
 
+        }
+    }
+    private void removeOraddDevice(DeviceId deviceId){
+        if (!TableIDMap.containsKey(deviceId)){
+            int tabaleId=sendPofFlowTables(deviceId,"FirstEntryTable");
+            TableIDMap.put(deviceId,tabaleId);
+            return;
+        }
+        reMoveFlowTable(deviceId,TableIDMap.get(deviceId));
+        TableIDMap.remove(deviceId);
+
+    }
+    private class InternalListener implements DeviceListener{
+
+        @Override
+        public void event(DeviceEvent deviceEvent) {
+//            log.info("==============deviceEvent==========={}======",deviceEvent.type());
+            DeviceId deviceId=deviceEvent.subject().id();
+            switch (deviceEvent.type()){
+                case DEVICE_ADDED:
+                    int tabaleId=sendPofFlowTables(deviceId,"FirstEntryTable");
+                    TableIDMap.put(deviceId,tabaleId);
+                    break;
+                case DEVICE_AVAILABILITY_CHANGED:
+                    removeOraddDevice(deviceId);
+                    break;
+            }
+
+//
         }
     }
 }
