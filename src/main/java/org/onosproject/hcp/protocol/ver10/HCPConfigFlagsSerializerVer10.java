@@ -38,19 +38,21 @@ public class HCPConfigFlagsSerializerVer10 {
 
         if ((value& MODE_ADVANCED_VAL)!=0){
             flagsEnumSet.add(HCPConfigFlags.MODE_ADVANCED);
-            if((value& CAPABILITIES_BW_VAL)!=0){
-                flagsEnumSet.add(HCPConfigFlags.CAPABILITIES_BW);
-            }else if ((value&CAPABILITIES_DELAY_VAL)!=0){
-                flagsEnumSet.add(HCPConfigFlags.CAPABILITIES_DELAY);
-            }else if ((value&CAPABILITIES_HOP_VAL)!=0){
+        }
+        if((value& CAPABILITIES_BW_VAL)!=0){
+            flagsEnumSet.add(HCPConfigFlags.CAPABILITIES_BW);
+        }
+        if ((value&CAPABILITIES_DELAY_VAL)!=0){
+            flagsEnumSet.add(HCPConfigFlags.CAPABILITIES_DELAY);
+        }
+        if ((value&CAPABILITIES_HOP_VAL)!=0){
                 flagsEnumSet.add(HCPConfigFlags.CAPABILITIES_HOP);
-            }
+        }
         if ((value&MODE_COMPRESSED_VAL)!=0){
             flagsEnumSet.add(HCPConfigFlags.MODE_COMPRESSED);
         }
         if ((value&MODE_TRUEST_VAL)!=0){
             flagsEnumSet.add(HCPConfigFlags.MODE_TRUST);
-        }
         }
 
         return flagsEnumSet;

@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1585069367078
+Bnd-LastModified: 1585311571956
 Build-Jdk: 1.8.0_131
 Built-By: ldy
 Bundle-Blueprint: OSGI-INF/blueprint/shell-config.xml
@@ -68,23 +68,26 @@ Import-Package: com.google.common.base;version="[22.0,23)",com.google.co
  ct.api;version="[1.0,2)",org.onosproject.api.Super;version="[1.0,2)",or
  g.onosproject.api.domain;version="[1.0,2)",org.onosproject.cli;version=
  "[1.11,2)",org.onosproject.cluster;version="[1.11,2)",org.onosproject.c
- ore;version="[1.11,2)",org.onosproject.event;version="[1.11,2)",org.ono
- sproject.floodlightpof.protocol;version="[1.0,2)",org.onosproject.flood
- lightpof.protocol.table;version="[1.0,2)",org.onosproject.hcp.exception
- s;version="[1.0,2)",org.onosproject.hcp.protocol;version="[1.0,2)",org.
- onosproject.hcp.protocol.errormsg;version="[1.0,2)",org.onosproject.hcp
- .protocol.ver10;version="[1.0,2)",org.onosproject.hcp.types;version="[1
- .0,2)",org.onosproject.hcp.util;version="[1.0,2)",org.onosproject.maste
- rship;version="[1.11,2)",org.onosproject.net;version="[1.11,2)",org.ono
- sproject.net.behaviour;version="[1.11,2)",org.onosproject.net.device;ve
- rsion="[1.11,2)",org.onosproject.net.edge;version="[1.11,2)",org.onospr
- oject.net.flow;version="[1.11,2)",org.onosproject.net.host;version="[1.
- 11,2)",org.onosproject.net.link;version="[1.11,2)",org.onosproject.net.
- packet;version="[1.11,2)",org.onosproject.net.table;version="[1.11,2)",
- org.onosproject.net.topology;version="[1.11,2)",org.onosproject.pof.con
- troller;version="[1.6,2)",org.onosproject.system;version="[1.0,2)",org.
- onosproject.system.domain;version="[1.0,2)",org.osgi.service.blueprint;
- version="[1.0.0,2.0.0)",org.slf4j;version="[1.7,2)"
+ ommon;version="[1.11,2)",org.onosproject.core;version="[1.11,2)",org.on
+ osproject.event;version="[1.11,2)",org.onosproject.floodlightpof.protoc
+ ol;version="[1.0,2)",org.onosproject.floodlightpof.protocol.action;vers
+ ion="[1.0,2)",org.onosproject.floodlightpof.protocol.table;version="[1.
+ 0,2)",org.onosproject.hcp.exceptions;version="[1.0,2)",org.onosproject.
+ hcp.protocol;version="[1.0,2)",org.onosproject.hcp.protocol.errormsg;ve
+ rsion="[1.0,2)",org.onosproject.hcp.protocol.ver10;version="[1.0,2)",or
+ g.onosproject.hcp.types;version="[1.0,2)",org.onosproject.hcp.util;vers
+ ion="[1.0,2)",org.onosproject.mastership;version="[1.11,2)",org.onospro
+ ject.net;version="[1.11,2)",org.onosproject.net.behaviour;version="[1.1
+ 1,2)",org.onosproject.net.device;version="[1.11,2)",org.onosproject.net
+ .edge;version="[1.11,2)",org.onosproject.net.flow;version="[1.11,2)",or
+ g.onosproject.net.flow.criteria;version="[1.11,2)",org.onosproject.net.
+ flow.instructions;version="[1.11,2)",org.onosproject.net.host;version="
+ [1.11,2)",org.onosproject.net.link;version="[1.11,2)",org.onosproject.n
+ et.packet;version="[1.11,2)",org.onosproject.net.table;version="[1.11,2
+ )",org.onosproject.net.topology;version="[1.11,2)",org.onosproject.pof.
+ controller;version="[1.6,2)",org.onosproject.system;version="[1.0,2)",o
+ rg.onosproject.system.domain;version="[1.0,2)",org.osgi.service.bluepri
+ nt;version="[1.0.0,2.0.0)",org.slf4j;version="[1.7,2)"
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
 Service-Component: OSGI-INF/org.onosproject.system.domain.HCPDomainRouti
  ngManager.xml,OSGI-INF/org.onosproject.system.domain.HCPDomainControlle

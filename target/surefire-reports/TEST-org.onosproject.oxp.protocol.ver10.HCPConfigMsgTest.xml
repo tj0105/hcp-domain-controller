@@ -59,5 +59,5 @@
     <property name="sun.cpu.isalist" value=""/>
   </properties>
   <testcase name="HCPGetConfigReplyMsgTest" classname="org.onosproject.oxp.protocol.ver10.HCPConfigMsgTest" time="0.003"/>
-  <testcase name="HCPGetConfigRequest" classname="org.onosproject.oxp.protocol.ver10.HCPConfigMsgTest" time="0.001"/>
+  <testcase name="HCPGetConfigRequest" classname="org.onosproject.oxp.protocol.ver10.HCPConfigMsgTest" time="0.002"/>
 </testsuite>

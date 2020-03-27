@@ -1,13 +1,9 @@
 package org.onosproject.system.domain;
 
 
-
 import com.google.common.collect.Table;
 import org.apache.felix.scr.annotations.*;
-import org.onlab.packet.ARP;
-import org.onlab.packet.Ethernet;
-import org.onlab.packet.Ip4Address;
-import org.onlab.packet.IpAddress;
+import org.onlab.packet.*;
 import org.onosproject.api.HCPSuper;
 import org.onosproject.api.HCPSuperMessageListener;
 import org.onosproject.api.Super.HCPSuperControllerListener;
@@ -15,10 +11,12 @@ import org.onosproject.api.domain.HCPDomainController;
 import org.onosproject.api.domain.HCPDomainTopoService;
 import org.onosproject.cluster.ClusterService;
 import org.onosproject.cluster.NodeId;
+import org.onosproject.common.DefaultTopology;
 import org.onosproject.core.ApplicationId;
 import org.onosproject.core.CoreService;
 import org.onosproject.floodlightpof.protocol.OFMatch20;
 import org.onosproject.floodlightpof.protocol.OFPortStatus;
+import org.onosproject.floodlightpof.protocol.action.OFAction;
 import org.onosproject.floodlightpof.protocol.table.OFFlowTable;
 import org.onosproject.floodlightpof.protocol.table.OFFlowTableResource;
 import org.onosproject.floodlightpof.protocol.table.OFTableType;
@@ -32,14 +30,17 @@ import org.onosproject.net.device.DeviceAdminService;
 import org.onosproject.net.device.DeviceEvent;
 import org.onosproject.net.device.DeviceListener;
 import org.onosproject.net.edge.EdgePortService;
-import org.onosproject.net.flow.DefaultTrafficTreatment;
-import org.onosproject.net.flow.FlowRuleService;
-import org.onosproject.net.flow.TrafficTreatment;
+import org.onosproject.net.flow.*;
+import org.onosproject.net.flow.criteria.Criteria;
+import org.onosproject.net.flow.criteria.Criterion;
+import org.onosproject.net.flow.instructions.DefaultPofActions;
+import org.onosproject.net.flow.instructions.DefaultPofInstructions;
 import org.onosproject.net.host.HostService;
 import org.onosproject.net.link.LinkService;
 import org.onosproject.net.packet.*;
 import org.onosproject.net.table.*;
 import org.onosproject.net.topology.PathService;
+import org.onosproject.net.topology.Topology;
 import org.onosproject.net.topology.TopologyService;
 import org.onosproject.pof.controller.Dpid;
 import org.onosproject.pof.controller.PofController;
@@ -48,8 +49,10 @@ import org.onosproject.pof.controller.RoleState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @Author ldy
@@ -58,7 +61,7 @@ import java.util.*;
  */
 @Component(immediate = true)
 public class HCPDomainRoutingManager {
-    private static final Logger log= LoggerFactory.getLogger(HCPDomainRoutingManager.class);
+    private static final Logger log = LoggerFactory.getLogger(HCPDomainRoutingManager.class);
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected PacketService packetService;
@@ -99,39 +102,46 @@ public class HCPDomainRoutingManager {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected PofController pofController;
 
-    private PacketProcessor packetProcessor=new ReactivePacketProcessor();
-    private HCPSuperMessageListener hcpSuperMessageListener=new InternalHCPSuperMessageListener();
-    private HCPSuperControllerListener hcpSuperControllerListener=new InternalHCPSuperControllerListener();
-    private PofSwitchListener pofSwitchListener=new InternalDeviceListener();
-    private DeviceListener deviceListener=new InternalListener();
-    public final short SIP=12;
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected TopologyService topologyService;
+
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected FlowTableStore flowTableStore;
+
+    private PacketProcessor packetProcessor = new ReactivePacketProcessor();
+    private HCPSuperMessageListener hcpSuperMessageListener = new InternalHCPSuperMessageListener();
+    private HCPSuperControllerListener hcpSuperControllerListener = new InternalHCPSuperControllerListener();
+    private PofSwitchListener pofSwitchListener = new InternalDeviceListener();
+    private DeviceListener deviceListener = new InternalListener();
+    public final short SIP = 12;
 
 
     private ApplicationId applicationId;
     private NodeId local;
     private HCPVersion hcpVersion;
     private HCPFactory hcpfactory;
-    private Map<DeviceId,Integer> TableIDMap;
+    private ConcurrentHashMap<DeviceId, Integer> TableIDMap;
+    private static final char[] map = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
-    private boolean flag=false;
+    private boolean flag = false;
+
     @Activate
-    public void activate(){
-        applicationId=coreService.registerApplication("org.onosproject.domain.system");
+    public void activate() {
+        applicationId = coreService.registerApplication("org.onosproject.domain.system");
         domainController.addHCPSuperControllerListener(hcpSuperControllerListener);
 //        pofController.addListener(pofSwitchListener);
         deviceService.addListener(deviceListener);
         init();
-
         log.info("=======================HCP Domain Routing Manager================");
     }
 
     @Deactivate
-    public void deactivate(){
-        for (DeviceId deviceId:TableIDMap.keySet()){
-            reMoveFlowTable(deviceId,TableIDMap.get(deviceId));
+    public void deactivate() {
+        for (DeviceId deviceId : TableIDMap.keySet()) {
+            reMoveFlowTable(deviceId, TableIDMap.get(deviceId));
         }
         TableIDMap.clear();
-        if (!flag){
+        if (!flag) {
             return;
         }
         deviceService.removeListener(deviceListener);
@@ -141,58 +151,56 @@ public class HCPDomainRoutingManager {
         domainController.removeMessageListener(hcpSuperMessageListener);
         log.info("=======================HCP Domain Routing Manager Stopped");
     }
-    public void setUp(){
-        flag=true;
-        hcpVersion=domainController.getHCPVersion();
-        hcpfactory=HCPFactories.getFactory(hcpVersion);
+
+    public void setUp() {
+        flag = true;
+        hcpVersion = domainController.getHCPVersion();
+        hcpfactory = HCPFactories.getFactory(hcpVersion);
         domainController.addMessageListener(hcpSuperMessageListener);
-        packetService.addProcessor(packetProcessor,PacketProcessor.director(4));
+        packetService.addProcessor(packetProcessor, PacketProcessor.director(4));
     }
 
-    public void init(){
-        TableIDMap=new HashMap<>();
-        for (Device device:deviceService.getAvailableDevices()){
-              DeviceId deviceId=device.id();
-              int tableId=sendPofFlowTables(deviceId,"FirstEntryTable");
-              TableIDMap.put(deviceId,tableId);
+    public void init() {
+        TableIDMap = new ConcurrentHashMap<>();
+        for (Device device : deviceService.getAvailableDevices()) {
+            DeviceId deviceId = device.id();
+            int tableId = sendPofFlowTables(deviceId, "FirstEntryTable");
+            TableIDMap.put(deviceId, tableId);
 
         }
     }
 
-    public void changePorts(DeviceId deviceId) {
-        if (deviceId.toString().split(":")[0].equals("pof")) {
-            for (Port port:deviceService.getPorts(deviceId)) {
-                if (!port.annotations().value(AnnotationKeys.PORT_NAME).equals("eth0")) {
-                    deviceService.changePortState(deviceId, port.number(), true);
-                }
-            }
-        }
+    public void reMoveFlowTable(DeviceId deviceId, int tableId) {
+        flowRuleService.removeFlowRulesById(applicationId);
+        log.info("++++ before removeFlowTablesByTableId: {}", tableId);
+        flowTableService.removeFlowTablesByTableId(deviceId, FlowTableId.valueOf(tableId));
+
     }
 
-    public int sendPofFlowTables(DeviceId deviceId,String tableName){
-        byte globeTableId=(byte) tableStore.getNewGlobalFlowTableId(deviceId, OFTableType.OF_MM_TABLE);
-        int tableId=tableStore.parseToSmallTableId(deviceId,globeTableId);
+    public int sendPofFlowTables(DeviceId deviceId, String tableName) {
+        byte globeTableId = (byte) tableStore.getNewGlobalFlowTableId(deviceId, OFTableType.OF_MM_TABLE);
+        int tableId = tableStore.parseToSmallTableId(deviceId, globeTableId);
 
-        OFMatch20 srcIp=new OFMatch20();
-        srcIp.setFieldId((short)SIP);
+        OFMatch20 srcIp = new OFMatch20();
+        srcIp.setFieldId((short) SIP);
         srcIp.setFieldName("srcIp");
-        srcIp.setOffset((short)208);
-        srcIp.setLength((short)32);
+        srcIp.setOffset((short) 208);
+        srcIp.setLength((short) 32);
 
-        ArrayList<OFMatch20> match20ArrayList=new ArrayList<>();
+        ArrayList<OFMatch20> match20ArrayList = new ArrayList<>();
         match20ArrayList.add(srcIp);
 
-        OFFlowTable ofFlowTable=new OFFlowTable();
-        ofFlowTable.setTableId((byte)tableId);
+        OFFlowTable ofFlowTable = new OFFlowTable();
+        ofFlowTable.setTableId((byte) tableId);
         ofFlowTable.setTableName(tableName);
         ofFlowTable.setMatchFieldList(match20ArrayList);
-        ofFlowTable.setMatchFieldNum((byte)1);
+        ofFlowTable.setMatchFieldNum((byte) 1);
         ofFlowTable.setTableSize(128);
         ofFlowTable.setTableType(OFTableType.OF_MM_TABLE);
         ofFlowTable.setCommand(null);
-        ofFlowTable.setKeyLength((short)32);
+        ofFlowTable.setKeyLength((short) 32);
 
-        FlowTable.Builder flowTable= DefaultFlowTable.builder()
+        FlowTable.Builder flowTable = DefaultFlowTable.builder()
                 .withFlowTable(ofFlowTable)
                 .forTable(tableId)
                 .forDevice(deviceId)
@@ -205,116 +213,185 @@ public class HCPDomainRoutingManager {
         return tableId;
     }
 
-    public void reMoveFlowTable(DeviceId deviceId,int tableId){
-//        flowRuleService.removeFlowRulesById(applicationId);
-        log.info("++++ before removeFlowTablesByTableId: {}", tableId);
-        flowTableService.removeFlowTablesByTableId(deviceId, FlowTableId.valueOf(tableId));
+    private void installFlowRule(DeviceId deviceId, int tableId, String srcIp, int port, int pority) {
+        TrafficSelector.Builder trafficSelector = DefaultTrafficSelector.builder();
+        ArrayList<Criterion> mathchList = new ArrayList<>();
+        mathchList.add(Criteria.matchOffsetLength(SIP, (short) 208, (short) 32, srcIp, "FFFFFFFF"));
+        trafficSelector.add(Criteria.matchOffsetLength(mathchList));
+
+        TrafficTreatment.Builder trafficTreatMent = DefaultTrafficTreatment.builder();
+        List<OFAction> actions = new ArrayList<>();
+        OFAction action_output = DefaultPofActions.output((short) 0, (short) 0, (short) 0, port).action();
+        actions.add(action_output);
+        trafficTreatMent.add(DefaultPofInstructions.applyActions(actions));
+        log.info("action_out:{}", action_output);
+
+        long newFlowEntryId = flowTableStore.getNewFlowEntryId(deviceId, tableId);
+        FlowRule.Builder flowRule = DefaultFlowRule.builder()
+                .forDevice(deviceId)
+                .forTable(tableId)
+                .withSelector(trafficSelector.build())
+                .withTreatment(trafficTreatMent.build())
+                .withPriority(pority)
+                .withCookie(newFlowEntryId)
+                .makePermanent();
+        flowRuleService.applyFlowRules(flowRule.build());
 
     }
-    private void PacketOut(Ip4Address ip4Address,Ethernet ethernet){
-        Set<Host> hosts=hostService.getHostsByIp(ip4Address);
-        if (hosts!=null||hosts.size()>0){
-            Host dstHost=(Host) hosts.toArray()[0];
-            PacketOut(dstHost.location(),ethernet);
+
+    private void processIpv4InDomain(Host srcHost, Host dstHost, IpAddress srcAddress) {
+        DeviceId srcDeviceId = srcHost.location().deviceId();
+        DeviceId dstDeviceId = dstHost.location().deviceId();
+        String srcIP = IpAddressToHexString(srcAddress).toString();
+        if (srcDeviceId.equals(dstDeviceId)) {
+            int tableId = TableIDMap.get(srcDeviceId);
+            installFlowRule(srcDeviceId, tableId, srcIP, (int) dstHost.location().port().toLong(), 1);
+            return;
         }
-        else{
+//        log.info("===========srcDeviceiD:{},dstDeviceId:{}",srcDeviceId,dstDeviceId);
+        Topology topology = topologyService.currentTopology();
+        DefaultTopology defaultTopology = (DefaultTopology) topology;
+//        log.info("==================Topology:{}{}",topology.linkCount(),topology.deviceCount());
+        Set<Path> paths = defaultTopology.getPaths(srcDeviceId, dstDeviceId);
+//        log.info("===============paths:{}",paths.toString());
+        Path path = (Path) paths.toArray()[0];
+        for (Link link : path.links()) {
+//            log.info("==============link:{}=============",link.toString());
+            DeviceId deviceId = link.src().deviceId();
+            int tableId = TableIDMap.get(deviceId);
+            installFlowRule(deviceId, tableId, srcIP, (int) link.src().port().toLong(), 1);
+        }
+        int tableID1 = TableIDMap.get(dstDeviceId);
+        installFlowRule(dstDeviceId, tableID1, srcIP,
+                (int) dstHost.location().port().toLong(), 1);
+    }
+
+    private void PacketOut(Ip4Address ip4Address, Ethernet ethernet) {
+        Set<Host> hosts = hostService.getHostsByIp(ip4Address);
+        if (hosts != null || hosts.size() > 0) {
+            Host dstHost = (Host) hosts.toArray()[0];
+            PacketOut(dstHost.location(), ethernet);
+        } else {
             floodPacketOut(ethernet);
+
         }
     }
-    private void floodPacketOut(Ethernet ethernet){
+
+
+    private void floodPacketOut(Ethernet ethernet) {
         TrafficTreatment.Builder builder = null;
-        for (ConnectPoint connectPoint:edgeService.getEdgePoints()){
-            if (!domainTopoService.isOuterPort(connectPoint)){
-                builder=DefaultTrafficTreatment.builder();
+        for (ConnectPoint connectPoint : edgeService.getEdgePoints()) {
+            if (!domainTopoService.isOuterPort(connectPoint)) {
+                builder = DefaultTrafficTreatment.builder();
                 builder.setOutput(connectPoint.port());
-                packetService.emit(new DefaultOutboundPacket(connectPoint.deviceId(),builder.build()
-                                        ,ByteBuffer.wrap(ethernet.serialize())));
+                packetService.emit(new DefaultOutboundPacket(connectPoint.deviceId(), builder.build()
+                        , ByteBuffer.wrap(ethernet.serialize())));
             }
 
         }
     }
-    private void PacketOut(ConnectPoint hostLocation,Ethernet ethernet){
-        TrafficTreatment.Builder builder= DefaultTrafficTreatment.builder();
+
+    private void PacketOut(ConnectPoint hostLocation, Ethernet ethernet) {
+        TrafficTreatment.Builder builder = DefaultTrafficTreatment.builder();
         builder.setOutput(hostLocation.port());
-        packetService.emit(new DefaultOutboundPacket(hostLocation.deviceId(),builder.build(), ByteBuffer.wrap(ethernet.serialize())));
-        return ;
+        packetService.emit(new DefaultOutboundPacket(hostLocation.deviceId(), builder.build(), ByteBuffer.wrap(ethernet.serialize())));
+        return;
     }
-    private void processPacketOut(PortNumber portNumber,Ethernet ethernet){
-        if (portNumber==null){
-            return ;
+
+    private void processPacketOut(PortNumber portNumber, Ethernet ethernet) {
+        if (portNumber == null) {
+            return;
         }
-        if (portNumber.toLong()== HCPVport.LOCAL.getPortNumber()){
-            if (ethernet.getEtherType()==Ethernet.TYPE_ARP){
-                ARP arp=(ARP)ethernet.getPayload();
-                PacketOut(Ip4Address.valueOf(arp.getTargetProtocolAddress()),ethernet);
+        if (portNumber.toLong() == HCPVport.LOCAL.getPortNumber()) {
+            if (ethernet.getEtherType() == Ethernet.TYPE_ARP) {
+                ARP arp = (ARP) ethernet.getPayload();
+                PacketOut(Ip4Address.valueOf(arp.getTargetProtocolAddress()), ethernet);
             }
-        }else {
+        } else {
             floodPacketOut(ethernet);
         }
 
     }
-    private class ReactivePacketProcessor implements PacketProcessor{
+
+    private void SendFlowRequestToSuper() {
+
+
+    }
+
+    private class ReactivePacketProcessor implements PacketProcessor {
 
         @Override
         public void process(PacketContext packetContext) {
-            if (packetContext.isHandled()){
+            if (packetContext.isHandled()) {
                 return;
             }
-            Ethernet ethernet=packetContext.inPacket().parsed();
+            Ethernet ethernet = packetContext.inPacket().parsed();
             if (ethernet == null || ethernet.getEtherType() == Ethernet.TYPE_LLDP) {
                 return;
             }
-            PortNumber dstPort=packetContext.inPacket().receivedFrom().port();
-            DeviceId dstDeviceId=packetContext.inPacket().receivedFrom().deviceId();
-            ConnectPoint connectPoint=new ConnectPoint(dstDeviceId,dstPort);
-            IpAddress targetAddress;
-
-            if (ethernet.getEtherType()==Ethernet.TYPE_ARP){
-                targetAddress= Ip4Address.valueOf(((ARP)ethernet.getPayload()).getTargetProtocolAddress());
+            PortNumber dstPort = packetContext.inPacket().receivedFrom().port();
+            DeviceId dstDeviceId = packetContext.inPacket().receivedFrom().deviceId();
+            ConnectPoint connectPoint = new ConnectPoint(dstDeviceId, dstPort);
+            IpAddress targetAddress = null;
+            IpAddress srcAddress = null;
+            if (ethernet.getEtherType() == Ethernet.TYPE_ARP) {
+                srcAddress = Ip4Address.valueOf(((ARP) ethernet.getPayload()).getSenderProtocolAddress());
+                targetAddress = Ip4Address.valueOf(((ARP) ethernet.getPayload()).getTargetProtocolAddress());
+            } else if (ethernet.getEtherType() == Ethernet.TYPE_IPV4) {
+                srcAddress = Ip4Address.valueOf(((IPv4) ethernet.getPayload()).getSourceAddress());
+                targetAddress = Ip4Address.valueOf(((IPv4) ethernet.getPayload()).getDestinationAddress());
+                log.info("==============srcAddress:{},targetAddress:{}======", srcAddress.toString(), targetAddress.toString());
             }
-            else {
-                return ;
-            }
-            Set<Host> hosts=hostService.getHostsByIp(targetAddress);
-            if (hosts !=null && hosts.size()>0){
-                return ;
+            Set<Host> hosts = hostService.getHostsByIp(targetAddress);
+            if (hosts != null && hosts.size() > 0) {
+                if (ethernet.getEtherType() == Ethernet.TYPE_IPV4) {
+                    Set<Host> hosts1 = hostService.getHostsByIp(srcAddress);
+                    processIpv4InDomain((Host) hosts1.toArray()[0], (Host) hosts.toArray()[0], srcAddress);
+                }
+                return;
             }
             //构建packetIn数据包发送给上层控制器
-            byte []frames=ethernet.serialize();
-            HCPPacketIn hcpPacketIn= HCPPacketInVer10.of((int)domainTopoService.getLogicalVportNumber(connectPoint).toLong(),frames);
-            Set<HCPSbpFlags> flagsSet = new HashSet<>();
-            flagsSet.add(HCPSbpFlags.DATA_EXITS);
-            HCPSbp hcpSbp=hcpfactory.buildSbp()
-                    .setSbpCmpType(HCPSbpCmpType.PACKET_IN)
-                    .setFlags(flagsSet)
-                    .setDataLength((short)hcpPacketIn.getData().length)
-                    .setSbpXid(1)
-                    .setSbpCmpData(hcpPacketIn)
-                    .build();
-            domainController.write(hcpSbp);
-            packetContext.block();
+            if (ethernet.getEtherType() == Ethernet.TYPE_ARP) {
+                byte[] frames = ethernet.serialize();
+                HCPPacketIn hcpPacketIn = HCPPacketInVer10.of((int) domainTopoService.getLogicalVportNumber(connectPoint).toLong(), frames);
+                Set<HCPSbpFlags> flagsSet = new HashSet<>();
+                flagsSet.add(HCPSbpFlags.DATA_EXITS);
+                HCPSbp hcpSbp = hcpfactory.buildSbp()
+                        .setSbpCmpType(HCPSbpCmpType.PACKET_IN)
+                        .setFlags(flagsSet)
+                        .setDataLength((short) hcpPacketIn.getData().length)
+                        .setSbpXid(1)
+                        .setSbpCmpData(hcpPacketIn)
+                        .build();
+                domainController.write(hcpSbp);
+                packetContext.block();
+            } else if (ethernet.getEtherType() == Ethernet.TYPE_IPV4) {
+                return;
+            }
+
         }
     }
-    private class InternalHCPSuperMessageListener implements HCPSuperMessageListener{
+
+    private class InternalHCPSuperMessageListener implements HCPSuperMessageListener {
 
         @Override
         public void handleIncommingMessage(HCPMessage message) {
-                if (message.getType()!= HCPType.HCP_SBP){
-                    return ;
-                }
-                HCPSbp hcpSbp=(HCPSbp) message;
-                switch (hcpSbp.getSbpCmpType()){
-                    case PACKET_OUT:
-                         HCPPacketOut hcpPacketOut=(HCPPacketOut)hcpSbp.getSbpCmpData();
-                         PortNumber portNumber =PortNumber.portNumber(hcpPacketOut.getOutPort());
-                         Ethernet ethernet=domainController.parseEthernet(hcpPacketOut.getData());
-                         log.info("==========PACKET_OUT======{}===",(ARP)ethernet.getPayload());
-                         processPacketOut(portNumber,ethernet);
-                         break;
-                    default:
-                        return;
-                }
+            if (message.getType() != HCPType.HCP_SBP) {
                 return;
+            }
+            HCPSbp hcpSbp = (HCPSbp) message;
+            switch (hcpSbp.getSbpCmpType()) {
+                case PACKET_OUT:
+                    HCPPacketOut hcpPacketOut = (HCPPacketOut) hcpSbp.getSbpCmpData();
+                    PortNumber portNumber = PortNumber.portNumber(hcpPacketOut.getOutPort());
+                    Ethernet ethernet = domainController.parseEthernet(hcpPacketOut.getData());
+                    log.info("==========PACKET_OUT======{}===", (ARP) ethernet.getPayload());
+                    processPacketOut(portNumber, ethernet);
+                    break;
+                default:
+                    return;
+            }
+            return;
 
         }
 
@@ -324,12 +401,12 @@ public class HCPDomainRoutingManager {
         }
     }
 
-    private class InternalHCPSuperControllerListener implements HCPSuperControllerListener{
+    private class InternalHCPSuperControllerListener implements HCPSuperControllerListener {
 
         @Override
         public void connectToSuperController(HCPSuper hcpSuper) {
-             log.info("1111111111111111111111111111111111");
-             setUp();
+            log.info("1111111111111111111111111111111111");
+            setUp();
         }
 
         @Override
@@ -338,7 +415,7 @@ public class HCPDomainRoutingManager {
         }
     }
 
-    private class InternalDeviceListener implements PofSwitchListener{
+    private class InternalDeviceListener implements PofSwitchListener {
 
 
         @Override
@@ -376,33 +453,65 @@ public class HCPDomainRoutingManager {
 
         }
     }
-    private void removeOraddDevice(DeviceId deviceId){
-        if (!TableIDMap.containsKey(deviceId)){
-            int tabaleId=sendPofFlowTables(deviceId,"FirstEntryTable");
-            TableIDMap.put(deviceId,tabaleId);
+
+    private void removeOraddDevice(DeviceId deviceId) {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (!TableIDMap.containsKey(deviceId)) {
+            int tabaleId = sendPofFlowTables(deviceId, "FirstEntryTable");
+            TableIDMap.put(deviceId, tabaleId);
             return;
         }
-        reMoveFlowTable(deviceId,TableIDMap.get(deviceId));
+        reMoveFlowTable(deviceId, TableIDMap.get(deviceId));
         TableIDMap.remove(deviceId);
-
     }
-    private class InternalListener implements DeviceListener{
 
+    private class InternalListener implements DeviceListener {
         @Override
         public void event(DeviceEvent deviceEvent) {
-//            log.info("==============deviceEvent==========={}======",deviceEvent.type());
-            DeviceId deviceId=deviceEvent.subject().id();
-            switch (deviceEvent.type()){
+            log.info("==============deviceEvent==========={}======", deviceEvent.type());
+            DeviceId deviceId = deviceEvent.subject().id();
+            switch (deviceEvent.type()) {
                 case DEVICE_ADDED:
-                    int tabaleId=sendPofFlowTables(deviceId,"FirstEntryTable");
-                    TableIDMap.put(deviceId,tabaleId);
+                    int tabaleId = sendPofFlowTables(deviceId, "FirstEntryTable");
+                    TableIDMap.put(deviceId, tabaleId);
+                    log.info("=====================TableIdMap========={}=====", TableIDMap.toString());
                     break;
                 case DEVICE_AVAILABILITY_CHANGED:
                     removeOraddDevice(deviceId);
+                    log.info("=====================TableIdMap========={}=====", TableIDMap.toString());
+                    break;
+                default:
                     break;
             }
-
+            return;
 //
         }
+    }
+
+    private StringBuffer IpAddressToHexString(IpAddress ipAddress) {
+        StringBuffer stringBuffer = new StringBuffer();
+        byte[] bytes = ipAddress.toOctets();
+        for (byte b : bytes) {
+            stringBuffer.append(toHex(b));
+        }
+        return stringBuffer;
+    }
+
+    private String toHex(int num) {
+        if (num == 0) return "00";
+        String result = "";
+        while (num != 0) {
+            int x = num & 0xF;
+            result = map[(x)] + result;
+            num = (num >>> 4);
+        }
+        if (num >= 16 && result.length() == 1) {
+            return result + "0";
+        }
+        return "0" + result;
     }
 }

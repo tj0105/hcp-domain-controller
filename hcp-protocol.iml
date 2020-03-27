@@ -144,19 +144,19 @@
     <orderEntry type="library" name="Maven: org.onosproject:onlab-rest:1.11.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.onosproject:onlab-osgi:1.11.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.onosproject:onos-cli:1.11.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.onosproject:onos-core-common:1.11.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.onosproject:onos-core-dist:1.11.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.onosproject:onos-core-serializers:1.11.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.onosproject:onos-incubator-api:1.11.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.onosproject:onos-incubator-net:1.11.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.onosproject:onos-incubator-store:1.11.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.commons:commons-math3:3.6.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.googlecode.concurrent-trees:concurrent-trees:2.6.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-codec:4.1.8.Final" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-handler:4.1.8.Final" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-resolver:4.1.8.Final" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-transport:4.1.8.Final" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-transport-native-epoll:4.1.8.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.onosproject:onos-core-common:1.11.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.onosproject:onos-core-dist:1.11.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.onosproject:onos-core-serializers:1.11.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.onosproject:onos-incubator-api:1.11.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.onosproject:onos-incubator-net:1.11.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.onosproject:onos-incubator-store:1.11.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-math3:3.6.1" level="project" />
+    <orderEntry type="library" name="Maven: com.googlecode.concurrent-trees:concurrent-trees:2.6.0" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.8.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.8.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-resolver:4.1.8.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.8.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport-native-epoll:4.1.8.Final" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.karaf.shell:org.apache.karaf.shell.console:3.0.8" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: jline:jline:2.13" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.fusesource.jansi:jansi:1.11" level="project" />
@@ -173,5 +173,6 @@
     <orderEntry type="library" name="Maven: org.onosproject:onos-floodlightpof:1.6.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-core-asl:1.9.13" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-mapper-asl:1.9.13" level="project" />
+    <orderEntry type="library" name="Maven: org.onosproject:onos-core-net:1.11.0-SNAPSHOT" level="project" />
   </component>
 </module>

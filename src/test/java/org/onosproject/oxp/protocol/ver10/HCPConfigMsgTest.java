@@ -36,7 +36,7 @@ public class HCPConfigMsgTest extends TestBaseVer10{
     public void HCPGetConfigReplyMsgTest() throws Exception{
         ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
         Set<HCPConfigFlags> flags = EnumSet.noneOf(HCPConfigFlags.class);
-        flags.add(HCPConfigFlags.MODE_ADVANCED);
+//        flags.add(HCPConfigFlags.MODE_ADVANCED);
         flags.add(HCPConfigFlags.CAPABILITIES_BW);
         HCPGetConfigReply configReply = getMessageFactry()
                 .buildGetConfigReply()
@@ -49,6 +49,7 @@ public class HCPConfigMsgTest extends TestBaseVer10{
         assertThat(message, instanceOf(configReply.getClass()));
 
         HCPGetConfigReply messageRev = (HCPGetConfigReply) message;
+        System.out.println(messageRev.getFlags().toString());
         assertThat(configReply, is(messageRev));
     }
 }
