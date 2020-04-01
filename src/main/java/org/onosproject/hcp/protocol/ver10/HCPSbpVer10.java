@@ -137,6 +137,11 @@ public class HCPSbpVer10  implements HCPSbp{
                 case PACKET_OUT:
                     message.sbpCmpData.writeTo(bb);
                     break;
+                case RESOURCE_REQUEST:
+                    message.sbpCmpData.writeTo(bb);
+                    break;
+                case RESOURCE_REPLY:
+                    message.sbpCmpData.writeTo(bb);
                 default:
             }
 
@@ -196,6 +201,12 @@ public class HCPSbpVer10  implements HCPSbp{
                     break;
                 case PACKET_OUT:
                     sbpCmpData=HCPPacketOutVer10.read(bb,dataLength);
+                    break;
+                case RESOURCE_REQUEST:
+                    sbpCmpData=HCPResourceRequestVer10.read(bb);
+                    break;
+                case RESOURCE_REPLY:
+                    sbpCmpData=HCPResourceReplyVer10.read(bb,dataLength);
                     break;
                 default:
                     throw new IllegalArgumentException("Illegal vaule for sbpcmptype in hcp version 1.0:"+sbpCmpType);

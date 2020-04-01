@@ -72,7 +72,8 @@ public class HCPDomainControllerImp implements HCPDomainController{
       capabilitie.add(HCPCapabilities.TABLE_STATS);
       this.SetCapabilities(capabilitie);
       Set<HCPConfigFlags> flags=new HashSet<>();
-      flags.add(HCPConfigFlags.CAPABILITIES_BW);
+      flags.add(HCPConfigFlags.MODE_ADVANCED);
+      flags.add(HCPConfigFlags.CAPABILITIES_HOP);
       this.setFlags(flags);
       this.setPeriod(5);
       this.setMissSendLength(128);

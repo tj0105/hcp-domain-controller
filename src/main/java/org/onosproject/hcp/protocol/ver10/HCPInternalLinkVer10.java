@@ -24,8 +24,10 @@ abstract class HCPInternalLinkVer10 {
             HCPVport srcVport=HCPVport.readFrom(bb);
             HCPVport dstVport=HCPVport.readFrom(bb);
 
-            long capability=bb.readLong();
-            return HCPInternalLink.of(srcVport,dstVport,capability);
+            long BandWidthcapability=bb.readLong();
+            int  Delaycapability=bb.readInt();
+            int  Hopcapanility=bb.readInt();
+            return HCPInternalLink.of(srcVport,dstVport,BandWidthcapability,Delaycapability,Hopcapanility);
         }
     }
 }

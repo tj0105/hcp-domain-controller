@@ -77,9 +77,9 @@ public class HCPDomainHostManager {
         flag=true;
         hcpVersion=domainController.getHCPVersion();
         hcpFactory=HCPFactories.getFactory(hcpVersion);
-        executorService= Executors.newSingleThreadScheduledExecutor
-                (Tools.groupedThreads("hcp/hostupdate", "hcp-hostupdate-%d", log));
-        executorService.scheduleAtFixedRate(new HostUpdateTesk(),domainController.getPeriod(),domainController.getPeriod(), TimeUnit.SECONDS);
+//        executorService= Executors.newSingleThreadScheduledExecutor
+//                (Tools.groupedThreads("hcp/hostupdate", "hcp-hostupdate-%d", log));
+//        executorService.scheduleAtFixedRate(new HostUpdateTesk(),domainController.getPeriod(),domainController.getPeriod(), TimeUnit.SECONDS);
         domainController.addMessageListener(hcpSuperMessageListener);
         hostService.addListener(hostListener);
         log.info("Host Manager have successful activate");

@@ -15,6 +15,7 @@ public class HCPVport implements HCPValueType<HCPVport> ,Writeable{
 
     private static final short HCP_MAX_SHORT = (short) 0xf00;
     private static final short HCP_IN_PORT_SHORT = (short) 0xff8;
+    private static final short HCP_OUT_PORT_SHORT = (short) 0xff9;
     private static final short HCP_FLOOD_SHORT = (short) 0xffb;
     private static final short HCP_ALL_SHORT = (short) 0xffc;
     private static final short HCP_CONTROLLER_SHORT = (short) 0xffd;
@@ -25,6 +26,7 @@ public class HCPVport implements HCPValueType<HCPVport> ,Writeable{
 
     public static final HCPVport MAX = new NamedVport(HCP_MAX_SHORT, "max");
     public static final HCPVport IN_PORT = new NamedVport(HCP_IN_PORT_SHORT, "in_port");
+    public static final HCPVport OUT_PORT = new NamedVport(HCP_OUT_PORT_SHORT, "out_port");
     public static final HCPVport FLOOD = new NamedVport(HCP_FLOOD_SHORT, "flood");
     public static final HCPVport ALL = new NamedVport(HCP_ALL_SHORT, "all");
     public static final HCPVport CONTROLLER = new NamedVport(HCP_CONTROLLER_SHORT, "controller");
@@ -40,6 +42,8 @@ public class HCPVport implements HCPValueType<HCPVport> ,Writeable{
                 return MAX;
             case HCP_IN_PORT_SHORT:
                 return IN_PORT;
+            case HCP_OUT_PORT_SHORT:
+                return OUT_PORT;
             case HCP_FLOOD_SHORT:
                 return FLOOD;
             case HCP_ALL_SHORT:
@@ -110,13 +114,26 @@ public class HCPVport implements HCPValueType<HCPVport> ,Writeable{
     public boolean equals(Object obj) {
         if (this==obj)
             return true;
-        if (obj!=null)
+        if (obj==null)
             return false;
         if (getClass()!= obj.getClass())
             return false;
         HCPVport hcpVport=(HCPVport) obj;
-        if (hcpVport.portNumber!=this.portNumber)
+        if (this.portNumber!=hcpVport.portNumber)
             return false;
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime=31;
+        int result=1;
+        return prime*result+portNumber;
+
+    }
+
+    @Override
+    public String toString() {
+        return "portNumber=" + portNumber;
     }
 }

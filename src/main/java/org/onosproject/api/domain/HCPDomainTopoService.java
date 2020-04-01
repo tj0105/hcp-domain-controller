@@ -1,7 +1,11 @@
 package org.onosproject.api.domain;
 
+import org.onosproject.hcp.types.HCPVport;
 import org.onosproject.net.ConnectPoint;
+import org.onosproject.net.Path;
 import org.onosproject.net.PortNumber;
+
+import java.util.Set;
 
 /**
  * @Author ldy
@@ -14,4 +18,9 @@ public interface HCPDomainTopoService {
     boolean isOuterPort(ConnectPoint connectPoint);
 
     ConnectPoint getLocationByVport(PortNumber portNumber);
+
+    Set<ConnectPoint> getVPortConnectPoint();
+
+    Path getVportToVportPath(HCPVport srcVport, HCPVport dstVport);
+
 }

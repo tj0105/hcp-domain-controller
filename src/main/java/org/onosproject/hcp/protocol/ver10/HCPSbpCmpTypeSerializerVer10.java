@@ -17,6 +17,8 @@ public class HCPSbpCmpTypeSerializerVer10 {
     public final static byte FLOWFORWARDING_REPLY_VAL=2;
     public final static byte PACKET_IN_VAL=3;
     public final static byte PACKET_OUT_VAL=4;
+    public final static byte RESOURCE_REQUEST_VAL=5;
+    public final static byte RESOURCE_REPLY_VAL=6;
 
     public static HCPSbpCmpType readFrom(ChannelBuffer bb) throws HCPParseError{
         try{
@@ -46,6 +48,10 @@ public class HCPSbpCmpTypeSerializerVer10 {
                 return HCPSbpCmpType.PACKET_IN;
             case PACKET_OUT_VAL:
                 return HCPSbpCmpType.PACKET_OUT;
+            case RESOURCE_REQUEST_VAL:
+                return HCPSbpCmpType.RESOURCE_REQUEST;
+            case RESOURCE_REPLY_VAL:
+                return HCPSbpCmpType.RESOURCE_REPLY;
             default:
                 throw new IllegalArgumentException("Illegal wire value for type HCPSbpCmpType in HCP protocol version 1.0:"+value);
         }
@@ -63,6 +69,10 @@ public class HCPSbpCmpTypeSerializerVer10 {
                 return PACKET_IN_VAL;
             case PACKET_OUT:
                 return PACKET_OUT_VAL;
+            case RESOURCE_REQUEST:
+                return RESOURCE_REQUEST_VAL;
+            case RESOURCE_REPLY:
+                return RESOURCE_REPLY_VAL;
             default:
                 throw new IllegalArgumentException("Illegal enum value for type HCPSbpCmpType in HCP protocol version 1.0: "+sbpCmpType);
         }

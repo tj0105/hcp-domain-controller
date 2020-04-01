@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @Author ldy
@@ -22,6 +23,25 @@ public class HexTest {
     }
     @Test
     public void MapTest(){
+        Map<String,Map<Integer,Integer>> mapConcurrentHashMap=new HashMap<>();
+        Map<Integer,Integer> map=mapConcurrentHashMap.get("1");
+        if (map==null){
+            map=new HashMap<>();
+            mapConcurrentHashMap.put("1",map);
+        }
+        map.put(1,2);
+        map.put(3,4);
+        System.out.println(mapConcurrentHashMap.toString());
+
+        Map<String,Set<Integer>> hashMap=new HashMap<>();
+        Set<Integer> set=hashMap.get("1");
+        if (set==null){
+            set=new HashSet<>();
+            hashMap.put("1",set);
+        }
+        set.add(1);
+        set.add(2);
+        System.out.println(hashMap.toString());
 //        Map<String,Set<Integer>> vportmap=new HashMap<>();
 //        Set<Integer> integers=new HashSet<>();
 //        integers.add(1);
@@ -40,10 +60,10 @@ public class HexTest {
 //            integers2.remove(1);
 //        }
 //        System.out.println(vportmap.get("1").toString());
-        IpAddress ipAddress=IpAddress.valueOf("10.0.0.1");
-        System.out.println(toHexString(ipAddress).toString());
-        System.out.println(ipAddress.toString());
-        System.out.println(toHex(1));
+//        IpAddress ipAddress=IpAddress.valueOf("10.0.0.1");
+//        System.out.println(toHexString(ipAddress).toString());
+//        System.out.println(ipAddress.toString());
+//        System.out.println(toHex(1));
     }
 
     private StringBuffer toHexString(IpAddress ipAddress){

@@ -3,10 +3,7 @@ package org.onosproject.hcp.protocol.ver10;
 import com.google.common.hash.PrimitiveSink;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.onosproject.hcp.protocol.HCPForwardingReply;
-import org.onosproject.hcp.types.DomainId;
-import org.onosproject.hcp.types.IPv4Address;
-import org.onosproject.hcp.types.U16;
-import org.onosproject.hcp.types.U8;
+import org.onosproject.hcp.types.*;
 
 /**
  * @Author ldy
@@ -17,13 +14,13 @@ public class HCPForwardingReplyVer10 implements HCPForwardingReply{
 
     private IPv4Address srcIpAddress;
     private IPv4Address dstIpAddress;
-    private int srcVport;
-    private int dstVport;
+    private HCPVport srcVport;
+    private HCPVport dstVport;
     private short ethType;
     private byte qos;
 
 
-    private HCPForwardingReplyVer10(IPv4Address srcIpAddress,IPv4Address dstIpAddress,int srcVport,int dstVport
+    private HCPForwardingReplyVer10(IPv4Address srcIpAddress,IPv4Address dstIpAddress,HCPVport srcVport,HCPVport dstVport
                                     ,short ethType, byte qos){
         this.srcIpAddress=srcIpAddress;
         this.dstIpAddress=dstIpAddress;
@@ -33,7 +30,7 @@ public class HCPForwardingReplyVer10 implements HCPForwardingReply{
         this.qos=qos;
     }
 
-    public static HCPForwardingReplyVer10 of(IPv4Address srcIpAddress,IPv4Address dstIpAddress,int srcVport,int dstVport
+    public static HCPForwardingReplyVer10 of(IPv4Address srcIpAddress,IPv4Address dstIpAddress,HCPVport srcVport,HCPVport dstVport
                                             ,short ethType, byte qos){
         return new HCPForwardingReplyVer10(srcIpAddress,dstIpAddress,srcVport,dstVport,ethType,qos);
     }
@@ -41,8 +38,8 @@ public class HCPForwardingReplyVer10 implements HCPForwardingReply{
     public static HCPForwardingReply read(ChannelBuffer bb){
         IPv4Address srcIpAddress=IPv4Address.read4Bytes(bb);
         IPv4Address dstIpAddress=IPv4Address.read4Bytes(bb);
-        int srcVport=bb.readInt();
-        int dstVport=bb.readInt();
+        HCPVport srcVport=HCPVport.readFrom(bb);
+        HCPVport dstVport=HCPVport.readFrom(bb);
         short ethType=bb.readByte();
         byte qos=bb.readByte();
         return of(srcIpAddress,dstIpAddress,srcVport,dstVport,ethType,qos);
@@ -59,12 +56,12 @@ public class HCPForwardingReplyVer10 implements HCPForwardingReply{
     }
 
     @Override
-    public int getSrcVport() {
+    public HCPVport getSrcVport() {
         return srcVport;
     }
 
     @Override
-    public int getDstVport() {
+    public HCPVport getDstVport() {
         return dstVport;
     }
 
@@ -85,15 +82,15 @@ public class HCPForwardingReplyVer10 implements HCPForwardingReply{
 
     @Override
     public byte[] getData() {
-        return null;
+        return new byte[0];
     }
 
     @Override
     public void writeTo(ChannelBuffer bb) {
         srcIpAddress.writeTo(bb);
         dstIpAddress.writeTo(bb);
-        bb.writeInt(srcVport);
-        bb.writeInt(dstVport);
+        srcVport.writeTo(bb);
+        dstVport.writeTo(bb);
         bb.writeShort(ethType);
         bb.writeByte(qos);
     }
@@ -127,8 +124,8 @@ public class HCPForwardingReplyVer10 implements HCPForwardingReply{
         final int prime=31;
         result=result*prime+(srcIpAddress != null ? srcIpAddress.hashCode() : 0);
         result=result*prime+(dstIpAddress != null ? dstIpAddress.hashCode() : 0);
-        result=result*prime+srcVport;
-        result=result*prime+dstVport;
+        result=result*prime+srcVport.hashCode();
+        result=result*prime+dstVport.hashCode();
         result=result*prime+ U16.f(ethType);
         result=result*prime+ U8.f(qos);
         return result;

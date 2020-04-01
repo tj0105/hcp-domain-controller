@@ -4,6 +4,7 @@ import jline.internal.Preconditions;
 import org.apache.felix.scr.annotations.*;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.onlab.graph.ScalarWeight;
 import org.onlab.packet.Ethernet;
 import org.onlab.packet.HCPLLDP;
 import org.onlab.packet.MacAddress;
@@ -19,10 +20,7 @@ import org.onosproject.hcp.protocol.ver10.HCPPacketInVer10;
 import org.onosproject.hcp.protocol.ver10.HCPVportDescriptionVer10;
 import org.onosproject.hcp.types.HCPInternalLink;
 import org.onosproject.hcp.types.HCPVport;
-import org.onosproject.net.ConnectPoint;
-import org.onosproject.net.DeviceId;
-import org.onosproject.net.Port;
-import org.onosproject.net.PortNumber;
+import org.onosproject.net.*;
 import org.onosproject.net.host.HostService;
 import org.onosproject.net.link.LinkEvent;
 import org.onosproject.net.link.LinkListener;
@@ -40,6 +38,7 @@ import static org.onosproject.net.flow.DefaultTrafficTreatment.builder;
 
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -85,6 +84,7 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
     private Map<ConnectPoint, PortNumber> vportMap = new HashMap<>();
     private Map<ConnectPoint, PortNumber> vportNumAllocateCache = new HashMap<>();
     private Map<PortNumber,Long> VportTimeMap=new HashMap<>();
+    private Map<HCPVport,Map<HCPVport,Path>> vportToVportpath=new HashMap<>();
 
     private ScheduledExecutorService executor;
 
@@ -113,6 +113,7 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         vportMap.clear();
         vportNumAllocateCache.clear();
         VportTimeMap.clear();
+        vportToVportpath.clear();
         log.info("==============Domain Topology Manager Stopped===================");
 
     }
@@ -167,6 +168,25 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         return null;
     }
 
+    @Override
+    public Set<ConnectPoint> getVPortConnectPoint() {
+       return new HashSet<>(vportMap.keySet());
+    }
+
+    @Override
+    public Path getVportToVportPath(HCPVport srcVport, HCPVport dstVport) {
+        Map<HCPVport,Path> vportPathMap=vportToVportpath.get(srcVport);
+        if (vportPathMap==null){
+            return null;
+        }
+        for (HCPVport vport:vportPathMap.keySet()){
+            if (vport.equals(dstVport)){
+                return vportPathMap.get(vport);
+            }
+        }
+        return null;
+    }
+
     private final String buildSrcMac() {
         String srcMac = ProbedLinkProvider.fingerprintMac(clusterMetadataService.getClusterMetadata());
         String defaultMac = ProbedLinkProvider.defaultMac();
@@ -178,7 +198,11 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         return srcMac;
     }
 
-
+    /**
+     * if the vportNumAllcateCache do not have the vport,Assign the new Port Number to the vport;
+     * @param connectPoint
+     * @return
+     */
     private PortNumber AllocateVPortNumber(ConnectPoint connectPoint) {
         if (vportNumAllocateCache.containsKey(connectPoint)) {
             return vportNumAllocateCache.get(connectPoint);
@@ -198,11 +222,18 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
             addOrUpdateVport(connectPoint, HCPVportState.LINK_DOWN,HCPVportReason.DELETE);
         }
     }
+
+    /**
+     * Assign or add the Vport last time to the vportmap and vportmapTime;
+     * @param connectPoint
+     * @param vportState
+     * @param vportReason
+     */
     private void addOrUpdateVport(ConnectPoint connectPoint, HCPVportState vportState, HCPVportReason vportReason) {
         Preconditions.checkNotNull(connectPoint);
         //if vportmap have connectPoint and vportState is add return
         if (vportMap.containsKey(connectPoint) && vportReason.equals(HCPVportReason.ADD)) {
-            StoreVPortTime(connectPoint.port());
+            StoreVPortTime(vportMap.get(connectPoint));
             return;
         }
         if (!vportMap.containsKey(connectPoint) && vportReason.equals(HCPVportReason.ADD)) {
@@ -232,6 +263,12 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         return 4000;
     }
 
+    /**
+     * update the vport state to the superController
+     * @param portNumber
+     * @param Vportstate
+     * @param reason
+     */
     private void UpdateVPortToSuper(PortNumber portNumber,HCPVportState Vportstate,HCPVportReason reason){
         HCPVport vport = HCPVport.ofShort((short) portNumber.toLong());
         Set<HCPVportState> state = new HashSet<>();
@@ -253,6 +290,36 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         }
     }
 
+    /**
+     * computer the resource between two the vports,But now just calculate the hop.
+     * Store the min hop path in the the map(vportTovportPath)
+     * @param src   vports deviceId
+     * @param dst   vports deviceId
+     * @param srcVPort srcvport HCPVport
+     * @param dstVport dstVport HCPVPort
+     * @return
+     */
+    private HCPInternalLink VPortToVportHCPInernalin(DeviceId src,DeviceId dst,HCPVport srcVPort,HCPVport dstVport){
+        Map<HCPVport,Path> srcVportMap=vportToVportpath.get(srcVPort);
+        if (srcVportMap==null){
+            srcVportMap=new HashMap<>();
+        }
+        Set<Path> paths=pathService.getPaths(src,dst);
+        List<Path> pathList=new ArrayList(paths);
+        pathList.sort((p1, p2) -> ((ScalarWeight) p1.weight()).value() > ((ScalarWeight) p2.weight()).value()
+                ? 1 : (((ScalarWeight) p1.weight()).value() < ((ScalarWeight) p2.weight()).value()) ? -1 : 0);
+        int hopCapability=pathList.get(0).links().size();
+        srcVportMap.put(dstVport,pathList.get(0));
+        HCPInternalLink hcpInternalLink=HCPInternalLink.of(srcVPort,dstVport,100,hopCapability);
+        return hcpInternalLink;
+    }
+
+    /**
+     * send the abstract intra-domain link to the superController.
+     * between the two vports we send such as information:including max bandwidth,
+     * sum of the delay and hop,otherwise, we send the vport the maxBandwdith and LoadBandWidth
+     * information to the superController.
+     */
     private void UpdateTopology() {
         List<HCPInternalLink> internalLinks = new ArrayList<>();
         Set<PortNumber> alreadhandle = new HashSet<>();
@@ -271,10 +338,9 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
                 } else {
                     if (srcConnection.deviceId().equals(dstConnection.deviceId())) {
                         long capability = 100000;
-                        internalLinks.add(HCPInternalLink.of(srcHCPVPort, dstHCPVPort, capability));
+                        internalLinks.add(HCPInternalLink.of(srcHCPVPort, dstHCPVPort, capability,0,0));
                     } else if (!pathService.getPaths(srcConnection.deviceId(), dstConnection.deviceId()).isEmpty()) {
-                        long capability = 200000;
-                        internalLinks.add(HCPInternalLink.of(srcHCPVPort, dstHCPVPort, capability));
+                        internalLinks.add(VPortToVportHCPInernalin(srcConnection.deviceId(),dstConnection.deviceId(),srcHCPVPort,dstHCPVPort));
                     }
                 }
             }
@@ -310,10 +376,12 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
             init();
         }
 
+
         @Override
         public void disconnectSuperController(HCPSuper hcpSuper) {
 
         }
+
     }
 
     private class InternalPacketProcessor implements PacketProcessor {
@@ -369,7 +437,7 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
                 packetService.emit(outboundPacket);
                 packetContext.block();
             } else {
-                log.info("=====================Sbp Message================");
+//                log.info("=====================Sbp Message================");
                 //如果lldp携带了Vport号，则说明对端控制器已经发现自己域的这个对外端口，
                 // 则需要将LLDP数据包上报给SuperController，让SuperController发现域间链路
                 PortNumber exitVportNumber = getVportNum(edgeConnectPoint);
@@ -378,7 +446,7 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
                 }
 
                 //构造LLDP数据包，通过Sbp数据包中的的SbpCmpType中的PACKET_IN模式
-                // 封装到Sbp数据吧中发送给SuperController
+                // 封装到Sbp数据中发送给SuperController
                 HCPLLDP sbpHCPlldp = HCPLLDP.hcplldp(hcplldp.getDomianId(),
                         hcplldp.getVportNum(), hcplldp.getDomianId(),
                         hcplldp.getVportNum());

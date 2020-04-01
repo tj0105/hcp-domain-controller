@@ -276,7 +276,7 @@ public class HCPDomainChannelHandler extends IdleStateAwareChannelHandler {
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        log.info("MessageEvent {}",e.getMessage());
+//        log.info("MessageEvent {}",e.getMessage());
         if (e.getMessage() instanceof List) {
             List<HCPMessage> msgList = (List<HCPMessage>) e.getMessage();
 
