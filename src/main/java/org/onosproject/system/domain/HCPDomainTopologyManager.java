@@ -303,6 +303,7 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         Map<HCPVport,Path> srcVportMap=vportToVportpath.get(srcVPort);
         if (srcVportMap==null){
             srcVportMap=new HashMap<>();
+            vportToVportpath.put(srcVPort,srcVportMap);
         }
         Set<Path> paths=pathService.getPaths(src,dst);
         List<Path> pathList=new ArrayList(paths);
@@ -422,7 +423,7 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
             //LLDP数据包发送给对端，让对端发现其是Vport（表示边界对外端口），并且上报给SuperController
             if (LLDP_VPORT_LOCAL == hcplldp.getVportNum()) {
                 addOrUpdateVport(edgeConnectPoint, HCPVportState.LINK_UP, HCPVportReason.ADD);
-                HCPLLDP replyhcplldp = HCPLLDP.hcplldp(Long.valueOf(dstDeviceId.toString().substring("pof:".length())),
+                HCPLLDP replyhcplldp = HCPLLDP.hcplldp(Long.valueOf(dstDeviceId.toString().substring("pof:".length()),16),
                         Long.valueOf(dstPort.toLong()).intValue(),
                         domainController.getDomainId().getLong(),
                         Long.valueOf(getLogicalVportNumber(edgeConnectPoint).toLong()).intValue());

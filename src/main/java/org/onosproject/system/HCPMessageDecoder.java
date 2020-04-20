@@ -1,6 +1,7 @@
 package org.onosproject.system;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.CompositeChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.frame.FrameDecoder;
@@ -23,8 +24,14 @@ public class HCPMessageDecoder extends FrameDecoder {
         if (!channel.isConnected()){
             return null;
         }
+        log.info("====================channelBuffer======{}====",channelBuffer.toString());
         HCPMessageReader<HCPMessage> reader= HCPFactories.getGenericReader();
+        if (channelBuffer instanceof CompositeChannelBuffer){
+            channelBuffer.readByte();
+        }
         HCPMessage message=reader.readFrom(channelBuffer);
+
+//        channelBuffer.clear();
 //        log.info("===============Decode Message========={}==========",message.getType());
         return message;
     }

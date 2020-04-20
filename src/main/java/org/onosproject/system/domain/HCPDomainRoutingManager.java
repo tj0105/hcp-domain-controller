@@ -457,6 +457,7 @@ public class HCPDomainRoutingManager {
                 installFlowRule(link.dst().deviceId(),dstTableId,srcIp,(int)link.dst().port().toLong(),10);
             }
         }else{
+            log.info("=================in the middle doamin here");
             ConnectPoint srcConnectPoint=hcpDomainTopoServie.getLocationByVport(PortNumber.portNumber(srcVport.getPortNumber()));
             ConnectPoint dstConnectPoint=hcpDomainTopoServie.getLocationByVport(PortNumber.portNumber(dstVPort.getPortNumber()));
             Path path=hcpDomainTopoServie.getVportToVportPath(srcVport,dstVPort);
@@ -595,6 +596,7 @@ public class HCPDomainRoutingManager {
             }
             //构建packetIn数据包发送给上层控制器
             if (ethernet.getEtherType() == Ethernet.TYPE_ARP) {
+                log.info("========arp=====",(ARP)ethernet.getPayload());
                 byte[] frames = ethernet.serialize();
                 HCPPacketIn hcpPacketIn = HCPPacketInVer10.of((int) domainTopoService.getLogicalVportNumber(connectPoint).toLong(), frames);
                 Set<HCPSbpFlags> flagsSet = new HashSet<>();
@@ -609,6 +611,7 @@ public class HCPDomainRoutingManager {
                 domainController.write(hcpSbp);
                 packetContext.block();
             } else if (ethernet.getEtherType() == Ethernet.TYPE_IPV4) {
+//                return ;
                 SendFlowRequestToSuper((Host)srchost.toArray()[0],srcAddress,targetAddress,connectPoint);
                 packetContext.block();
             }
