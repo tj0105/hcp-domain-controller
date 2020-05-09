@@ -23,4 +23,9 @@ public interface HCPDomainTopoService {
 
     Path getVportToVportPath(HCPVport srcVport, HCPVport dstVport);
 
+    long getVportMaxCapability(ConnectPoint connectPoint);
+
+    long getVportLoadCapability(ConnectPoint connectPoint);
+
+    long getResetVportCapability(ConnectPoint connectPoint);
 }

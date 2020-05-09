@@ -4,6 +4,9 @@ package org.onosproject.system.domain;
 import com.google.common.collect.Table;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.apache.felix.scr.annotations.*;
+import org.onlab.graph.DefaultEdgeWeigher;
+import org.onlab.graph.ScalarWeight;
+import org.onlab.graph.Weight;
 import org.onlab.packet.*;
 import org.onosproject.api.HCPSuper;
 import org.onosproject.api.HCPSuperMessageListener;
@@ -44,9 +47,7 @@ import org.onosproject.net.host.HostService;
 import org.onosproject.net.link.LinkService;
 import org.onosproject.net.packet.*;
 import org.onosproject.net.table.*;
-import org.onosproject.net.topology.PathService;
-import org.onosproject.net.topology.Topology;
-import org.onosproject.net.topology.TopologyService;
+import org.onosproject.net.topology.*;
 import org.onosproject.pof.controller.Dpid;
 import org.onosproject.pof.controller.PofController;
 import org.onosproject.pof.controller.PofSwitchListener;
@@ -132,6 +133,7 @@ public class HCPDomainRoutingManager {
     private ConcurrentHashMap<IpAddress,Map<HCPVport,Path>> ipaddressPathMap;
     private static final char[] map = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
+    private LinkWeigher BANDWIDTH_WEIGHT=new graphBanwidthWeigth();
     private boolean flag = false;
 
     @Activate
@@ -316,9 +318,13 @@ public class HCPDomainRoutingManager {
         Topology topology = topologyService.currentTopology();
         DefaultTopology defaultTopology = (DefaultTopology) topology;
 //        log.info("==================Topology:{}{}",topology.linkCount(),topology.deviceCount());
-        Set<Path> paths = defaultTopology.getPaths(srcDeviceId, dstDeviceId);
+        Set<Path> paths = defaultTopology.getPaths(srcDeviceId, dstDeviceId,BANDWIDTH_WEIGHT);
 //        log.info("===============paths:{}",paths.toString());
+        if (paths==null){
+            paths=defaultTopology.getPaths(srcDeviceId,dstDeviceId);
+        }
         Path path = (Path) paths.toArray()[0];
+
         log.info("===========path========={}=======",path.toString());
         for (Link link : path.links()) {
 //            log.info("==============link:{}=============",link.toString());
@@ -382,11 +388,17 @@ public class HCPDomainRoutingManager {
                     vportHops.add(hcpVportHop);
                     continue;
                 }
-                Set<Path> paths=topology.getPaths(dstHost.location().deviceId(),dstDeviceId);
+                Set<Path> paths=topology.getPaths(dstHost.location().deviceId(),dstDeviceId,BANDWIDTH_WEIGHT);
                 Path path=(Path)paths.toArray()[0];
                 HCPVport vport=HCPVport.ofShort(
                         (short) hcpDomainTopoServie.getLogicalVportNumber(connectPoint).toLong());
-                HCPVportHop hcpVportHop=HCPVportHop.of(vport,path.links().size());
+                HCPVportHop hcpVportHop;
+                if (path==null){
+                    hcpVportHop=HCPVportHop.of(vport,100);
+                }
+                else{
+                    hcpVportHop=HCPVportHop.of(vport,path.links().size());
+                }
                 vportHops.add(hcpVportHop);
                 pathmap.put(vport,path);
             }
@@ -754,6 +766,20 @@ public class HCPDomainRoutingManager {
             return;
 //
         }
+    }
+    class graphBanwidthWeigth extends DefaultEdgeWeigher<TopologyVertex,TopologyEdge> implements LinkWeigher {
+
+        @Override
+        public Weight weight(TopologyEdge topologyEdge) {
+            if (hcpDomainTopoServie.getResetVportCapability(topologyEdge.link().dst())<hcpDomainTopoServie.getVportMaxCapability(topologyEdge.link().dst())*0.2){
+                return ScalarWeight.NON_VIABLE_WEIGHT;
+            }
+            else{
+                return new ScalarWeight(1);
+            }
+//            return new ScalarWeight(portBandwidth.get(topologyEdge.link().dst()));
+        }
+
     }
 
     private StringBuffer IpAddressToHexString(IpAddress ipAddress) {

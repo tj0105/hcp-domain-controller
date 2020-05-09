@@ -4,7 +4,11 @@ import jline.internal.Preconditions;
 import org.apache.felix.scr.annotations.*;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+import org.onlab.graph.DefaultEdgeWeigher;
 import org.onlab.graph.ScalarWeight;
+import org.onlab.graph.Weight;
 import org.onlab.packet.Ethernet;
 import org.onlab.packet.HCPLLDP;
 import org.onlab.packet.MacAddress;
@@ -20,14 +24,19 @@ import org.onosproject.hcp.protocol.ver10.HCPPacketInVer10;
 import org.onosproject.hcp.protocol.ver10.HCPVportDescriptionVer10;
 import org.onosproject.hcp.types.HCPInternalLink;
 import org.onosproject.hcp.types.HCPVport;
+import org.onosproject.incubator.net.PortStatisticsService;
 import org.onosproject.net.*;
+import org.onosproject.net.device.DeviceAdminService;
 import org.onosproject.net.host.HostService;
 import org.onosproject.net.link.LinkEvent;
 import org.onosproject.net.link.LinkListener;
 import org.onosproject.net.link.LinkService;
 import org.onosproject.net.link.ProbedLinkProvider;
 import org.onosproject.net.packet.*;
+import org.onosproject.net.topology.LinkWeigher;
 import org.onosproject.net.topology.PathService;
+import org.onosproject.net.topology.TopologyEdge;
+import org.onosproject.net.topology.TopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +45,12 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.onlab.util.Tools.groupedThreads;
 import static org.onosproject.net.flow.DefaultTrafficTreatment.builder;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.text.Annotation;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -74,6 +88,9 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected PathService pathService;
 
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected DeviceAdminService deviceService;
+
     private PacketProcessor hcplldpPacketProcesser = new InternalPacketProcessor();
 
     private LinkListener linkListener = new InternalLinkListener();
@@ -85,13 +102,20 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
     private Map<ConnectPoint, PortNumber> vportNumAllocateCache = new HashMap<>();
     private Map<PortNumber,Long> VportTimeMap=new HashMap<>();
     private Map<HCPVport,Map<HCPVport,Path>> vportToVportpath=new HashMap<>();
+    private Map<String,ConnectPoint> devicePortName=new HashMap<>();
+    private ConcurrentHashMap<ConnectPoint,Double> portBandwidth=new ConcurrentHashMap<>();
 
+
+    private String allportName=null;
+    private double MAX_BANDWIDTH;
+    private double BANDWIDTH_THRESHOLD;
     private ScheduledExecutorService executor;
 
     private long STATE_VPORT_TIME=10000;
     private final static int LLDP_VPORT_LOCAL = 0xffff;
     private boolean flag = false;
-
+    private LinkWeigher BANDWIDTH_WEIGHT=new graphBanwidthWeigth();
+    private Socket socket=null;
     @Activate
     public void activate() {
         domainController.addHCPSuperControllerListener(hcpSuperControllerListener);
@@ -114,6 +138,13 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         vportNumAllocateCache.clear();
         VportTimeMap.clear();
         vportToVportpath.clear();
+        devicePortName.clear();
+        portBandwidth.clear();
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         log.info("==============Domain Topology Manager Stopped===================");
 
     }
@@ -126,16 +157,123 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         domainController.addMessageListener(hcpSuperMessageListener);
         linkService.addListener(linkListener);
         packetService.addProcessor(hcplldpPacketProcesser, PacketProcessor.director(0));
+        storeDeviceIdPortName();
+        log.info("devicePortName=========={}",devicePortName.toString());
+        allportName=getAllportName();
         executor = newSingleThreadScheduledExecutor(groupedThreads("hcp/topologyupdate", "hcp-topologyupdate-%d", log));
         executor.scheduleAtFixedRate(new TopoUpdateTask(),
                 domainController.getPeriod(), domainController.getPeriod(), SECONDS);
-//        try {
-//            Thread.sleep(1000);
-////            addOrUpdateVport(null,HCPVportState.LINK_UP,HCPVportReason.ADD);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        connectSocketGetBanwidth();
     }
+
+    private void storeDeviceIdPortName(){
+        for (Device device:deviceService.getAvailableDevices()) {
+            DeviceId deviceId = device.id();
+            List<Port> portList =deviceService.getPorts(deviceId);
+            for (Port port:portList) {
+                PortNumber portNumber=port.number();
+                ConnectPoint connectPoint=new ConnectPoint(deviceId,portNumber);
+                Annotations annotations=port.annotations();
+                for (String key:annotations.keys()){
+                    if (key.equals(AnnotationKeys.PORT_NAME)){
+                        String name=annotations.value(key);
+                        devicePortName.put(name,connectPoint);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    private String getAllportName(){
+        StringBuffer buffer=new StringBuffer();
+        for (String s:devicePortName.keySet()){
+            buffer.append(s+",");
+        }
+        log.info("buffer before===={}",buffer.toString());
+        buffer.deleteCharAt(buffer.length()-1);
+        log.info("buffer after===={}",buffer.toString());
+        return buffer.toString();
+    }
+    private void connectSocketGetBanwidth(){
+        try {
+            socket=new Socket("192.168.109.208",6688);
+            ObjectOutputStream outputStream=new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream inputStream=new ObjectInputStream(socket.getInputStream());
+            new Thread(new client_listen(socket,inputStream)).start();
+            new Thread(new client_send(socket,outputStream)).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    class client_listen implements Runnable{
+        private Socket socket;
+        private ObjectInputStream inputStream;
+
+        client_listen(Socket socket,ObjectInputStream inputStream){
+            this.socket=socket;
+            this.inputStream=inputStream;
+        }
+        @Override
+        public void run() {
+            try {
+                while(true) {
+                    JsonObject jsonObject = (JsonObject) inputStream.readObject();
+                    String meesge = jsonObject.get("msg").asString();
+//                    log.info("======message===={}", jsonObject.toString());
+                    if (jsonObject.get("type").asString().equals("1")) {
+                        StringBuffer stringBuffer = new StringBuffer(meesge);
+                        String max_bandwidth = meesge.split(",")[0];
+                        MAX_BANDWIDTH = Double.valueOf(max_bandwidth.split(":")[1]);
+                        BANDWIDTH_THRESHOLD = MAX_BANDWIDTH * 0.2;
+                        meesge = stringBuffer.delete(0, max_bandwidth.length()+1).toString();
+                    }
+                    for (String s : meesge.split(",")) {
+                        String name = s.split(":")[0];
+                        String bandwidth = s.split(":")[1];
+                        portBandwidth.put(devicePortName.get(name), Double.valueOf(bandwidth));
+                    }
+//                    log.info("=====================portBandwidth===={}", portBandwidth.toString());
+                }
+            } catch (Exception e) {
+               log.debug("=============bug===={}",e.getMessage());
+            }
+        }
+    }
+    class  client_send implements Runnable{
+        private Socket socket;
+        private ObjectOutputStream objectOutputStream;
+
+        client_send(Socket socket,ObjectOutputStream outputStream){
+            this.socket=socket;
+            this.objectOutputStream=outputStream;
+        }
+        @Override
+        public void run() {
+            boolean flag=true;
+            try {
+                while(true){
+                    JsonObject jsonObject=new JsonObject();
+                    if (flag){
+                        jsonObject.add("type","1");
+                        jsonObject.add("msg",allportName);
+                        flag=false;
+                    }
+                    else {
+                        jsonObject.add("type","2");
+                        jsonObject.add("msg","null");
+
+                    }
+//                    log.info("=================jsonObject========={}",jsonObject.toString());
+                    objectOutputStream.writeObject(jsonObject);
+                    objectOutputStream.flush();
+                    Thread.sleep(5000);
+                }
+            }catch (Exception e){
+                log.debug("=============bug===={}",e.getMessage());
+            }
+        }
+    }
+
 
     /**
      * check whether the connectPoint has already VportNumber
@@ -143,7 +281,6 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
      * @param connectPoint
      * @return the Vport number
      */
-
     @Override
     public PortNumber getLogicalVportNumber(ConnectPoint connectPoint) {
         return vportMap.containsKey(connectPoint) ? vportMap.get(connectPoint) : PortNumber.portNumber(HCPVport.LOCAL.getPortNumber());
@@ -186,7 +323,34 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         }
         return null;
     }
+    @Override
+    public long getVportMaxCapability(ConnectPoint connectPoint) {
+        return (long)MAX_BANDWIDTH;
+    }
+    @Override
+    public long getVportLoadCapability(ConnectPoint connectPoint) {
+        return (long)(double) portBandwidth.get(connectPoint);
+    }
+    @Override
+    public long getResetVportCapability(ConnectPoint connectPoint){
+        return getVportMaxCapability(connectPoint)-getVportLoadCapability(connectPoint);
+    }
 
+
+    class graphBanwidthWeigth extends DefaultEdgeWeigher<TopologyVertex,TopologyEdge> implements LinkWeigher {
+
+        @Override
+        public Weight weight(TopologyEdge topologyEdge) {
+            if (getResetVportCapability(topologyEdge.link().dst())<BANDWIDTH_THRESHOLD){
+                return ScalarWeight.NON_VIABLE_WEIGHT;
+            }
+            else{
+                return new ScalarWeight(1);
+            }
+//            return new ScalarWeight(portBandwidth.get(topologyEdge.link().dst()));
+        }
+
+    }
     private final String buildSrcMac() {
         String srcMac = ProbedLinkProvider.fingerprintMac(clusterMetadataService.getClusterMetadata());
         String defaultMac = ProbedLinkProvider.defaultMac();
@@ -253,16 +417,6 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         UpdateTopology();
     }
 
-
-
-    private long getVportMaxCapability(ConnectPoint connectPoint) {
-        return 300000;
-    }
-
-    private long getVportLoadCapability(ConnectPoint connectPoint) {
-        return 4000;
-    }
-
     /**
      * update the vport state to the superController
      * @param portNumber
@@ -305,13 +459,37 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
             srcVportMap=new HashMap<>();
             vportToVportpath.put(srcVPort,srcVportMap);
         }
-        Set<Path> paths=pathService.getPaths(src,dst);
+
+        Set<Path> paths=pathService.getPaths(src,dst,BANDWIDTH_WEIGHT);
+        if (paths==null){
+            HCPInternalLink hcpInternalLink=HCPInternalLink.of(srcVPort,dstVport,0,1000);
+            return hcpInternalLink;
+        }
         List<Path> pathList=new ArrayList(paths);
         pathList.sort((p1, p2) -> ((ScalarWeight) p1.weight()).value() > ((ScalarWeight) p2.weight()).value()
                 ? 1 : (((ScalarWeight) p1.weight()).value() < ((ScalarWeight) p2.weight()).value()) ? -1 : 0);
         int hopCapability=pathList.get(0).links().size();
         srcVportMap.put(dstVport,pathList.get(0));
-        HCPInternalLink hcpInternalLink=HCPInternalLink.of(srcVPort,dstVport,100,hopCapability);
+//        Queue<Double> bandwidth_queuq=new LinkedList<>();
+//        Path max_bandwidth_path=null;
+//        for (Path path:paths) {
+//            double min_bandwidth=9999;
+//            for (Link link:path.links()){
+//                long banwidth=getResetVportCapability(link.dst());
+//                if (banwidth<min_bandwidth){
+//                    min_bandwidth=banwidth;
+//                }
+//            }
+//            if (bandwidth_queuq.isEmpty()){
+//                bandwidth_queuq.add(min_bandwidth);
+//            }else{
+//                if (min_bandwidth>bandwidth_queuq.peek()){
+//                    bandwidth_queuq.poll();
+//                    bandwidth_queuq.add(min_bandwidth);
+//                }
+//            }
+//        }
+        HCPInternalLink hcpInternalLink=HCPInternalLink.of(srcVPort,dstVport,(long)(double)MAX_BANDWIDTH,hopCapability);
         return hcpInternalLink;
     }
 
@@ -489,6 +667,14 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
             // update vport
             UpdateVportsToSuper();
             // update intra_links
+            StringBuffer StringBuffer=new StringBuffer();
+            for (ConnectPoint connectPoint:portBandwidth.keySet()){
+                if(portBandwidth.get(connectPoint)!=0.0){
+                    StringBuffer.append(connectPoint+"=");
+                    StringBuffer.append(portBandwidth.get(connectPoint)+",");
+                }
+            }
+            log.info("=====max_bandwidth={}======portBandwidth======{}",MAX_BANDWIDTH,StringBuffer.toString());
             UpdateTopology();
         }
     }

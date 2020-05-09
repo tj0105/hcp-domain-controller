@@ -11,4 +11,5 @@
     <reference name="hostService" interface="org.onosproject.net.host.HostService" cardinality="1..1" policy="static" bind="bindHostService" unbind="unbindHostService"/>
     <reference name="clusterMetadataService" interface="org.onosproject.cluster.ClusterMetadataService" cardinality="1..1" policy="static" bind="bindClusterMetadataService" unbind="unbindClusterMetadataService"/>
     <reference name="pathService" interface="org.onosproject.net.topology.PathService" cardinality="1..1" policy="static" bind="bindPathService" unbind="unbindPathService"/>
+    <reference name="deviceService" interface="org.onosproject.net.device.DeviceAdminService" cardinality="1..1" policy="static" bind="bindDeviceService" unbind="unbindDeviceService"/>
 </scr:component>

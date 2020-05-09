@@ -2,6 +2,7 @@ package org.onosproject.oxp.protocol.ver10;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+//import org.json.simple.JSONObject;
 import org.junit.Test;
 import org.onosproject.hcp.protocol.HCPConfigFlags;
 import org.onosproject.hcp.protocol.HCPGetConfigReply;
@@ -29,6 +30,7 @@ public class HCPConfigMsgTest extends TestBaseVer10{
         HCPGetConfigRequest configRequest=getMessageFactry()
                 .buildGetConfitRequest()
                 .build();
+
     }
 
 
