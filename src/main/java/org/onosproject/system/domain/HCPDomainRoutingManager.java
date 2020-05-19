@@ -360,20 +360,19 @@ public class HCPDomainRoutingManager {
         }
 
     }
-    private void processResourceRequest(IPv4Address srcIpv4Address,IPv4Address dstIpv4Address,Set<HCPConfigFlags> flags){
+    private void HostToEdgeHop(){
+        Set<HCPConfigFlags> hcpConfigFlags=new HashSet<>();
+        hcpConfigFlags.add(HCPConfigFlags.CAPABILITIES_HOP);
+        for (Host host:hostService.getHosts()){
+            IPv4Address iPv4Address=IPv4Address.of((host.ipAddresses().toArray()[0]).toString());
+            processResourceRequest(iPv4Address,hcpConfigFlags);
+        }
+    }
+    private void processResourceRequest(IPv4Address dstIpv4Address,Set<HCPConfigFlags> flags){
         IpAddress dstIpaddress=IpAddress.valueOf(dstIpv4Address.toString());
         List<HCPVportHop> vportHops=new ArrayList<>();
         if (flags.contains(HCPConfigFlags.CAPABILITIES_HOP)) {
-            Map<HCPVport,Path> pathmap=ipaddressPathMap.get(dstIpaddress);
-            if(pathmap!=null) {
-                for (HCPVport hcpvPort:pathmap.keySet()){
-                    HCPVportHop hcpVportHop=HCPVportHop.of(hcpvPort,pathmap.get(hcpvPort).links().size());
-                    vportHops.add(hcpVportHop);
-                }
-                sendResourceFlowToSuper(srcIpv4Address,dstIpv4Address,vportHops);
-                return ;
-            }
-            pathmap=new HashMap<>();
+            HashMap pathmap=new HashMap<>();
             ipaddressPathMap.put(dstIpaddress,pathmap);
             Set<Host> dsthostSet = hostService.getHostsByIp(dstIpaddress);
             Set<ConnectPoint> connectPointSet=hcpDomainTopoServie.getVPortConnectPoint();
@@ -394,15 +393,16 @@ public class HCPDomainRoutingManager {
                         (short) hcpDomainTopoServie.getLogicalVportNumber(connectPoint).toLong());
                 HCPVportHop hcpVportHop;
                 if (path==null){
-                    hcpVportHop=HCPVportHop.of(vport,100);
+                    hcpVportHop=HCPVportHop.of(vport,1000);
                 }
                 else{
                     hcpVportHop=HCPVportHop.of(vport,path.links().size());
+                    pathmap.put(vport,path);
                 }
                 vportHops.add(hcpVportHop);
-                pathmap.put(vport,path);
+
             }
-            sendResourceFlowToSuper(srcIpv4Address,dstIpv4Address,vportHops);
+            sendResourceFlowToSuper(dstIpv4Address,vportHops);
         }
 
     }
@@ -495,10 +495,10 @@ public class HCPDomainRoutingManager {
             }
         }
     }
-    private void sendResourceFlowToSuper(IPv4Address srcIp,IPv4Address dstIp,List<HCPVportHop> list){
+    private void sendResourceFlowToSuper(IPv4Address dstIp,List<HCPVportHop> list){
         Set<HCPSbpFlags> flagsSet = new HashSet<>();
         flagsSet.add(HCPSbpFlags.DATA_EXITS);
-        HCPResourceReply hcpResourceReply= HCPResourceReplyVer10.of(srcIp,dstIp,list);
+        HCPResourceReply hcpResourceReply= HCPResourceReplyVer10.of(dstIp,list);
         HCPSbp hcpSbp=hcpfactory.buildSbp()
                 .setSbpCmpType(HCPSbpCmpType.RESOURCE_REPLY)
                 .setFlags(flagsSet)
@@ -538,13 +538,19 @@ public class HCPDomainRoutingManager {
                 vportHops.add(hcpVportHop);
                 continue;
             }
-            Set<Path> paths=topology.getPaths(srcDeviceId,dstDeviceId);
+            Set<Path> paths=topology.getPaths(srcDeviceId,dstDeviceId,BANDWIDTH_WEIGHT);
             Path path=(Path)paths.toArray()[0];
             HCPVport vport=HCPVport.ofShort(
                     (short) hcpDomainTopoServie.getLogicalVportNumber(connectPoint1).toLong());
-            HCPVportHop hcpVportHop=HCPVportHop.of(vport,path.links().size());
-            vportHops.add(hcpVportHop);
-            pathmap.put(vport,path);
+            if (paths==null){
+                HCPVportHop hcpVportHop=HCPVportHop.of(vport,1000);
+                vportHops.add(hcpVportHop);
+            }
+            else{
+                HCPVportHop hcpVportHop=HCPVportHop.of(vport,path.links().size());
+                vportHops.add(hcpVportHop);
+                pathmap.put(vport,path);
+            }
         }
         log.info("==========IddressPathMap======={}",ipaddressPathMap.toString());
         HCPForwardingRequest hcpForwardingRequest= HCPForwardingRequestVer10.of(src,dst,(int )connectPoint.port().toLong()
@@ -653,7 +659,7 @@ public class HCPDomainRoutingManager {
                     IPv4Address srcIpv4Address=hcpResourceRequest.getSrcIpAddress();
                     IPv4Address dstIpv4Address=hcpResourceRequest.getDstIpAddress();
                     Set<HCPConfigFlags> flagsSet=hcpResourceRequest.getFlags();
-                    processResourceRequest(srcIpv4Address,dstIpv4Address,flagsSet);
+                    processResourceRequest(dstIpv4Address,flagsSet);
                     break;
                 case FLOW_FORWARDING_REPLY:
                     HCPForwardingReply hcpForwardingReply=(HCPForwardingReply)hcpSbp.getSbpCmpData();
@@ -780,6 +786,12 @@ public class HCPDomainRoutingManager {
 //            return new ScalarWeight(portBandwidth.get(topologyEdge.link().dst()));
         }
 
+    }
+    class hostToEdgeHopTask implements Runnable {
+        @Override
+        public void run() {
+           HostToEdgeHop();
+        }
     }
 
     private StringBuffer IpAddressToHexString(IpAddress ipAddress) {

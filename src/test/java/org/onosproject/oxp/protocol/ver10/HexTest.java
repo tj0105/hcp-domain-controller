@@ -1,10 +1,19 @@
 package org.onosproject.oxp.protocol.ver10;
 
 import org.junit.Test;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.onlab.packet.IpAddress;
 import org.onosproject.hcp.types.MacAddress;
+import org.python.core.PyFunction;
+import org.python.core.PyInteger;
+import org.python.core.PyObject;
+import org.python.util.PythonInterpreter;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
+import java.sql.Time;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -19,7 +28,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HexTest {
     @Test
     public  void main() {
+        System.out.println(System.currentTimeMillis());
+        Set<IpAddress> ipAddresses=new HashSet<>();
+        ipAddresses.add(IpAddress.valueOf("192.168.109.11"));
+        ipAddresses.add(IpAddress.valueOf("192.168.109.12"));
+        ipAddresses.add(IpAddress.valueOf("192.168.109.13"));
+        ipAddresses.add(IpAddress.valueOf("192.168.109.14"));
+        System.out.println(ipAddresses.toArray()[0].toString());
         System.out.println(String.format("%06x",2222));
+        System.out.println(System.currentTimeMillis());
     }
     @Test
     public void MapTest(){
@@ -90,4 +107,45 @@ public class HexTest {
 	 return "0"+result;
 
     }
+    @Test
+    public  void invoke_python(){
+        System.out.println(System.currentTimeMillis());
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(System.currentTimeMillis());
+        Process proc;
+        try {
+            System.out.println(System.currentTimeMillis());
+            proc = Runtime.getRuntime().exec("python /home/ldy/python_project/test.py");
+//            System.out.println(System.currentTimeMillis());
+            BufferedReader in = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            System.out.println(System.currentTimeMillis());
+            String line = null;
+            while ((line = in.readLine()) != null) {
+                System.out.println(line);
+            }
+            System.out.println(System.currentTimeMillis());
+            in.close();
+            proc.waitFor();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void jypython(){
+        PythonInterpreter interpreter = new PythonInterpreter();
+        System.out.println(System.currentTimeMillis());
+        interpreter.execfile("/home/ldy/python_project/test1.py");
+        PyFunction pyFunction=interpreter.get("add",PyFunction.class);
+        PyObject pyObject=pyFunction.__call__(new PyInteger(5),new PyInteger(10));
+        System.out.println(System.currentTimeMillis());
+        System.out.println(pyObject);
+    }
+
 }

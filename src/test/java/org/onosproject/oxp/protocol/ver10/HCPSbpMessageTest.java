@@ -233,7 +233,7 @@ public class HCPSbpMessageTest {
         vportHops.add(vportHop);
         vportHops.add(vportHop2);
         HCPResourceReplyVer10 resourceReplyVer10=HCPResourceReplyVer10
-                .of(srcipAddress,dstIpaddress,vportHops);
+                .of(dstIpaddress,vportHops);
         Set<HCPSbpFlags> flagsSet=new HashSet<>();
         flagsSet.add(HCPSbpFlags.DATA_EXITS);
         HCPSbp hcpSbp =getMessageFactry().buildSbp()
@@ -255,7 +255,7 @@ public class HCPSbpMessageTest {
         System.out.println("messageRev sbpDataLength:"+messageRev.getDataLength());
         HCPResourceReply hcpResourceRequest=(HCPResourceReply) messageRev.getSbpCmpData();
         System.out.println("hcpforwarding request dstIpaddress:"+hcpResourceRequest.getDstIpAddress().toString());
-        System.out.println("hcpforwarding request srcIpaddress:"+hcpResourceRequest.getSrcIpAddress());
+//        System.out.println("hcpforwarding request srcIpaddress:"+hcpResourceRequest.getSrcIpAddress());
 //        System.out.println("hcpforwarding request type:"+(Ethernet.TYPE_IPV4==hcpForwardingRequest.getEthType()));
 
         List<HCPVportHop> vportHops1=hcpResourceRequest.getvportHopList();

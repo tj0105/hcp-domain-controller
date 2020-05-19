@@ -11,7 +11,6 @@ import java.util.List;
  * @Version 1.0
  */
 public interface HCPResourceReply extends HCPSbpCmpData{
-    IPv4Address getSrcIpAddress();
     IPv4Address getDstIpAddress();
     List<HCPVportHop> getvportHopList();
 }

@@ -453,7 +453,7 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
      * @param dstVport dstVport HCPVPort
      * @return
      */
-    private HCPInternalLink VPortToVportHCPInernalin(DeviceId src,DeviceId dst,HCPVport srcVPort,HCPVport dstVport){
+    private HCPInternalLink VPortToVportHCPInernalink(DeviceId src,DeviceId dst,HCPVport srcVPort,HCPVport dstVport){
         Map<HCPVport,Path> srcVportMap=vportToVportpath.get(srcVPort);
         if (srcVportMap==null){
             srcVportMap=new HashMap<>();
@@ -516,10 +516,10 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
                     internalLinks.add(HCPInternalLink.of(srcHCPVPort, HCPVport.LOCAL, srcVportLoadCapability));
                 } else {
                     if (srcConnection.deviceId().equals(dstConnection.deviceId())) {
-                        long capability = 100000;
-                        internalLinks.add(HCPInternalLink.of(srcHCPVPort, dstHCPVPort, capability,0,0));
+//                        long capability = 100000;
+                        internalLinks.add(HCPInternalLink.of(srcHCPVPort, dstHCPVPort, (long)MAX_BANDWIDTH,0,0));
                     } else if (!pathService.getPaths(srcConnection.deviceId(), dstConnection.deviceId()).isEmpty()) {
-                        internalLinks.add(VPortToVportHCPInernalin(srcConnection.deviceId(),dstConnection.deviceId(),srcHCPVPort,dstHCPVPort));
+                        internalLinks.add(VPortToVportHCPInernalink(srcConnection.deviceId(),dstConnection.deviceId(),srcHCPVPort,dstHCPVPort));
                     }
                 }
             }
