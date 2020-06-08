@@ -58,6 +58,6 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase name="TopologyRequest" classname="org.onosproject.oxp.protocol.ver10.TopologyTest" time="0"/>
-  <testcase name="TopologyReply" classname="org.onosproject.oxp.protocol.ver10.TopologyTest" time="0.005"/>
+  <testcase name="TopologyRequest" classname="org.onosproject.oxp.protocol.ver10.TopologyTest" time="0.002"/>
+  <testcase name="TopologyReply" classname="org.onosproject.oxp.protocol.ver10.TopologyTest" time="0.003"/>
 </testsuite>

@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1589012864435
+Bnd-LastModified: 1591583880708
 Build-Jdk: 1.8.0_131
 Built-By: ldy
 Bundle-Blueprint: OSGI-INF/blueprint/shell-config.xml
@@ -35,21 +35,22 @@ Export-Package: org.onosproject.hcp.types;version="1.0.0";uses:="com.goo
  "io.netty.channel,io.netty.channel.socket,org.jboss.netty.bootstrap,org
  .jboss.netty.channel,org.jboss.netty.handler.timeout,org.jboss.netty.ut
  il,org.onlab.packet,org.onosproject.api,org.onosproject.api.Super,org.o
- nosproject.api.domain,org.onosproject.cluster,org.onosproject.core,org.
- onosproject.hcp.protocol,org.onosproject.hcp.types,org.onosproject.mast
- ership,org.onosproject.net,org.onosproject.net.device,org.onosproject.n
- et.edge,org.onosproject.net.flow,org.onosproject.net.host,org.onosproje
- ct.net.link,org.onosproject.net.packet,org.onosproject.net.table,org.on
- osproject.net.topology,org.onosproject.pof.controller,org.slf4j",org.on
- osproject.system;version="1.0.0";uses:="org.jboss.netty.buffer,org.jbos
- s.netty.channel,org.jboss.netty.handler.codec.frame,org.jboss.netty.han
- dler.codec.oneone,org.onosproject.api,org.onosproject.api.Super,org.ono
- sproject.api.domain,org.onosproject.core,org.onosproject.hcp.protocol,o
- rg.onosproject.hcp.types,org.onosproject.net,org.onosproject.net.behavi
- our,org.slf4j",org.onosproject.system.Super;version="1.0.0";uses:="org.
- jboss.netty.channel,org.jboss.netty.handler.timeout,org.jboss.netty.uti
- l,org.onosproject.api,org.onosproject.api.Super,org.onosproject.api.dom
- ain,org.onosproject.hcp.protocol,org.onosproject.hcp.types,org.slf4j"
+ nosproject.api.domain,org.onosproject.cluster,org.onosproject.common,or
+ g.onosproject.core,org.onosproject.hcp.protocol,org.onosproject.hcp.typ
+ es,org.onosproject.mastership,org.onosproject.net,org.onosproject.net.d
+ evice,org.onosproject.net.edge,org.onosproject.net.flow,org.onosproject
+ .net.host,org.onosproject.net.link,org.onosproject.net.packet,org.onosp
+ roject.net.provider,org.onosproject.net.table,org.onosproject.net.topol
+ ogy,org.onosproject.pof.controller,org.slf4j",org.onosproject.system;ve
+ rsion="1.0.0";uses:="org.jboss.netty.buffer,org.jboss.netty.channel,org
+ .jboss.netty.handler.codec.frame,org.jboss.netty.handler.codec.oneone,o
+ rg.onosproject.api,org.onosproject.api.Super,org.onosproject.api.domain
+ ,org.onosproject.core,org.onosproject.hcp.protocol,org.onosproject.hcp.
+ types,org.onosproject.net,org.onosproject.net.behaviour,org.slf4j",org.
+ onosproject.system.Super;version="1.0.0";uses:="org.jboss.netty.channel
+ ,org.jboss.netty.handler.timeout,org.jboss.netty.util,org.onosproject.a
+ pi,org.onosproject.api.Super,org.onosproject.api.domain,org.onosproject
+ .hcp.protocol,org.onosproject.hcp.types,org.slf4j"
 Import-Package: com.eclipsesource.json;version="[0.9,1)",com.google.comm
  on.base;version="[22.0,23)",com.google.common.collect;version="[22.0,23
  )",com.google.common.hash;version="[22.0,23)",com.google.common.primiti
@@ -84,11 +85,12 @@ Import-Package: com.eclipsesource.json;version="[0.9,1)",com.google.comm
  )",org.onosproject.net.flow.criteria;version="[1.11,2)",org.onosproject
  .net.flow.instructions;version="[1.11,2)",org.onosproject.net.host;vers
  ion="[1.11,2)",org.onosproject.net.link;version="[1.11,2)",org.onosproj
- ect.net.packet;version="[1.11,2)",org.onosproject.net.table;version="[1
- .11,2)",org.onosproject.net.topology;version="[1.11,2)",org.onosproject
- .pof.controller;version="[1.6,2)",org.onosproject.system;version="[1.0,
- 2)",org.onosproject.system.domain;version="[1.0,2)",org.osgi.service.bl
- ueprint;version="[1.0.0,2.0.0)",org.slf4j;version="[1.7,2)"
+ ect.net.packet;version="[1.11,2)",org.onosproject.net.provider;version=
+ "[1.11,2)",org.onosproject.net.table;version="[1.11,2)",org.onosproject
+ .net.topology;version="[1.11,2)",org.onosproject.pof.controller;version
+ ="[1.6,2)",org.onosproject.system;version="[1.0,2)",org.onosproject.sys
+ tem.domain;version="[1.0,2)",org.osgi.service.blueprint;version="[1.0.0
+ ,2.0.0)",org.slf4j;version="[1.7,2)"
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
 Service-Component: OSGI-INF/org.onosproject.system.domain.HCPDomainRouti
  ngManager.xml,OSGI-INF/org.onosproject.system.domain.HCPDomainControlle

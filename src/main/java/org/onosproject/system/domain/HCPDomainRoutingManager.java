@@ -3,6 +3,7 @@ package org.onosproject.system.domain;
 
 import com.google.common.collect.Table;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
+import jnr.ffi.annotations.In;
 import org.apache.felix.scr.annotations.*;
 import org.onlab.graph.DefaultEdgeWeigher;
 import org.onlab.graph.ScalarWeight;
@@ -28,10 +29,7 @@ import org.onosproject.hcp.protocol.*;
 import org.onosproject.hcp.protocol.ver10.HCPForwardingRequestVer10;
 import org.onosproject.hcp.protocol.ver10.HCPPacketInVer10;
 import org.onosproject.hcp.protocol.ver10.HCPResourceReplyVer10;
-import org.onosproject.hcp.types.HCPVport;
-import org.onosproject.hcp.types.HCPVportHop;
-import org.onosproject.hcp.types.IPAddress;
-import org.onosproject.hcp.types.IPv4Address;
+import org.onosproject.hcp.types.*;
 import org.onosproject.mastership.MastershipService;
 import org.onosproject.net.*;
 import org.onosproject.net.device.DeviceAdminService;
@@ -43,9 +41,12 @@ import org.onosproject.net.flow.criteria.Criteria;
 import org.onosproject.net.flow.criteria.Criterion;
 import org.onosproject.net.flow.instructions.DefaultPofActions;
 import org.onosproject.net.flow.instructions.DefaultPofInstructions;
+import org.onosproject.net.host.HostEvent;
+import org.onosproject.net.host.HostListener;
 import org.onosproject.net.host.HostService;
 import org.onosproject.net.link.LinkService;
 import org.onosproject.net.packet.*;
+import org.onosproject.net.provider.ProviderId;
 import org.onosproject.net.table.*;
 import org.onosproject.net.topology.*;
 import org.onosproject.pof.controller.Dpid;
@@ -55,10 +56,14 @@ import org.onosproject.pof.controller.RoleState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
 import java.lang.reflect.Array;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.onosproject.net.host.HostEvent.Type.HOST_ADDED;
 
 /**
  * @Author ldy
@@ -117,6 +122,10 @@ public class HCPDomainRoutingManager {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected HCPDomainTopoService hcpDomainTopoServie;
 
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected LinkService LinkServie;
+
+    private HostListener hostListener=new InternalHostListener();
     private PacketProcessor packetProcessor = new ReactivePacketProcessor();
     private HCPSuperMessageListener hcpSuperMessageListener = new InternalHCPSuperMessageListener();
     private HCPSuperControllerListener hcpSuperControllerListener = new InternalHCPSuperControllerListener();
@@ -131,11 +140,29 @@ public class HCPDomainRoutingManager {
     private HCPFactory hcpfactory;
     private ConcurrentHashMap<DeviceId, Integer> TableIDMap;
     private ConcurrentHashMap<IpAddress,Map<HCPVport,Path>> ipaddressPathMap;
+    private List<TopologyVertex> topologyVertexList=new ArrayList<>();
+    private HashMap<TopologyVertex,List<TopologyEdge>> topologyEdgeHashMap=new HashMap<>();
+    private HashMap<String,Link> src_dst_Link=new HashMap<>();
     private static final char[] map = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+
+    public  DefaultTopology defaultTopology;
+    public  static ProviderId RouteproviderId=new ProviderId("USTC","intra-route");
 
     private LinkWeigher BANDWIDTH_WEIGHT=new graphBanwidthWeigth();
     private boolean flag = false;
+    private boolean drl_flag=true;
 
+    //DRL socket
+    private Socket DRL_Socket;
+    private InputStream DRL_input;
+    private InputStreamReader DRL_input_reader;
+    private BufferedReader bufferedReader;
+    private OutputStream DRL_output;
+    private PrintWriter printWriter;
+    private String DRL_IP="127.0.0.1";
+    private int DRL_PORT=11000;
+    private boolean DRL_TRAIN_COMPLETE=false;
+    private int DEVICEID_LENGTH=0;
     @Activate
     public void activate() {
         applicationId = coreService.registerApplication("org.onosproject.domain.system");
@@ -153,6 +180,9 @@ public class HCPDomainRoutingManager {
         }
         TableIDMap.clear();
         ipaddressPathMap.clear();
+        topologyEdgeHashMap.clear();
+        topologyVertexList.clear();
+        src_dst_Link.clear();
         if (!flag) {
             return;
         }
@@ -170,6 +200,48 @@ public class HCPDomainRoutingManager {
         hcpfactory = HCPFactories.getFactory(hcpVersion);
         domainController.addMessageListener(hcpSuperMessageListener);
         packetService.addProcessor(packetProcessor, PacketProcessor.director(4));
+        if (drl_flag){
+            try {
+                Thread.sleep(10000);
+                Topology topology = topologyService.currentTopology();
+                defaultTopology = (DefaultTopology) topology;
+                int min=9999;
+                topologyVertexList=new ArrayList<>(defaultTopology.getGraph().getVertexes());
+//                log.info("=======before=====topologyVertexList===={}",topologyVertexList.toString());
+                topologyVertexList.sort((p1,p2)->Integer.parseInt(p1.deviceId().toString().split(":")[1],16)>
+                        Integer.parseInt(p2.deviceId().toString().split(":")[1],16)?1:Integer.parseInt(p1.deviceId().toString().split(":")[1],16)<
+                        Integer.parseInt(p2.deviceId().toString().split(":")[1],16)?-1:0);
+//                log.info("=======after=====topologyVertexList===={}",topologyVertexList.toString());
+                for (TopologyVertex topologyVertex:topologyVertexList){
+                    int device_Id=Integer.parseInt(topologyVertex.toString().split(":")[1],16);
+                    if (min>device_Id){
+                        min=device_Id;
+                    }
+                    List<TopologyEdge> topologyEdgeList=new ArrayList<>(defaultTopology.getGraph().getEdgesFrom(topologyVertex));
+                    topologyEdgeHashMap.put(topologyVertex,topologyEdgeList);
+                }
+                DEVICEID_LENGTH=min-1;
+                for (Link link:LinkServie.getActiveLinks()) {
+                    DeviceId srcDevice=link.src().deviceId();
+                    DeviceId dstDevice=link.dst().deviceId();
+                    StringBuffer stringBuffer=new StringBuffer();
+                    stringBuffer.append(Integer.parseInt(srcDevice.toString().split(":")[1],16)-DEVICEID_LENGTH);
+                    stringBuffer.append(",");
+                    stringBuffer.append(Integer.parseInt(dstDevice.toString().split(":")[1],16)-DEVICEID_LENGTH);
+                    src_dst_Link.put(stringBuffer.toString(),link);
+                }
+                DRL_Socket=new Socket(DRL_IP,DRL_PORT);
+                DRL_input=DRL_Socket.getInputStream();
+                DRL_input_reader=new InputStreamReader(DRL_input);
+                bufferedReader=new BufferedReader(DRL_input_reader);
+                DRL_output=DRL_Socket.getOutputStream();
+                printWriter=new PrintWriter(DRL_output);
+                new Thread(new drl_start()).start();
+            }catch (Exception e){
+                log.debug("=============hcpdomainRoutingManager debug={}",e.getMessage());
+            }
+
+        }
     }
 
     public void init() {
@@ -179,10 +251,73 @@ public class HCPDomainRoutingManager {
             DeviceId deviceId = device.id();
             int tableId = sendPofFlowTables(deviceId, "FirstEntryTable");
             TableIDMap.put(deviceId, tableId);
-
         }
     }
+    class drl_start implements Runnable{
 
+        @Override
+        public void run() {
+            boolean flag=true;
+            try{
+                if (flag){
+                    StringBuffer stringBuffer=new StringBuffer();
+                    stringBuffer.append("1\n");
+//                    for (TopologyVertex topologyVertex: topologyVertexList) {
+//                        stringBuffer.append(Integer.parseInt(topologyVertex.toString().split(":")[1],16));
+//                        for (TopologyEdge topologyEdge:topologyEdgeHashMap.get(topologyVertex)) {
+//                            stringBuffer.append(",");
+//                            stringBuffer.append(Integer.parseInt(topologyEdge.dst().toString().split(":")[1],16)-DEVICEID_LENGTH);
+//                        }
+//                        stringBuffer.append(":"+"10"+"\n");
+//                    }
+                    flag=false;
+//                    stringBuffer.deleteCharAt(stringBuffer.length()-1);
+                    log.info("==========drl message stringbuffer====={}",stringBuffer.toString());
+                    printWriter.print(stringBuffer.toString());
+                    printWriter.flush();
+                }
+                String receve=bufferedReader.readLine();
+                if (receve.equals("2")){
+                    StringBuffer stringBuffer1=new StringBuffer();
+                    stringBuffer1.append("3\n");
+                    for (int i = 0; i < defaultTopology.linkCount()-1; i++) {
+                        stringBuffer1.append("10,");
+                    }
+                    stringBuffer1.append("10:");
+                    stringBuffer1.append(9);
+                    stringBuffer1.append(",");
+                    stringBuffer1.append(12);
+                    stringBuffer1.append(",5");
+                    printWriter.println(stringBuffer1.toString());
+                    printWriter.flush();
+                    log.info("==========drl message stringbuffer====={}",stringBuffer1.toString());
+                    String message=bufferedReader.readLine();
+                    log.info("=======messsage={}======DRL have been to Train================",message);
+                    Thread.sleep(5000);
+
+                    StringBuffer stringBuffer2=new StringBuffer();
+                    stringBuffer2.append("3\n");
+                    for (int i = 0; i < defaultTopology.linkCount()-1; i++) {
+                        stringBuffer2.append("10,");
+                    }
+                    stringBuffer2.append("10:");
+                    stringBuffer2.append(9);
+                    stringBuffer2.append(",");
+                    stringBuffer2.append(12);
+                    stringBuffer2.append(",5");
+                    log.info("==========send========current time=={}=",System.currentTimeMillis());
+                    printWriter.println(stringBuffer2.toString());
+                    printWriter.flush();
+                    String message1=bufferedReader.readLine();
+                    log.info("==========result========current time=={}=",System.currentTimeMillis());
+                    log.info("====result===messsage={}=====================",message1);
+                    DRL_TRAIN_COMPLETE=true;
+                }
+            }catch (Exception e){
+                log.debug("=============drl start debug={}",e.getMessage());
+            }
+        }
+    }
     public void reMoveFlowTable(DeviceId deviceId, int tableId) {
         flowRuleService.removeFlowRulesById(applicationId);
         log.info("++++ before removeFlowTablesByTableId: {}", tableId);
@@ -237,7 +372,7 @@ public class HCPDomainRoutingManager {
         OFAction action_output = DefaultPofActions.output((short) 0, (short) 0, (short) 0, port).action();
         actions.add(action_output);
         trafficTreatMent.add(DefaultPofInstructions.applyActions(actions));
-        log.info("deviceId:{},IpAddress:{},action_out:{}",deviceId,dstIp, action_output);
+//        log.info("deviceId:{},IpAddress:{},action_out:{}",deviceId,dstIp, action_output);
 
         long newFlowEntryId = flowTableStore.getNewFlowEntryId(deviceId, tableId);
         FlowRule.Builder flowRule = DefaultFlowRule.builder()
@@ -310,21 +445,41 @@ public class HCPDomainRoutingManager {
         String dstIp = IpAddressToHexString(dstAddress).toString();
         if (srcDeviceId.equals(dstDeviceId)) {
             int tableId = TableIDMap.get(srcDeviceId);
-            installFlowRule(srcDeviceId, tableId, dstIp, (int) dstHost.location().port().toLong(), 1);
+            installFlowRule(srcDeviceId, tableId, dstIp, (int) dstHost.location().port().toLong(), 10);
             installFlowRule(srcDeviceId,tableId,srcIP,(int)srcHost.location().port().toLong(),10);
             return;
         }
-//        log.info("===========srcDeviceiD:{},dstDeviceId:{}",srcDeviceId,dstDeviceId);
-        Topology topology = topologyService.currentTopology();
-        DefaultTopology defaultTopology = (DefaultTopology) topology;
-//        log.info("==================Topology:{}{}",topology.linkCount(),topology.deviceCount());
-        Set<Path> paths = defaultTopology.getPaths(srcDeviceId, dstDeviceId,BANDWIDTH_WEIGHT);
-//        log.info("===============paths:{}",paths.toString());
-        if (paths==null){
-            paths=defaultTopology.getPaths(srcDeviceId,dstDeviceId);
-        }
-        Path path = (Path) paths.toArray()[0];
+        Path path=null;
+        //  qi fa shi suan fa dedao de jiguo
+        if (!drl_flag){
+            log.info("===========srcDeviceiD:{},dstDeviceId:{}",srcDeviceId,dstDeviceId);
 
+            Topology topology = topologyService.currentTopology();
+            DefaultTopology defaultTopology = (DefaultTopology) topology;
+//        log.info("==================Topology:{}{}",topology.linkCount(),topology.deviceCount());
+            Set<Path> paths = defaultTopology.getPaths(srcDeviceId, dstDeviceId,BANDWIDTH_WEIGHT);
+//        log.info("===============paths:{}",paths.toString());
+            if (paths==null){
+                paths=defaultTopology.getPaths(srcDeviceId,dstDeviceId);
+            }
+            path= (Path) paths.toArray()[0];
+        }
+        else{
+           path=getDRLPath(srcDeviceId,dstDeviceId,srcIP,dstIp);
+           if (path==null){
+               Topology topology = topologyService.currentTopology();
+               DefaultTopology defaultTopology = (DefaultTopology) topology;
+//        log.info("==================Topology:{}{}",topology.linkCount(),topology.deviceCount());
+               Set<Path> paths = defaultTopology.getPaths(srcDeviceId, dstDeviceId,BANDWIDTH_WEIGHT);
+//        log.info("===============paths:{}",paths.toString());
+               if (paths==null){
+                   paths=defaultTopology.getPaths(srcDeviceId,dstDeviceId);
+               }
+               path= (Path) paths.toArray()[0];
+           }
+        }
+
+        // install the rule for the deviceId
         log.info("===========path========={}=======",path.toString());
         for (Link link : path.links()) {
 //            log.info("==============link:{}=============",link.toString());
@@ -341,6 +496,66 @@ public class HCPDomainRoutingManager {
         installFlowRule(srcDeviceId,tableId2,srcIP,(int)srcHost.location().port().toLong(),10);
     }
 
+    /**
+     * get the path through the drl model
+     * @param srcDevice srchost devices
+     * @param dstDevice dsthost devices
+     * @param srcIp request srcIp
+     * @param dstIp request dstIp
+     * @return path
+     */
+    private Path getDRLPath(DeviceId srcDevice,DeviceId dstDevice,String srcIp,String dstIp){
+        List<Link> links=new ArrayList<>();
+        StringBuffer stringBuffer=new StringBuffer();
+        stringBuffer.append("3\n");
+        for (int i = 0; i < defaultTopology.linkCount()-1; i++) {
+            stringBuffer.append("10,");
+        }
+        stringBuffer.append("10:");
+        stringBuffer.append(Integer.parseInt(srcDevice.toString().split(":")[1],16)-DEVICEID_LENGTH);
+        stringBuffer.append(",");
+        stringBuffer.append(Integer.parseInt(dstDevice.toString().split(":")[1],16)-DEVICEID_LENGTH);
+        stringBuffer.append(",5");
+//        log.info("request information:srcAddress={},dstAddress={},src_device={},dst_device={},message={}",
+//                srcIp,dstIp,srcDevice.toString(),dstDevice.toString(),stringBuffer.toString());
+        try {
+//            log.info("==========================before==time===DRL request===={}===",System.currentTimeMillis());
+            printWriter.println(stringBuffer.toString());
+            printWriter.flush();
+            String message=bufferedReader.readLine();
+//            log.info("==========================before==time===DRL request===={}===",System.currentTimeMillis());
+            if (message.equals("False")){
+                return null;
+            }
+//            log.info("===========DRL message={}======",message);
+            String mess[]=message.split(",");
+            for (int i = 0; i <mess.length-1 ; i++) {
+                String temp=mess[i]+","+mess[i+1];
+                links.add(src_dst_Link.get(temp));
+            }
+//            if(mess[0].equals("5")){
+//                return null;
+//            }
+//            String deci[]=mess[1].split(",");
+//            DeviceId [] deviceIds=new DeviceId[deci.length];
+//            for(int i=0;i<mess.length;i++){
+//                deviceIds[i]=DeviceId.deviceId("pof:"+String.format("%016x",deci[i]));
+//            }
+//            for(int i=0;i<deviceIds.length-1;i++){
+//                Set<Link> linkSet=LinkServie.getDeviceLinks(deviceIds[i]);
+//                for (Link link:linkSet){
+//                    if (link.dst().deviceId()==deviceIds[i+1]){
+//                        links.add(link);
+//                        break;
+//                    }
+//                }
+//            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new DefaultPath(RouteproviderId,links,new ScalarWeight(1));
+    }
     /***
      * process the packetOut from the SuperController.
      * @param portNumber
@@ -408,17 +623,25 @@ public class HCPDomainRoutingManager {
     }
     private void processFlowForwardingReply(IPv4Address srcIpv4address,IPv4Address dstIpv4Address,
                                             HCPVport srcVport,HCPVport dstVPort,short type,byte qos){
+//        log.info("============================process Flow_Reply=======srcVport={}==dstVport={}============",srcVport.toString(),dstVPort.toString());
         IpAddress srcAddress= IpAddress.valueOf(srcIpv4address.toString());
         IpAddress dstAddress= IpAddress.valueOf(dstIpv4Address.toString());
         String srcIp=IpAddressToHexString(srcAddress).toString();
         String dstIp=IpAddressToHexString(dstAddress).toString();
         if (srcVport.equals(HCPVport.IN_PORT)){
-            log.info("============in the in port here");
+//            log.info("============in the in port here");
             ConnectPoint connectPoint=hcpDomainTopoServie.getLocationByVport(PortNumber.portNumber(dstVPort.getPortNumber()));
             Set<Host> hostSet=hostService.getHostsByIp(dstAddress);
             Host dstHost=(Host)hostSet.toArray()[0];
-            Path path=getvportPath(dstAddress,dstVPort);
-            log.info("=====================path========={}",path.toString());
+            Path path=null;
+            if (!drl_flag){
+               path=getvportPath(dstAddress,dstVPort);
+            }
+            else{
+                path=getDRLPath(connectPoint.deviceId(),dstHost.location().deviceId(),srcIp,dstIp);
+            }
+//            log.info("=====================path========={}",path.toString());
+
             if (path==null){
                 int tableId=TableIDMap.get(dstHost.location().deviceId());
                 installFlowRule(dstHost.location().deviceId(),tableId,dstIp,(int)dstHost.location().port().toLong(),10);
@@ -426,28 +649,35 @@ public class HCPDomainRoutingManager {
                 return ;
             }
             for (Link link:path.links()){
-                if (link.src().deviceId().equals(dstHost.location().deviceId())){
+                if (link.src().deviceId().equals(connectPoint.deviceId())){
                     int TableId=TableIDMap.get(link.src().deviceId());
-//                    installFlowRule(link.src().deviceId(),TableId,srcIp,(int)link.src().port().toLong(),10);
-                    installFlowRule(link.src().deviceId(),TableId,dstIp,(int)dstHost.location().port().toLong(),10);
-                }
-                if (link.dst().deviceId().equals(connectPoint.deviceId())){
-                    int TableId=TableIDMap.get(link.dst().deviceId());
-                    installFlowRule(link.dst().deviceId(),TableId,srcIp,(int)connectPoint.port().toLong(),10);
+                    installFlowRule(link.src().deviceId(),TableId,srcIp,(int)connectPoint.port().toLong(),10);
 //                    installFlowRule(link.dst().deviceId(),TableId,dstIp,(int)link.dst().port().toLong(),10);
                 }
+                if (link.dst().deviceId().equals(dstHost.location().deviceId())) {
+                    int TableId = TableIDMap.get(link.dst().deviceId());
+//                    installFlowRule(link.src().deviceId(),TableId,srcIp,(int)link.src().port().toLong(),10);
+                    installFlowRule(link.dst().deviceId(), TableId, dstIp, (int) dstHost.location().port().toLong(), 10);
+                }
                 int srctableId=TableIDMap.get(link.src().deviceId());
-                installFlowRule(link.src().deviceId(),srctableId,srcIp,(int)link.src().port().toLong(),10);
+                installFlowRule(link.src().deviceId(),srctableId,dstIp,(int)link.src().port().toLong(),10);
                 int dsttableId=TableIDMap.get(link.dst().deviceId());
-                installFlowRule(link.dst().deviceId(),dsttableId,dstIp,(int)link.dst().port().toLong(),10);
+                installFlowRule(link.dst().deviceId(),dsttableId,srcIp,(int)link.dst().port().toLong(),10);
             }
+            log.info("=====================path========={}",path.toString());
         }else if(srcVport.equals(HCPVport.OUT_PORT)){
-            log.info("=================in the out port here");
+//            log.info("=================in the out port here");
             ConnectPoint connectPoint=hcpDomainTopoServie.getLocationByVport(PortNumber.portNumber(dstVPort.getPortNumber()));
             Set<Host> hostsSet=hostService.getHostsByIp(srcAddress);
             Host srcHost=(Host)hostsSet.toArray()[0];
-            Path path=getvportPath(srcAddress,dstVPort);
-            log.info("=====================path========={}",path.toString());
+            Path path=null;
+            if (!drl_flag){
+                path=getvportPath(srcAddress,dstVPort);
+            }else{
+                path=getDRLPath(srcHost.location().deviceId(),connectPoint.deviceId(),srcIp,dstIp);
+            }
+
+//            log.info("=====================path========={}",path.toString());
             if (path==null){
                 int tableId=TableIDMap.get(srcHost.location().deviceId());
                 installFlowRule(srcHost.location().deviceId(),tableId,dstIp,(int)connectPoint.port().toLong(),10);
@@ -468,11 +698,17 @@ public class HCPDomainRoutingManager {
                 int dstTableId=TableIDMap.get(link.dst().deviceId());
                 installFlowRule(link.dst().deviceId(),dstTableId,srcIp,(int)link.dst().port().toLong(),10);
             }
+            log.info("=====================path========={}",path.toString());
         }else{
-            log.info("=================in the middle doamin here");
+//            log.info("=================in the middle doamin here");
             ConnectPoint srcConnectPoint=hcpDomainTopoServie.getLocationByVport(PortNumber.portNumber(srcVport.getPortNumber()));
             ConnectPoint dstConnectPoint=hcpDomainTopoServie.getLocationByVport(PortNumber.portNumber(dstVPort.getPortNumber()));
-            Path path=hcpDomainTopoServie.getVportToVportPath(srcVport,dstVPort);
+            Path path=null;
+            if(!drl_flag){
+                path=hcpDomainTopoServie.getVportToVportPath(srcVport,dstVPort);
+            }else{
+                path=getDRLPath(srcConnectPoint.deviceId(),dstConnectPoint.deviceId(),srcIp,dstIp);
+            }
             if (path==null){
                 int tableId=TableIDMap.get(srcConnectPoint.deviceId());
                 installFlowRule(srcConnectPoint.deviceId(),tableId,dstIp,(int)dstConnectPoint.port().toLong(),10);
@@ -493,6 +729,7 @@ public class HCPDomainRoutingManager {
                 int dstTableId=TableIDMap.get(link.dst().deviceId());
                 installFlowRule(link.dst().deviceId(),dstTableId,srcIp,(int)link.dst().port().toLong(),10);
             }
+            log.info("=====================path========={}",path.toString());
         }
     }
     private void sendResourceFlowToSuper(IPv4Address dstIp,List<HCPVportHop> list){
@@ -506,7 +743,7 @@ public class HCPDomainRoutingManager {
                 .setSbpXid(1)
                 .setSbpCmpData(hcpResourceReply)
                 .build();
-        log.info("==========hcpResourceReply======{}======",hcpResourceReply.toString());
+//        log.info("==========hcpResourceReply======{}======",hcpResourceReply.toString());
         domainController.write(hcpSbp);
     }
 
@@ -552,10 +789,10 @@ public class HCPDomainRoutingManager {
                 pathmap.put(vport,path);
             }
         }
-        log.info("==========IddressPathMap======={}",ipaddressPathMap.toString());
+//        log.info("==========IddressPathMap======={}",ipaddressPathMap.toString());
         HCPForwardingRequest hcpForwardingRequest= HCPForwardingRequestVer10.of(src,dst,(int )connectPoint.port().toLong()
                                                     ,Ethernet.TYPE_IPV4,(byte)3,vportHops);
-        log.info("======================hcpForwardingRequest============={}",hcpForwardingRequest.toString());
+//        log.info("======================hcpForwardingRequest============={}",hcpForwardingRequest.toString());
         Set<HCPSbpFlags> flagsSet = new HashSet<>();
         flagsSet.add(HCPSbpFlags.DATA_EXITS);
         HCPSbp hcpSbp=hcpfactory.buildSbp()
@@ -608,13 +845,14 @@ public class HCPDomainRoutingManager {
             Set<Host> srchost = hostService.getHostsByIp(srcAddress);
             if (dsthost != null && dsthost.size() > 0) {
                 if (ethernet.getEtherType() == Ethernet.TYPE_IPV4) {
-                    processIpv4InDomain((Host)srchost .toArray()[0], (Host) dsthost.toArray()[0], srcAddress,targetAddress);
+                    processIpv4InDomain((Host)srchost.toArray()[0], (Host) dsthost.toArray()[0], srcAddress,targetAddress);
                 }
+                packetContext.block();
                 return;
             }
             //构建packetIn数据包发送给上层控制器
             if (ethernet.getEtherType() == Ethernet.TYPE_ARP) {
-                log.info("========arp=====",(ARP)ethernet.getPayload());
+//                log.info("========arp=====",(ARP)ethernet.getPayload());
                 byte[] frames = ethernet.serialize();
                 HCPPacketIn hcpPacketIn = HCPPacketInVer10.of((int) domainTopoService.getLogicalVportNumber(connectPoint).toLong(), frames);
                 Set<HCPSbpFlags> flagsSet = new HashSet<>();
@@ -650,12 +888,12 @@ public class HCPDomainRoutingManager {
                     HCPPacketOut hcpPacketOut = (HCPPacketOut) hcpSbp.getSbpCmpData();
                     PortNumber portNumber = PortNumber.portNumber(hcpPacketOut.getOutPort());
                     Ethernet ethernet = domainController.parseEthernet(hcpPacketOut.getData());
-                    log.info("==========PACKET_OUT======{}===", (ARP) ethernet.getPayload());
+//                    log.info("==========PACKET_OUT======{}===", (ARP) ethernet.getPayload());
                     processPacketOut(portNumber, ethernet);
                     break;
                 case RESOURCE_REQUEST:
                     HCPResourceRequest hcpResourceRequest=(HCPResourceRequest)hcpSbp.getSbpCmpData();
-                    log.info("==================HCPResourceRequest==============");
+//                    log.info("==================HCPResourceRequest==============");
                     IPv4Address srcIpv4Address=hcpResourceRequest.getSrcIpAddress();
                     IPv4Address dstIpv4Address=hcpResourceRequest.getDstIpAddress();
                     Set<HCPConfigFlags> flagsSet=hcpResourceRequest.getFlags();
@@ -773,17 +1011,48 @@ public class HCPDomainRoutingManager {
 //
         }
     }
+    private class InternalHostListener implements HostListener{
+
+        @Override
+        public void event(HostEvent hostEvent) {
+            Host updatedHost = null;
+            Host removedHost = null;
+            List<HCPHost> hcpHosts = new ArrayList<>();
+            switch (hostEvent.type()) {
+                case HOST_ADDED:
+                    updatedHost = hostEvent.subject();
+                    break;
+                case HOST_REMOVED:
+                    removedHost = hostEvent.subject();
+                    break;
+                case HOST_UPDATED:
+                    updatedHost = hostEvent.subject();
+                    removedHost = hostEvent.prevSubject();
+                    break;
+                default:
+            }
+            if (null!=updatedHost){
+                IpAddress ipAddress=(IpAddress) updatedHost.ipAddresses().toArray()[0];
+                IPv4Address hostIpaddress= IPv4Address.of(ipAddress.toOctets());
+                Set<HCPConfigFlags> flags=new HashSet<>();
+                flags.add(HCPConfigFlags.CAPABILITIES_HOP);
+                processResourceRequest(hostIpaddress,flags);
+            }
+
+        }
+    }
     class graphBanwidthWeigth extends DefaultEdgeWeigher<TopologyVertex,TopologyEdge> implements LinkWeigher {
 
         @Override
         public Weight weight(TopologyEdge topologyEdge) {
-            if (hcpDomainTopoServie.getResetVportCapability(topologyEdge.link().dst())<hcpDomainTopoServie.getVportMaxCapability(topologyEdge.link().dst())*0.2){
-                return ScalarWeight.NON_VIABLE_WEIGHT;
-            }
-            else{
-                return new ScalarWeight(1);
-            }
-//            return new ScalarWeight(portBandwidth.get(topologyEdge.link().dst()));
+//            if (hcpDomainTopoServie.getResetVportCapability(topologyEdge.link().dst())<hcpDomainTopoServie.getVportMaxCapability(topologyEdge.link().dst())*0.2){
+//                return ScalarWeight.NON_VIABLE_WEIGHT;
+//            }
+//            else{
+//                return new ScalarWeight(1);
+//            }
+            return new ScalarWeight(1);
+//
         }
 
     }

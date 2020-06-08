@@ -107,7 +107,7 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
 
 
     private String allportName=null;
-    private double MAX_BANDWIDTH;
+    private double MAX_BANDWIDTH=10;
     private double BANDWIDTH_THRESHOLD;
     private ScheduledExecutorService executor;
 
@@ -116,6 +116,7 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
     private boolean flag = false;
     private LinkWeigher BANDWIDTH_WEIGHT=new graphBanwidthWeigth();
     private Socket socket=null;
+    private int UpdateTopologyTimes=0;
     @Activate
     public void activate() {
         domainController.addHCPSuperControllerListener(hcpSuperControllerListener);
@@ -140,12 +141,12 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         vportToVportpath.clear();
         devicePortName.clear();
         portBandwidth.clear();
-        try {
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        log.info("==============Domain Topology Manager Stopped===================");
+//        try {
+//            socket.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        log.info("==============Domain Topology Manager Stopped===================");
 
     }
 
@@ -157,13 +158,13 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         domainController.addMessageListener(hcpSuperMessageListener);
         linkService.addListener(linkListener);
         packetService.addProcessor(hcplldpPacketProcesser, PacketProcessor.director(0));
-        storeDeviceIdPortName();
-        log.info("devicePortName=========={}",devicePortName.toString());
-        allportName=getAllportName();
+//        storeDeviceIdPortName();
+//        log.info("devicePortName=========={}",devicePortName.toString());
+//        allportName=getAllportName();
         executor = newSingleThreadScheduledExecutor(groupedThreads("hcp/topologyupdate", "hcp-topologyupdate-%d", log));
         executor.scheduleAtFixedRate(new TopoUpdateTask(),
                 domainController.getPeriod(), domainController.getPeriod(), SECONDS);
-        connectSocketGetBanwidth();
+//        connectSocketGetBanwidth();
     }
 
     private void storeDeviceIdPortName(){
@@ -336,6 +337,11 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
         return getVportMaxCapability(connectPoint)-getVportLoadCapability(connectPoint);
     }
 
+    @Override
+    public Map<ConnectPoint, PortNumber> getAllVport() {
+        return vportMap;
+    }
+
 
     class graphBanwidthWeigth extends DefaultEdgeWeigher<TopologyVertex,TopologyEdge> implements LinkWeigher {
 
@@ -459,8 +465,9 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
             srcVportMap=new HashMap<>();
             vportToVportpath.put(srcVPort,srcVportMap);
         }
-
-        Set<Path> paths=pathService.getPaths(src,dst,BANDWIDTH_WEIGHT);
+        Set<Path> paths=pathService.getPaths(src,dst);
+        //compute the path based the bandwidth
+//        Set<Path> paths=pathService.getPaths(src,dst,BANDWIDTH_WEIGHT);
         if (paths==null){
             HCPInternalLink hcpInternalLink=HCPInternalLink.of(srcVPort,dstVport,0,1000);
             return hcpInternalLink;
@@ -502,11 +509,15 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
     private void UpdateTopology() {
         List<HCPInternalLink> internalLinks = new ArrayList<>();
         Set<PortNumber> alreadhandle = new HashSet<>();
+        if (vportMap.keySet().isEmpty()){
+            return ;
+        }
         for (ConnectPoint srcConnection : vportMap.keySet()) {
             PortNumber srcVport = vportMap.get(srcConnection);
             HCPVport srcHCPVPort = HCPVport.ofShort((short) srcVport.toLong());
             long srcVPortMaxCapability = getVportMaxCapability(srcConnection);
-            long srcVportLoadCapability = getVportLoadCapability(srcConnection);
+//            long srcVportLoadCapability = getVportLoadCapability(srcConnection);
+            long srcVportLoadCapability =0;
             for (ConnectPoint dstConnection : vportMap.keySet()) {
                 PortNumber dstVPort = vportMap.get(dstConnection);
                 HCPVport dstHCPVPort = HCPVport.ofShort((short) dstVPort.toLong());
@@ -667,14 +678,14 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
             // update vport
             UpdateVportsToSuper();
             // update intra_links
-            StringBuffer StringBuffer=new StringBuffer();
-            for (ConnectPoint connectPoint:portBandwidth.keySet()){
-                if(portBandwidth.get(connectPoint)!=0.0){
-                    StringBuffer.append(connectPoint+"=");
-                    StringBuffer.append(portBandwidth.get(connectPoint)+",");
-                }
-            }
-            log.info("=====max_bandwidth={}======portBandwidth======{}",MAX_BANDWIDTH,StringBuffer.toString());
+//            StringBuffer StringBuffer=new StringBuffer();
+//            for (ConnectPoint connectPoint:portBandwidth.keySet()){
+//                if(portBandwidth.get(connectPoint)!=0.0){
+//                    StringBuffer.append(connectPoint+"=");
+//                    StringBuffer.append(portBandwidth.get(connectPoint)+",");
+//                }
+//            }
+//            log.info("=====max_bandwidth={}======portBandwidth======{}",MAX_BANDWIDTH,StringBuffer.toString());
             UpdateTopology();
         }
     }

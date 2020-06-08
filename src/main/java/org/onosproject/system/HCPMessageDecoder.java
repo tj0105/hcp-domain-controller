@@ -24,7 +24,7 @@ public class HCPMessageDecoder extends FrameDecoder {
         if (!channel.isConnected()){
             return null;
         }
-        log.info("====================channelBuffer======{}====",channelBuffer.toString());
+//        log.info("====================channelBuffer======{}====",channelBuffer.toString());
         HCPMessageReader<HCPMessage> reader= HCPFactories.getGenericReader();
         if (channelBuffer instanceof CompositeChannelBuffer){
             channelBuffer.readByte();

@@ -22,6 +22,9 @@
         <command>
             <action class="org.onosproject.command.SuperHostList"/>
         </command>
+        <command>
+            <action class="org.onosproject.command.DomainVportListCommand"/>
+        </command>
     </command-bundle>
 
 </blueprint>

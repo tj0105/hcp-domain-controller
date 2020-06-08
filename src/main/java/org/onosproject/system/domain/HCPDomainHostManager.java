@@ -140,7 +140,7 @@ public class HCPDomainHostManager {
         public void event(HostEvent event) {
             Host updatedHost = null;
             Host removedHost = null;
-            List<HCPHost> oxpHosts = new ArrayList<>();
+            List<HCPHost> hcpHosts = new ArrayList<>();
             switch (event.type()) {
                 case HOST_ADDED:
                     updatedHost = event.subject();
@@ -155,12 +155,13 @@ public class HCPDomainHostManager {
                 default:
             }
             if (null != removedHost) {
-                oxpHosts.addAll(toHCPHosts(removedHost,HCPHostState.INACTIVE));
+                hcpHosts.addAll(toHCPHosts(removedHost,HCPHostState.INACTIVE));
             }
             if (null != updatedHost) {
-                oxpHosts.addAll(toHCPHosts(updatedHost,HCPHostState.ACTIVE));
+                hcpHosts.addAll(toHCPHosts(updatedHost,HCPHostState.ACTIVE));
             }
-            sendHostChangeMessage(oxpHosts,null);
+//            log.info("=============hcpHost======{}",hcpHosts.toString());
+            sendHostChangeMessage(hcpHosts,null);
         }
     }
 

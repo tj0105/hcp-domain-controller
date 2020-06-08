@@ -58,7 +58,7 @@ public class HCPDomainControllerImp implements HCPDomainController{
   public void activate(){
       this.setHCPVersion(HCPVersion.HCP_10);
       this.setDomainId(DomainId.of(1111));
-      this.setHCPSuperIp("192.168.109.112");
+      this.setHCPSuperIp("192.168.109.224");
       this.setHCPSuperPort(8899);
       this.setHCPSbpType(HCPSbpType.POF);
       this.setHCPSbpVersion((HCPSbpVersion.of((byte)4,HCPVersion.HCP_10)));

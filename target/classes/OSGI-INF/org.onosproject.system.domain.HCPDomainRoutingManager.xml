@@ -18,4 +18,5 @@
     <reference name="topologyService" interface="org.onosproject.net.topology.TopologyService" cardinality="1..1" policy="static" bind="bindTopologyService" unbind="unbindTopologyService"/>
     <reference name="flowTableStore" interface="org.onosproject.net.table.FlowTableStore" cardinality="1..1" policy="static" bind="bindFlowTableStore" unbind="unbindFlowTableStore"/>
     <reference name="hcpDomainTopoServie" interface="org.onosproject.api.domain.HCPDomainTopoService" cardinality="1..1" policy="static" bind="bindHcpDomainTopoServie" unbind="unbindHcpDomainTopoServie"/>
+    <reference name="LinkServie" interface="org.onosproject.net.link.LinkService" cardinality="1..1" policy="static" bind="bindLinkServie" unbind="unbindLinkServie"/>
 </scr:component>

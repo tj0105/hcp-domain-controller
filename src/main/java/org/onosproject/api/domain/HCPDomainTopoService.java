@@ -5,6 +5,8 @@ import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.Path;
 import org.onosproject.net.PortNumber;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -28,4 +30,6 @@ public interface HCPDomainTopoService {
     long getVportLoadCapability(ConnectPoint connectPoint);
 
     long getResetVportCapability(ConnectPoint connectPoint);
+
+    Map<ConnectPoint,PortNumber> getAllVport();
 }

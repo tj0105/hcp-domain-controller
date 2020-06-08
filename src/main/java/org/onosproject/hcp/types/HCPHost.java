@@ -94,4 +94,13 @@ public class HCPHost implements Writeable,PrimitiveSinkable {
             return false;
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "HCPHost{" +
+                "iPv4Address=" + iPv4Address +
+                ", macAddress=" + macAddress +
+                ", hostState=" + hostState +
+                '}';
+    }
 }
