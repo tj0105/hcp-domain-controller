@@ -21,7 +21,7 @@ public class HCPHelloVer10 implements HCPHello {
 
     //version
     public final static byte WIRE_VERSION=1;
-    public final static int LENGTH=8;
+    public final static int LENGTH=31;
 
     private static final long DEFAULT_XID=0x0L;
 
@@ -77,7 +77,9 @@ public class HCPHelloVer10 implements HCPHello {
             if (logger.isTraceEnabled()){
                 logger.trace("readFrom-length={}",length);
             }
+            bb.skipBytes(23);
             long xid= U32.f(bb.readInt());
+
 
             HCPHelloVer10 hcpHelloVer10=new HCPHelloVer10(xid);
             if (logger.isTraceEnabled()) {
@@ -99,7 +101,12 @@ public class HCPHelloVer10 implements HCPHello {
             //length
             bb.writeShort(LENGTH);
             //xid
+            bb.writeZero(23);
             bb.writeInt(U32.t(message.xid));
+
+            //skip to 31
+
+
         }
     }
     @Override

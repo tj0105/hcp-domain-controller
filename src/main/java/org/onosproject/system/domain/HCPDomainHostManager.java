@@ -53,7 +53,7 @@ public class HCPDomainHostManager {
 
     @Activate
     public void activate() {
-        domainController.addHCPSuperControllerListener(hcpSuperControllerListener);
+//        domainController.addHCPSuperControllerListener(hcpSuperControllerListener);
         log.info("============Domain HostManager started===========");
 
     }
@@ -61,15 +61,15 @@ public class HCPDomainHostManager {
 
     @Deactivate
     public void deactivate(){
-        domainController.removeHCPSuperControllerListener(hcpSuperControllerListener);
-        if (!flag){
-            return ;
-        }
-        if (executorService!=null){
-            executorService.shutdown();
-        }
-        domainController.removeMessageListener(hcpSuperMessageListener);
-        hostService.removeListener(hostListener);
+//        domainController.removeHCPSuperControllerListener(hcpSuperControllerListener);
+//        if (!flag){
+//            return ;
+//        }
+//        if (executorService!=null){
+//            executorService.shutdown();
+//        }
+//        domainController.removeMessageListener(hcpSuperMessageListener);
+//        hostService.removeListener(hostListener);
         log.info("============Domain HostManager stoped===========");
     }
 

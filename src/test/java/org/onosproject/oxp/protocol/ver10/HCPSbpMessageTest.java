@@ -80,17 +80,17 @@ public class HCPSbpMessageTest {
 
     @Test
     public void SbpForwardRequestTest() throws HCPParseError{
-        IpAddress ipAddress=IpAddress.valueOf("192.168.109.13");
+        IpAddress ipAddress=IpAddress.valueOf("10.0.0.1");
         IPv4Address srcipAddress=IPv4Address.of(ipAddress.toString());
-        IPv4Address dstIpaddress=IPv4Address.of("192.168.109.14");
+        IPv4Address dstIpaddress=IPv4Address.of("10.0.0.2");
         ChannelBuffer buffer=ChannelBuffers.dynamicBuffer();
         List<HCPVportHop> vportHops=new ArrayList<>();
-        HCPVportHop vportHop=HCPVportHop.of(HCPVport.ofShort((short)1),0);
-//        HCPVportHop vportHop2=HCPVportHop.of(HCPVport.ofShort((short)2),6);
-        vportHops.add(vportHop);
+//        HCPVportHop vportHop=HCPVportHop.of(HCPVport.ofShort((short)1),0);
+////        HCPVportHop vportHop2=HCPVportHop.of(HCPVport.ofShort((short)2),6);
+//        vportHops.add(vportHop);
 //        vportHops.add(vportHop2);
         HCPForwardingRequestVer10 forwardingRequestVer10=HCPForwardingRequestVer10
-                .of(srcipAddress,dstIpaddress,10,(short)2,(byte)6,vportHops);
+                .of(srcipAddress,dstIpaddress,1,Ethernet.TYPE_IPV4,(byte)3,vportHops);
         Set<HCPSbpFlags> flagsSet=new HashSet<>();
         flagsSet.add(HCPSbpFlags.DATA_EXITS);
         HCPSbp hcpSbp =getMessageFactry().buildSbp()
@@ -100,7 +100,16 @@ public class HCPSbpMessageTest {
                 .setSbpCmpData(forwardingRequestVer10)
                 .setSbpXid(1)
                 .build();
+        HCPSbp hcpSbp1 =getMessageFactry().buildSbp()
+                .setFlags(flagsSet)
+                .setSbpCmpType(HCPSbpCmpType.FLOW_FORWARDING_REQUEST)
+                .setDataLength((short)forwardingRequestVer10.getData().length)
+                .setSbpCmpData(forwardingRequestVer10)
+                .setSbpXid(1)
+                .build();
+//        hcpSbp1.writeTo(buffer);
         hcpSbp.writeTo(buffer);
+        buffer.markReaderIndex();
         assertThat(hcpSbp, instanceOf(HCPSbpVer10.class));
         HCPMessage message=getMessageReader().readFrom(buffer);
         System.out.println(message.getType());
@@ -165,25 +174,14 @@ public class HCPSbpMessageTest {
     }
     @Test
     public void SbpForwardingReplyTest() throws HCPParseError {
-        ConcurrentHashMap<IpAddress,Map<HCPVport,String>> mapConcurrentHashMap=new ConcurrentHashMap<>();
         ChannelBuffer buffer=ChannelBuffers.dynamicBuffer();
-        IPv4Address srcipAddress=IPv4Address.of("192.168.109.12");
-        IPv4Address dstIpaddress=IPv4Address.of("192.168.109.13");
-        IpAddress srcIp=IpAddress.valueOf(srcipAddress.toString());
-        Map<HCPVport,String> map=mapConcurrentHashMap.get(srcIp);
-        if (map==null){
-            map=new HashMap<>();
-            mapConcurrentHashMap.put(srcIp,map);
-        }
-        map.put(HCPVport.ofShort((short)1),"ssss");
-        map.put(HCPVport.ofShort((short)1),"ssssSSS");
-
-        System.out.println(mapConcurrentHashMap.toString());
+        IPv4Address srcipAddress=IPv4Address.of("10.0.0.1");
+        IPv4Address dstIpaddress=IPv4Address.of("10.0.0.2");
         HCPVport  srcvport=HCPVport.IN_PORT;
 //        System.out.println(srcvport.equals(HCPVport.OUT_PORT));
-        HCPVport  dstpport=HCPVport.ofShort((short)1);
+        HCPVport  dstpport=HCPVport.OUT_PORT;
         HCPForwardingReply forwardingReply=HCPForwardingReplyVer10
-                .of(srcipAddress,dstIpaddress,srcvport,dstpport,Ethernet.TYPE_IPV4,(byte)6);
+                .of(srcipAddress,dstIpaddress,srcvport,dstpport,Ethernet.TYPE_IPV4,(byte)3);
         Set<HCPSbpFlags> flagsSet=new HashSet<>();
         flagsSet.add(HCPSbpFlags.DATA_EXITS);
         HCPSbp hcpSbp =getMessageFactry().buildSbp()
@@ -193,13 +191,29 @@ public class HCPSbpMessageTest {
                 .setSbpCmpData(forwardingReply)
                 .setSbpXid(1)
                 .build();
+        HCPSbp hcpSbp1 =getMessageFactry().buildSbp()
+                .setFlags(flagsSet)
+                .setSbpCmpType(HCPSbpCmpType.FLOW_FORWARDING_REPLY)
+                .setDataLength((short)forwardingReply.getData().length)
+                .setSbpCmpData(forwardingReply)
+                .setSbpXid(1)
+                .build();
         hcpSbp.writeTo(buffer);
+        hcpSbp1.writeTo(buffer);
         assertThat(hcpSbp, instanceOf(HCPSbpVer10.class));
-        HCPMessage message=getMessageReader().readFrom(buffer);
-        System.out.println(message.getType());
-        System.out.println(message.getXid());
-        assertThat(message, instanceOf(hcpSbp.getClass()));
-        HCPSbp messageRev = (HCPSbp) message;
+        List<HCPMessage> messages=new ArrayList<>();
+        while(buffer.readableBytes()>8){
+            HCPMessage message=getMessageReader().readFrom(buffer);
+            if (message==null){
+                break;
+            }
+            messages.add(message);
+//            buffer.readByte();
+        }
+        System.out.println(messages.get(0).getType());
+        System.out.println(messages.get(0).getXid());
+        assertThat(messages.get(0), instanceOf(hcpSbp.getClass()));
+        HCPSbp messageRev = (HCPSbp) messages.get(0);
         System.out.println("messageRev sbpcmptype:"+messageRev.getSbpCmpType());
         System.out.println("messageRev sbpFlags:"+messageRev.getFlags());
         System.out.println("messageRev sbpDataLength:"+messageRev.getDataLength());
@@ -211,15 +225,15 @@ public class HCPSbpMessageTest {
         System.out.println("hcpforwardint reply srcVPort:"+hcpForwardingReply.getSrcVport());
         System.out.println("hcpforwardint reply dstVPort:"+hcpForwardingReply.getDstVport());
         HCPVport dstVport=hcpForwardingReply.getDstVport();
-        System.out.println(HCPVport.ofShort((short)1).equals(dstpport));
-        if (!mapConcurrentHashMap.containsKey(IpAddress.valueOf(hcpForwardingReply.getSrcIpAddress().toString()))){
-            System.out.println("null");
-        }
-        Map<HCPVport,String> stringMap=mapConcurrentHashMap.get(IpAddress.valueOf(hcpForwardingReply.getSrcIpAddress().toString()));
-        if (!stringMap.containsKey(dstVport)){
-            System.out.println("null1");
-        }
-        System.out.println(stringMap.get(hcpForwardingReply.getDstVport()));
+//        System.out.println(HCPVport.ofShort((short)1).equals(dstpport));
+//        if (!mapConcurrentHashMap.containsKey(IpAddress.valueOf(hcpForwardingReply.getSrcIpAddress().toString()))){
+//            System.out.println("null");
+//        }
+//        Map<HCPVport,String> stringMap=mapConcurrentHashMap.get(IpAddress.valueOf(hcpForwardingReply.getSrcIpAddress().toString()));
+//        if (!stringMap.containsKey(dstVport)){
+//            System.out.println("null1");
+//        }
+//        System.out.println(stringMap.get(hcpForwardingReply.getDstVport()));
 
     }
     @Test

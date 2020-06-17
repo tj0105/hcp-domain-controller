@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1591583880708
+Bnd-LastModified: 1591866324283
 Build-Jdk: 1.8.0_131
 Built-By: ldy
 Bundle-Blueprint: OSGI-INF/blueprint/shell-config.xml
@@ -96,5 +96,6 @@ Service-Component: OSGI-INF/org.onosproject.system.domain.HCPDomainRouti
  ngManager.xml,OSGI-INF/org.onosproject.system.domain.HCPDomainControlle
  rImp.xml,OSGI-INF/org.onosproject.system.Super.HCPSuperControllerImpl.x
  ml,OSGI-INF/org.onosproject.system.domain.HCPDomainHostManager.xml,OSGI
- -INF/org.onosproject.system.domain.HCPDomainTopologyManager.xml
+ -INF/org.onosproject.system.domain.HCPDomainCbench.xml,OSGI-INF/org.ono
+ sproject.system.domain.HCPDomainTopologyManager.xml
 Tool: Bnd-3.0.0.201509101326

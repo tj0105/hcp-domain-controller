@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HexTest {
     @Test
     public  void main() {
+        System.out.println(Integer.MAX_VALUE);
 //        byte b=127;
 //        byte c=126;
 //        int a=9;

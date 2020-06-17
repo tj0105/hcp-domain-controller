@@ -165,32 +165,32 @@ public class HCPDomainRoutingManager {
     private int DEVICEID_LENGTH=0;
     @Activate
     public void activate() {
-        applicationId = coreService.registerApplication("org.onosproject.domain.system");
-        domainController.addHCPSuperControllerListener(hcpSuperControllerListener);
-//        pofController.addListener(pofSwitchListener);
-        deviceService.addListener(deviceListener);
-        init();
+//        applicationId = coreService.registerApplication("org.onosproject.domain.system");
+//        domainController.addHCPSuperControllerListener(hcpSuperControllerListener);
+////        pofController.addListener(pofSwitchListener);
+//        deviceService.addListener(deviceListener);
+//        init();
         log.info("=======================HCP Domain Routing Manager================");
     }
 
     @Deactivate
     public void deactivate() {
-        for (DeviceId deviceId : TableIDMap.keySet()) {
-            reMoveFlowTable(deviceId, TableIDMap.get(deviceId));
-        }
-        TableIDMap.clear();
-        ipaddressPathMap.clear();
-        topologyEdgeHashMap.clear();
-        topologyVertexList.clear();
-        src_dst_Link.clear();
-        if (!flag) {
-            return;
-        }
-        deviceService.removeListener(deviceListener);
-//        pofController.removeListener(pofSwitchListener);
-        domainController.removeHCPSuperControllerListener(hcpSuperControllerListener);
-        packetService.removeProcessor(packetProcessor);
-        domainController.removeMessageListener(hcpSuperMessageListener);
+//        for (DeviceId deviceId : TableIDMap.keySet()) {
+//            reMoveFlowTable(deviceId, TableIDMap.get(deviceId));
+//        }
+//        TableIDMap.clear();
+//        ipaddressPathMap.clear();
+//        topologyEdgeHashMap.clear();
+//        topologyVertexList.clear();
+//        src_dst_Link.clear();
+//        if (!flag) {
+//            return;
+//        }
+//        deviceService.removeListener(deviceListener);
+////        pofController.removeListener(pofSwitchListener);
+//        domainController.removeHCPSuperControllerListener(hcpSuperControllerListener);
+//        packetService.removeProcessor(packetProcessor);
+//        domainController.removeMessageListener(hcpSuperMessageListener);
         log.info("=======================HCP Domain Routing Manager Stopped");
     }
 
@@ -926,7 +926,7 @@ public class HCPDomainRoutingManager {
         @Override
         public void connectToSuperController(HCPSuper hcpSuper) {
             log.info("1111111111111111111111111111111111");
-            setUp();
+//            setUp();
         }
 
         @Override

@@ -18,7 +18,7 @@ public class HCPGetConfigRequestVer10 implements HCPGetConfigRequest{
 
     //version
     public final static byte WIRE_VERSION=1;
-    public final static byte LENGTH=8;
+    public final static byte LENGTH=31;
 
     private final static long DEFAULT_XID=0x0L;
 
@@ -57,6 +57,7 @@ public class HCPGetConfigRequestVer10 implements HCPGetConfigRequest{
             //length
             bb.writeShort(LENGTH);
             //xid
+            bb.writeZero(23);
             bb.writeInt(U32.t(message.xid));
         }
     }
@@ -77,6 +78,7 @@ public class HCPGetConfigRequestVer10 implements HCPGetConfigRequest{
                 throw new HCPParseError("Wrong type:Expected=HCPType.HCP_GET_CONFIG_REQUEST(6),got="+type);
             int length=bb.readShort();
             //xid
+            bb.skipBytes(23);
             long xid= U32.f(bb.readInt());
             return new HCPGetConfigRequestVer10(xid);
         }

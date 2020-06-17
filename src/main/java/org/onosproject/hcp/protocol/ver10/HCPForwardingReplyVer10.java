@@ -40,7 +40,7 @@ public class HCPForwardingReplyVer10 implements HCPForwardingReply{
         IPv4Address dstIpAddress=IPv4Address.read4Bytes(bb);
         HCPVport srcVport=HCPVport.readFrom(bb);
         HCPVport dstVport=HCPVport.readFrom(bb);
-        short ethType=bb.readByte();
+        short ethType=bb.readShort();
         byte qos=bb.readByte();
         return of(srcIpAddress,dstIpAddress,srcVport,dstVport,ethType,qos);
     }

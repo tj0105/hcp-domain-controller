@@ -24,7 +24,7 @@ public class HCPFeaturesReplyVer10 implements HCPFeaturesReply{
 
     //version
     private static byte WIRE_VERSION=1;
-    private static int LENGTH=24;
+    private static int LENGTH=31;
 
     private static final long DEFAULT_XID=0x0L;
     private static final DomainId DEFAULT_DOMAIN_ID=DomainId.None;
@@ -114,7 +114,7 @@ public class HCPFeaturesReplyVer10 implements HCPFeaturesReply{
             //sbpVersion
             message.sbpVersion.writeTo(bb);
             // byte skip 2
-            bb.writeZero(2);
+            bb.writeZero(9);
             //capabitilies
             HCPCapabilitiesSerializerVer10.writeTo(bb,message.capabilities);
         }
@@ -149,7 +149,7 @@ public class HCPFeaturesReplyVer10 implements HCPFeaturesReply{
             HCPSbpType sbpType=HCPSbpTypeSerializerVer10.readFrom(bb);
             //sbpVersion
             HCPSbpVersion sbpVersion=HCPSbpVersion.of(bb.readByte(),HCPVersion.HCP_10);
-            bb.skipBytes(2);
+            bb.skipBytes(9);
             //capabilities
             Set<HCPCapabilities> capabilities=HCPCapabilitiesSerializerVer10.readFrom(bb);
             return new HCPFeaturesReplyVer10(xid,domainId,sbpType,sbpVersion,capabilities);

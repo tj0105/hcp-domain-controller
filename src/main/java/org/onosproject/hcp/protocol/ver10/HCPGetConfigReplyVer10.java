@@ -21,7 +21,7 @@ public class HCPGetConfigReplyVer10 implements HCPGetConfigReply{
 
     //hcp version
     public static final byte WIRE_VERSION=1;
-    public static final int LENGTH=12;
+    public static final int LENGTH=31;
 
     private static final long DEFAULT_XID=0x0L;
     private static final Set<HCPConfigFlags> DEFAULT_FLAGS= ImmutableSet.<HCPConfigFlags>of();
@@ -99,7 +99,9 @@ public class HCPGetConfigReplyVer10 implements HCPGetConfigReply{
             //period
             bb.writeByte(message.period);
             //miss send length
+            bb.writeZero(19);
             bb.writeShort(message.missSendLength);
+
         }
     }
 
@@ -131,7 +133,9 @@ public class HCPGetConfigReplyVer10 implements HCPGetConfigReply{
             //period;
             byte period=bb.readByte();
             //miss send length
+            bb.writeZero(19);
             short missSendLength=bb.readShort();
+
             return new HCPGetConfigReplyVer10(xid,flag,period,missSendLength);
 
 

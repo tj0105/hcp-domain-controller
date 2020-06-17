@@ -17,7 +17,7 @@ public class HCPFeaturesRequestVer10 implements HCPFeaturesRequest {
     public static final Logger logger= LoggerFactory.getLogger(HCPFeaturesReplyVer10.class);
 
     public static final byte WIRE_VERSION=1;
-    public static final int LENGTH=8;
+    public static final int LENGTH=31;
 
     private static final long DEFAULT_XID=0x0L;
 
@@ -60,7 +60,9 @@ public class HCPFeaturesRequestVer10 implements HCPFeaturesRequest {
             bb.writeByte(4);
             //length
             bb.writeShort(LENGTH);
+            bb.writeZero(23);
             bb.writeInt(U32.t(message.xid));
+
         }
     }
     static final Reader READER=new Reader();
@@ -79,7 +81,9 @@ public class HCPFeaturesRequestVer10 implements HCPFeaturesRequest {
             if (type!=(byte)0x4)
                 throw new HCPParseError("Wrong type:Expected=HCPType.HCP_FEATURES_REQUEST(4),got="+type);
             int legth=bb.readShort();
+            bb.skipBytes(23);
             long xid= U32.f(bb.readInt());
+
             return new HCPFeaturesRequestVer10(xid);
         }
     }

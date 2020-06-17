@@ -119,28 +119,28 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
     private int UpdateTopologyTimes=0;
     @Activate
     public void activate() {
-        domainController.addHCPSuperControllerListener(hcpSuperControllerListener);
+//        domainController.addHCPSuperControllerListener(hcpSuperControllerListener);
         log.info("==============Domain Topology Manager Start===================");
     }
 
     @Deactivate
     public void deactivate() {
-        domainController.removeHCPSuperControllerListener(hcpSuperControllerListener);
-        if (!flag) {
-            return;
-        }
-        if (executor!=null){
-            executor.shutdown();
-        }
-        linkService.removeListener(linkListener);
-        domainController.removeMessageListener(hcpSuperMessageListener);
-        packetService.removeProcessor(hcplldpPacketProcesser);
-        vportMap.clear();
-        vportNumAllocateCache.clear();
-        VportTimeMap.clear();
-        vportToVportpath.clear();
-        devicePortName.clear();
-        portBandwidth.clear();
+//        domainController.removeHCPSuperControllerListener(hcpSuperControllerListener);
+//        if (!flag) {
+//            return;
+//        }
+//        if (executor!=null){
+//            executor.shutdown();
+//        }
+//        linkService.removeListener(linkListener);
+//        domainController.removeMessageListener(hcpSuperMessageListener);
+//        packetService.removeProcessor(hcplldpPacketProcesser);
+//        vportMap.clear();
+//        vportNumAllocateCache.clear();
+//        VportTimeMap.clear();
+//        vportToVportpath.clear();
+//        devicePortName.clear();
+//        portBandwidth.clear();
 //        try {
 //            socket.close();
 //        } catch (IOException e) {
