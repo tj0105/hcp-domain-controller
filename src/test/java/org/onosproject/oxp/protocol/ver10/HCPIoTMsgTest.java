@@ -49,12 +49,14 @@ public class HCPIoTMsgTest {
         IPv4Address iPv4Address = IPv4Address.of("10.0.0.1");
         HCPIoTType hcpIoTType = HCPIoTType.IOT_EPC;
         HCPIOTID hcpiotid = HCPIOTID.of("ABCDEFG1234567");
+        HCPIoTState hcpIoTState = HCPIoTState.ACTIVE;
         IPv4Address iPv4Address1 = IPv4Address.of("10.0.0.1");
         HCPIoTType hcpIoTType1 = HCPIoTType.IOT_ECODE;
         HCPIOTID hcpiotid1 = HCPIOTID.of("234567ABCDEFG");
+        HCPIoTState hcpIoTState1 = HCPIoTState.INACTIVE;
         List<HCPIOT> iots = new ArrayList<>();
-        iots.add(HCPIOT.of(iPv4Address,hcpIoTType,hcpiotid));
-        iots.add(HCPIOT.of(iPv4Address1,hcpIoTType1,hcpiotid1));
+        iots.add(HCPIOT.of(iPv4Address,hcpIoTType,hcpiotid,hcpIoTState));
+        iots.add(HCPIOT.of(iPv4Address1,hcpIoTType1,hcpiotid1,hcpIoTState1));
         HCPIoTReply hcpIoTReply = TestBaseVer10.getMessageFactry()
                 .buildIoTReply()
                 .setDomainId(DomainId.of(1111))
@@ -75,10 +77,12 @@ public class HCPIoTMsgTest {
         System.out.println(hcpIoTReply1.getIoTs().get(0).getiPv4Address());
         System.out.println(hcpIoTReply1.getIoTs().get(0).getIoTType());
         System.out.println(hcpIoTReply1.getIoTs().get(0).getHcpiotid());
+        System.out.println(hcpIoTReply1.getIoTs().get(0).getHCPIoTState());
         System.out.println("=====================this is second iot=====================");
         System.out.println(hcpIoTReply1.getIoTs().get(1).getiPv4Address());
         System.out.println(hcpIoTReply1.getIoTs().get(1).getIoTType());
         System.out.println(hcpIoTReply1.getIoTs().get(1).getHcpiotid());
+        System.out.println(hcpIoTReply1.getIoTs().get(1).getHCPIoTState());
         assertThat(hcpIoTReply1,is(hcpIoTReply));
     }
 
@@ -89,11 +93,13 @@ public class HCPIoTMsgTest {
         HCPIoTType hcpIoTType = HCPIoTType.IOT_EPC;
         HCPIOTID hcpiotid = HCPIOTID.of("ABCDEFG1234567");
         IPv4Address iPv4Address1 = IPv4Address.of("10.0.0.1");
+        HCPIoTState hcpIoTState = HCPIoTState.ACTIVE;
         HCPIoTType hcpIoTType1 = HCPIoTType.IOT_ECODE;
         HCPIOTID hcpiotid1 = HCPIOTID.of("234567ABCDEFG");
+        HCPIoTState hcpIoTState1 = HCPIoTState.INACTIVE;
         List<HCPIOT> iots = new ArrayList<>();
-        iots.add(HCPIOT.of(iPv4Address,hcpIoTType,hcpiotid));
-        iots.add(HCPIOT.of(iPv4Address1,hcpIoTType1,hcpiotid1));
+        iots.add(HCPIOT.of(iPv4Address,hcpIoTType,hcpiotid,hcpIoTState));
+        iots.add(HCPIOT.of(iPv4Address1,hcpIoTType1,hcpiotid1,hcpIoTState1));
         HCPIoTUpdate hcpIoTUpdate = TestBaseVer10.getMessageFactry()
                 .buildIoTUpdate()
                 .setDomainId(DomainId.of(1111))
@@ -114,10 +120,12 @@ public class HCPIoTMsgTest {
         System.out.println(hcpIoTReply1.getIoTs().get(0).getiPv4Address());
         System.out.println(hcpIoTReply1.getIoTs().get(0).getIoTType());
         System.out.println(hcpIoTReply1.getIoTs().get(0).getHcpiotid());
+        System.out.println(hcpIoTReply1.getIoTs().get(0).getHCPIoTState());
         System.out.println("=====================this is second iot=====================");
         System.out.println(hcpIoTReply1.getIoTs().get(1).getiPv4Address());
         System.out.println(hcpIoTReply1.getIoTs().get(1).getIoTType());
         System.out.println(hcpIoTReply1.getIoTs().get(1).getHcpiotid());
+        System.out.println(hcpIoTReply1.getIoTs().get(1).getHCPIoTState());
         assertThat(hcpIoTReply1,is(hcpIoTUpdate));
     }
     @Test

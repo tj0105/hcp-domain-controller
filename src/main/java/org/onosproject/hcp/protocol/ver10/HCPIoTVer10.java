@@ -2,6 +2,7 @@ package org.onosproject.hcp.protocol.ver10;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.onosproject.hcp.exceptions.HCPParseError;
+import org.onosproject.hcp.protocol.HCPIoTState;
 import org.onosproject.hcp.protocol.HCPIoTType;
 import org.onosproject.hcp.protocol.HCPMessageReader;
 import org.onosproject.hcp.types.HCPIOT;
@@ -23,7 +24,8 @@ abstract class HCPIoTVer10 {
             IPv4Address iPv4Address = IPv4Address.read4Bytes(bb);
             HCPIoTType ioTType = HCPIoTTypeSerializerVer10.readFrom(bb);
             HCPIOTID hcpiotid = HCPIOTID.read(bb);
-            return HCPIOT.of(iPv4Address,ioTType,hcpiotid);
+            HCPIoTState hcpIoTState = HCPIoTStateSerializerVer10.readFrom(bb);
+            return HCPIOT.of(iPv4Address,ioTType,hcpiotid,hcpIoTState);
         }
     }
 }
