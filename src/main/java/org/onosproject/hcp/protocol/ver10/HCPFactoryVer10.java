@@ -103,6 +103,21 @@ public class HCPFactoryVer10 implements HCPFactory{
     }
 
     @Override
+    public HCPIoTRequest.Builder buildIoTRequest() {
+        return new HCPIoTRequestVer10.Builder().setXid(nextXid());
+    }
+
+    @Override
+    public HCPIoTReply.Builder buildIoTReply() {
+        return new HCPIoTReplyVer10.Builder().setXid(nextXid());
+    }
+
+    @Override
+    public HCPIoTUpdate.Builder buildIoTUpdate() {
+        return new HCPIoTUpdateVer10.Builder().setXid(nextXid());
+    }
+
+    @Override
     public HCPMessageReader<HCPMessage> getReader() {
         return  HCPMessageVer10.READER;
     }

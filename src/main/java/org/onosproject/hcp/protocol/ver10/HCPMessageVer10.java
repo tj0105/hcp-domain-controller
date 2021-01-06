@@ -82,6 +82,15 @@ public final class HCPMessageVer10 {
                 case (byte)0xf:
                     //discriminator value HCPType=15 for class HCPSbpMessageVer10
                     return HCPSbpVer10.READER.readFrom(bb);
+                case (byte)0x10:
+                    //discriminator value HCPType=16 for class HCPIoTRequestMessageVer10
+                    return HCPIoTRequestVer10.READER.readFrom(bb);
+                case (byte)0x11:
+                    //discriminator value HCPType=17 for class HCPIoTReplyMessageVer10
+                    return HCPIoTReplyVer10.READER.readFrom(bb);
+                case (byte) 0x12:
+                    //discriminator value HCPType=18 for class HCPIoTUpdateMessageVer10
+                    return HCPIoTUpdateVer10.READER.readFrom(bb);
                 default:
                     throw new HCPParseError("Unknown value for discriminator type of class HCPMessageVer10: " + type);
 

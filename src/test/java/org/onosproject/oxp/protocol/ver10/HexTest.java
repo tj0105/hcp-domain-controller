@@ -5,6 +5,7 @@ import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.onlab.packet.IpAddress;
 import org.onosproject.hcp.types.MacAddress;
 import org.onosproject.net.PortNumber;
+import org.python.modules._systemrestart;
 //import org.python.core.PyFunction;
 //import org.python.core.PyInteger;
 //import org.python.core.PyObject;
@@ -15,10 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.sql.Time;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -28,19 +26,21 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class HexTest {
     @Test
-    public  void main() {
+    public  void main(){
+        System.out.println(Integer.parseInt("111"));
+
 //        byte b=127;
 //        byte c=126;
 //        int a=9;
-        Map<PortNumber,Integer> portNumberIntegerMap=new HashMap<>();
-        System.out.println(portNumberIntegerMap.keySet().isEmpty());
-//        HashMap<PortNumber,Integer> hashMap=new HashMap<>();
-        PortNumber port=PortNumber.portNumber(1);
-        PortNumber port2=PortNumber.portNumber(2);
-        portNumberIntegerMap.put(port,1);
-        portNumberIntegerMap.put(port2,2);
-        System.out.println(portNumberIntegerMap.toString());
-        System.out.println(new HashMap<>(portNumberIntegerMap));
+//        Map<PortNumber,Integer> portNumberIntegerMap=new HashMap<>();
+//        System.out.println(portNumberIntegerMap.keySet().isEmpty());
+////        HashMap<PortNumber,Integer> hashMap=new HashMap<>();
+//        PortNumber port=PortNumber.portNumber(1);
+//        PortNumber port2=PortNumber.portNumber(2);
+//        portNumberIntegerMap.put(port,1);
+//        portNumberIntegerMap.put(port2,2);
+//        System.out.println(portNumberIntegerMap.toString());
+//        System.out.println(new HashMap<>(portNumberIntegerMap));
 // hashMap.put(null,null);
 //        System.out.println(hashMap.size());
 //        System.out.println(b+c);

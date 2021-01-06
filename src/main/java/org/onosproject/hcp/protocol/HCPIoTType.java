@@ -7,6 +7,6 @@ package org.onosproject.hcp.protocol;
  */
 public enum HCPIoTType {
     IOT_EPC,
-    IOT_EOCDE,
+    IOT_ECODE,
     IOT_IOD;
 }

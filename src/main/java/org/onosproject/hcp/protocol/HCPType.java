@@ -17,8 +17,10 @@ public enum  HCPType {
     HCP_HOST_REPLY(12,"HostReply"),
     HCP_HOST_UPDATE(13,"HostUpdate"),
     HCP_VPORT_STATUS(14,"VportStatus"),
-    HCP_SBP(15,"SBP");
-
+    HCP_SBP(15,"SBP"),
+    HCP_IOT_REQUEST(16,"IoTRequest"),
+    HCP_IOT_REPLY(17,"IoTReply"),
+    HCP_IOT_UPDATE(18,"IoTUpdate");
     private int value;
     private String name;
 
@@ -61,6 +63,12 @@ public enum  HCPType {
                 return HCP_VPORT_STATUS;
             case 15:
                 return HCP_SBP;
+            case 16:
+                return HCP_IOT_REQUEST;
+            case 17:
+                return HCP_IOT_REPLY;
+            case 18:
+                return HCP_IOT_UPDATE;
             default:
                 throw new IllegalArgumentException("Illegal value for type HCPType in version 1.0"+value);        }
     }

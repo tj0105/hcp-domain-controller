@@ -30,6 +30,9 @@ public interface HCPFactory extends XidGenerator {
     HCPHostUpdate.Builder buildHostUpdate();
     HCPVportStatus.Builder buildVportStatus();
     HCPSbp.Builder buildSbp();
+    HCPIoTRequest.Builder buildIoTRequest();
+    HCPIoTReply.Builder buildIoTReply();
+    HCPIoTUpdate.Builder buildIoTUpdate();
     HCPMessageReader<HCPMessage> getReader();
 
     HCPVersion getVersion();
