@@ -790,7 +790,8 @@ public class HCPDomainRoutingManager {
             }
         }
 //        log.info("==========IddressPathMap======={}",ipaddressPathMap.toString());
-        HCPForwardingRequest hcpForwardingRequest= HCPForwardingRequestVer10.of(src,dst,(int )connectPoint.port().toLong()
+        HCPFlowType hcpFlowType =HCPFlowType.HCP_HOST;
+        HCPForwardingRequest hcpForwardingRequest= HCPForwardingRequestVer10.of(hcpFlowType,src,dst,(int )connectPoint.port().toLong()
                                                     ,Ethernet.TYPE_IPV4,(byte)3,vportHops);
 //        log.info("======================hcpForwardingRequest============={}",hcpForwardingRequest.toString());
         Set<HCPSbpFlags> flagsSet = new HashSet<>();

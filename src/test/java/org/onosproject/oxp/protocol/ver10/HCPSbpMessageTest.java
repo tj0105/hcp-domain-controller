@@ -4,12 +4,11 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
 import org.onlab.packet.*;
+import org.onlab.packet.MacAddress;
 import org.onosproject.hcp.exceptions.HCPParseError;
 import org.onosproject.hcp.protocol.*;
 import org.onosproject.hcp.protocol.ver10.*;
-import org.onosproject.hcp.types.HCPVport;
-import org.onosproject.hcp.types.HCPVportHop;
-import org.onosproject.hcp.types.IPv4Address;
+import org.onosproject.hcp.types.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -80,6 +79,7 @@ public class HCPSbpMessageTest {
 
     @Test
     public void SbpForwardRequestTest() throws HCPParseError{
+        System.out.println(IPv4Address.FULL_MASK);
         IpAddress ipAddress=IpAddress.valueOf("192.168.109.13");
         IPv4Address srcipAddress=IPv4Address.of(ipAddress.toString());
         IPv4Address dstIpaddress=IPv4Address.of("192.168.109.14");
@@ -89,8 +89,19 @@ public class HCPSbpMessageTest {
 //        HCPVportHop vportHop2=HCPVportHop.of(HCPVport.ofShort((short)2),6);
         vportHops.add(vportHop);
 //        vportHops.add(vportHop2);
+        HCPFlowType hcpFlowType = HCPFlowType.HCP_HOST;
+        HCPFlowType hcpFlowType1 = HCPFlowType.HCP_IOT;
+        HCPIOTID srcIoTId = HCPIOTID.of("ABCDEFG12345");
+        HCPIOTID dstIoTId = HCPIOTID.of("12345678ABC");
+        HCPIOT srcIoT = HCPIOT.of(srcipAddress,HCPIoTType.IOT_EPC,srcIoTId,HCPIoTState.ACTIVE);
+        HCPIOT dstIoT = HCPIOT.of(dstIpaddress,HCPIoTType.IOT_EPC,dstIoTId,HCPIoTState.ACTIVE);
+
         HCPForwardingRequestVer10 forwardingRequestVer10=HCPForwardingRequestVer10
-                .of(srcipAddress,dstIpaddress,10,(short)2,(byte)6,vportHops);
+                .of(hcpFlowType,srcipAddress,dstIpaddress,10,(short)2,(byte)6,vportHops);
+        HCPForwardingRequestVer10 forwardingRequestVer11=HCPForwardingRequestVer10
+                .of(hcpFlowType1,srcIoT,dstIoT,10,(short)2,(byte)6,vportHops);
+        System.out.println(forwardingRequestVer11.toString());
+        System.out.println(forwardingRequestVer10.toString());
         Set<HCPSbpFlags> flagsSet=new HashSet<>();
         flagsSet.add(HCPSbpFlags.DATA_EXITS);
         HCPSbp hcpSbp =getMessageFactry().buildSbp()
@@ -111,6 +122,9 @@ public class HCPSbpMessageTest {
         System.out.println("messageRev sbpFlags:"+messageRev.getFlags());
         System.out.println("messageRev sbpDataLength:"+messageRev.getDataLength());
         HCPForwardingRequest hcpForwardingRequest=(HCPForwardingRequest) messageRev.getSbpCmpData();
+        System.out.println("hcpforwarding request flowType:"+hcpForwardingRequest.getFLowType());
+        System.out.println("hcpforwarding request dstIot:"+hcpForwardingRequest.getDstIoT());
+        System.out.println("hcpforwarding request srcIot:"+hcpForwardingRequest.getSrcIoT());
         System.out.println("hcpforwarding request dstIpaddress:"+hcpForwardingRequest.getDstIpAddress());
         System.out.println("hcpforwarding request srcIpaddress:"+hcpForwardingRequest.getSrcIpAddress());
         System.out.println("hcpforwarding request type:"+hcpForwardingRequest.getEthType());
@@ -182,8 +196,18 @@ public class HCPSbpMessageTest {
         HCPVport  srcvport=HCPVport.IN_PORT;
 //        System.out.println(srcvport.equals(HCPVport.OUT_PORT));
         HCPVport  dstpport=HCPVport.ofShort((short)1);
+        HCPFlowType hcpFlowType =HCPFlowType.HCP_HOST;
+        HCPFlowType hcpFlowType1 = HCPFlowType.HCP_IOT;
+        HCPIOTID srcIoTId = HCPIOTID.of("ABCDEFG12345");
+        HCPIOTID dstIoTId = HCPIOTID.of("12345678ABC");
+        HCPIOT srcIoT = HCPIOT.of(srcipAddress,HCPIoTType.IOT_EPC,srcIoTId,HCPIoTState.ACTIVE);
+        HCPIOT dstIoT = HCPIOT.of(dstIpaddress,HCPIoTType.IOT_EPC,dstIoTId,HCPIoTState.ACTIVE);
         HCPForwardingReply forwardingReply=HCPForwardingReplyVer10
-                .of(srcipAddress,dstIpaddress,srcvport,dstpport,Ethernet.TYPE_IPV4,(byte)6);
+                .of(hcpFlowType,srcipAddress,dstIpaddress,srcvport,dstpport,Ethernet.TYPE_IPV4,(byte)6);
+        HCPForwardingReply forwardingReply1=HCPForwardingReplyVer10
+                .of(hcpFlowType1,srcIoT,dstIoT,srcvport,dstpport,Ethernet.TYPE_IPV4,(byte)6);
+        System.out.println(forwardingReply1.toString());
+        System.out.println(forwardingReply.toString());
         Set<HCPSbpFlags> flagsSet=new HashSet<>();
         flagsSet.add(HCPSbpFlags.DATA_EXITS);
         HCPSbp hcpSbp =getMessageFactry().buildSbp()
@@ -204,8 +228,11 @@ public class HCPSbpMessageTest {
         System.out.println("messageRev sbpFlags:"+messageRev.getFlags());
         System.out.println("messageRev sbpDataLength:"+messageRev.getDataLength());
         HCPForwardingReply hcpForwardingReply=(HCPForwardingReply) messageRev.getSbpCmpData();
-        System.out.println("hcpforwarding request dstIpaddress:"+hcpForwardingReply.getDstIpAddress().toString());
+        System.out.println("hcpforwarding request flowType:"+hcpForwardingReply.getFLowType());
+        System.out.println("hcpforwarding request dstIpaddress:"+hcpForwardingReply.getDstIpAddress());
         System.out.println("hcpforwarding request srcIpaddress:"+hcpForwardingReply.getSrcIpAddress());
+        System.out.println("hcpforwarding request dstIoT:"+hcpForwardingReply.getDstIoT());
+        System.out.println("hcpforwarding request srcIoT:"+hcpForwardingReply.getSrcIoT());
         System.out.println("hcpforwarding request type:"+(Ethernet.TYPE_IPV4==hcpForwardingReply.getEthType()));
         System.out.println("hcpforwarding request qos:"+hcpForwardingReply.getQos());
         System.out.println("hcpforwardint reply srcVPort:"+hcpForwardingReply.getSrcVport());

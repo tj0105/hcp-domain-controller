@@ -6,6 +6,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.ipfilter.IpFilteringHandler;
 import org.onosproject.hcp.exceptions.HCPParseError;
+import org.onosproject.hcp.protocol.HCPFlowType;
 import org.onosproject.hcp.protocol.HCPForwardingRequest;
 import org.onosproject.hcp.types.*;
 import org.onosproject.hcp.util.ChannelUtils;
@@ -14,6 +15,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author ldy
@@ -22,6 +24,9 @@ import java.util.List;
  */
 public class HCPForwardingRequestVer10 implements HCPForwardingRequest{
 
+   private HCPFlowType hcpFlowType;
+   private HCPIOT srcIoT;
+   private HCPIOT dstIoT;
    private IPv4Address srcIpAddress;
    private IPv4Address dstIpAddress;
    private int inPort;
@@ -29,8 +34,9 @@ public class HCPForwardingRequestVer10 implements HCPForwardingRequest{
    private byte qos;
    private List<HCPVportHop> vportHopList;
 
-   private HCPForwardingRequestVer10(IPv4Address srcIpAddress,IPv4Address dstIpAddress,
+   private HCPForwardingRequestVer10(HCPFlowType hcpFlowType,IPv4Address srcIpAddress,IPv4Address dstIpAddress,
                                      int port,short ethType,byte qos,List<HCPVportHop> vportHops){
+       this.hcpFlowType = hcpFlowType;
        this.srcIpAddress=srcIpAddress;
        this.dstIpAddress=dstIpAddress;
        this.inPort=port;
@@ -38,27 +44,63 @@ public class HCPForwardingRequestVer10 implements HCPForwardingRequest{
        this.qos=qos;
        this.vportHopList=vportHops;
    }
-
-   public static HCPForwardingRequestVer10 of(IPv4Address srcIpAddress,IPv4Address dstIpAddress
+    private HCPForwardingRequestVer10(HCPFlowType hcpFlowType,HCPIOT srcIoT,HCPIOT dstIoT,
+                                      int port,short ethType,byte qos,List<HCPVportHop> vportHops){
+        this.hcpFlowType = hcpFlowType;
+        this.srcIoT = srcIoT;
+        this.dstIoT = dstIoT;
+        this.inPort=port;
+        this.ethType=ethType;
+        this.qos=qos;
+        this.vportHopList=vportHops;
+    }
+   public static HCPForwardingRequestVer10 of(HCPFlowType hcpFlowType,IPv4Address srcIpAddress,IPv4Address dstIpAddress
                                         ,int port,short ethType,byte qos,List<HCPVportHop> vportHops){
-       return new HCPForwardingRequestVer10(srcIpAddress,
-                                            dstIpAddress,
-                                            port,
-                                            ethType,
-                                            qos,
-                                            vportHops);
+       return new HCPForwardingRequestVer10(hcpFlowType,srcIpAddress, dstIpAddress, port, ethType, qos, vportHops);
    }
+    public static HCPForwardingRequestVer10 of(HCPFlowType hcpFlowType,HCPIOT srcIoT,HCPIOT dstIoT
+            ,int port,short ethType,byte qos,List<HCPVportHop> vportHops){
+        return new HCPForwardingRequestVer10(hcpFlowType,srcIoT, dstIoT, port, ethType, qos, vportHops);
+    }
 
    public static HCPForwardingRequest read(ChannelBuffer bb,int dataLength) throws HCPParseError {
-       IPv4Address srcIpAddress=IPv4Address.read4Bytes(bb);
-       IPv4Address dstIpAddress=IPv4Address.read4Bytes(bb);
-       int inPort=bb.readInt();
-       short ethType=bb.readShort();
-       byte qos=bb.readByte();
-       List<HCPVportHop> vportHops=ChannelUtils.readList(bb,dataLength,HCPVportHopVer10.READER);
-       return of(srcIpAddress,dstIpAddress,
-                 inPort,ethType,qos,vportHops);
+       HCPFlowType hcpFlowType = HCPFlowTypeSerializerVer10.readFrom(bb);
+       if (hcpFlowType.equals(HCPFlowType.HCP_HOST)){
+           IPv4Address srcIpAddress=IPv4Address.read4Bytes(bb);
+           IPv4Address dstIpAddress=IPv4Address.read4Bytes(bb);
+           int inPort=bb.readInt();
+           short ethType=bb.readShort();
+           byte qos=bb.readByte();
+           List<HCPVportHop> vportHops=ChannelUtils.readList(bb,dataLength,HCPVportHopVer10.READER);
+           return of(hcpFlowType,srcIpAddress,dstIpAddress,
+                   inPort,ethType,qos,vportHops);
+       }else{
+           HCPIOT srcIoT = HCPIoTVer10.READER.readFrom(bb);
+           HCPIOT dstIoT = HCPIoTVer10.READER.readFrom(bb);
+           int inPort=bb.readInt();
+           short ethType=bb.readShort();
+           byte qos=bb.readByte();
+           List<HCPVportHop> vportHops=ChannelUtils.readList(bb,dataLength,HCPVportHopVer10.READER);
+           return of(hcpFlowType,srcIoT,dstIoT,inPort,ethType,qos,vportHops);
+       }
+
    }
+
+    @Override
+    public HCPFlowType getFLowType() {
+        return hcpFlowType;
+    }
+
+    @Override
+    public HCPIOT getSrcIoT() {
+        return srcIoT;
+    }
+
+    @Override
+    public HCPIOT getDstIoT() {
+        return dstIoT;
+    }
+
     @Override
     public IPv4Address getSrcIpAddress() {
         return srcIpAddress;
@@ -104,8 +146,15 @@ public class HCPForwardingRequestVer10 implements HCPForwardingRequest{
 
     @Override
     public void writeTo(ChannelBuffer bb) {
-        srcIpAddress.writeTo(bb);
-        dstIpAddress.writeTo(bb);
+        HCPFlowTypeSerializerVer10.writeTo(bb,hcpFlowType);
+        if (hcpFlowType.equals(HCPFlowType.HCP_HOST)){
+            srcIpAddress.writeTo(bb);
+            dstIpAddress.writeTo(bb);
+        }
+        else{
+            srcIoT.writeTo(bb);
+            dstIoT.writeTo(bb);
+        }
         bb.writeInt(inPort);
         bb.writeShort(ethType);
         bb.writeByte(qos);
@@ -118,43 +167,34 @@ public class HCPForwardingRequestVer10 implements HCPForwardingRequest{
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this==obj) return true;
-        if (obj==null||getClass()!=obj.getClass())
-            return false;
-        HCPForwardingRequestVer10 other=(HCPForwardingRequestVer10) obj;
-        if (inPort != other.inPort) return false;
-        if (ethType != other.ethType) return false;
-        if (qos != other.qos) return false;
-        if (srcIpAddress != null ? !srcIpAddress.equals(other.srcIpAddress) : other.srcIpAddress != null) return false;
-        if (dstIpAddress != null ? !dstIpAddress.equals(other.dstIpAddress) : other.dstIpAddress != null) return false;
-        if (this.vportHopList!=other.vportHopList)
-            return false;
-        return true;
-   }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HCPForwardingRequestVer10 that = (HCPForwardingRequestVer10) o;
+        return inPort == that.inPort && ethType == that.ethType && qos == that.qos && hcpFlowType == that.hcpFlowType && Objects.equals(srcIoT, that.srcIoT)
+                && Objects.equals(dstIoT, that.dstIoT) && Objects.equals(srcIpAddress, that.srcIpAddress) &&
+                Objects.equals(dstIpAddress, that.dstIpAddress) && Objects.equals(vportHopList, that.vportHopList);
+    }
 
     @Override
     public int hashCode() {
-       final int prime = 31;
-       int result=1;
-       result=result*prime+(srcIpAddress!=null?srcIpAddress.hashCode():0);
-       result=result*prime+(dstIpAddress!=null?dstIpAddress.hashCode():0);
-       result=result*prime+inPort;
-       result=result*prime+ U16.f(ethType);
-       result=result*prime+ U8.f(qos);
-       result=result*prime+ vportHopList.hashCode();
-       return result;
+        return Objects.hash(hcpFlowType, srcIoT, dstIoT, srcIpAddress, dstIpAddress, inPort, ethType, qos, vportHopList);
     }
 
     @Override
     public String toString() {
-        return "HCPForwardingRequestVer10{" +
-                "srcIpAddress=" + srcIpAddress.toString() +
-                ", dstIpAddress=" + dstIpAddress.toString()+
-                ", inPort=" + inPort +
-                ", ethType=" + ethType +
-                ", qos=" + qos +
-                ", vportHopList=" + vportHopList.toString() +
-                '}';
+            return "HCPForwardingRequestVer10{" +
+                    "flowType=" + hcpFlowType +
+                    ", srcIpAddress=" + srcIpAddress +
+                    ", dstIpAddress=" + dstIpAddress +
+                    ", srcIoT=" + srcIoT+
+                    ", dstIoT=" + dstIoT+
+                    ", inPort=" + inPort +
+                    ", ethType=" + ethType +
+                    ", qos=" + qos +
+                    ", vportHopList=" + vportHopList.toString() +
+                    '}';
+
+
     }
 }

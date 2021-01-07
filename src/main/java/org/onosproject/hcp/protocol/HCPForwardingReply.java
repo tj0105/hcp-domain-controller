@@ -1,10 +1,14 @@
 package org.onosproject.hcp.protocol;
 
 import org.onosproject.hcp.types.DomainId;
+import org.onosproject.hcp.types.HCPIOT;
 import org.onosproject.hcp.types.HCPVport;
 import org.onosproject.hcp.types.IPv4Address;
 
 public interface HCPForwardingReply extends HCPSbpCmpData {
+    HCPFlowType getFLowType();
+    HCPIOT getSrcIoT();
+    HCPIOT getDstIoT();
     IPv4Address getSrcIpAddress();
     IPv4Address getDstIpAddress();
     HCPVport getSrcVport();
