@@ -3,6 +3,7 @@ package org.onosproject.oxp.protocol.ver10;
 import org.junit.Test;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.onlab.packet.IpAddress;
+import org.onosproject.hcp.types.HCPIOTID;
 import org.onosproject.hcp.types.MacAddress;
 import org.onosproject.net.PortNumber;
 import org.python.modules._systemrestart;
@@ -28,7 +29,9 @@ public class HexTest {
     @Test
     public  void main(){
         System.out.println(Integer.parseInt("111"));
-
+        HCPIOTID hcpiotid = HCPIOTID.of("1111");
+        HCPIOTID hcpiotid1 =HCPIOTID.of("1111");
+        System.out.println(hcpiotid1.equals(hcpiotid));
 //        byte b=127;
 //        byte c=126;
 //        int a=9;

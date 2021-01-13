@@ -58,7 +58,8 @@ public class HCPIOTID implements Writeable,PrimitiveSinkable {
         bb.writeShort(length);
         bb.writeBytes(IotID);
     }
-
+//         List<Link> linkList=path.links();
+//         PortNumber srcport=null;
     @Override
     public void putTo(PrimitiveSink sink) {
 
