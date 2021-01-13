@@ -13,6 +13,7 @@ import org.onosproject.api.HCPSuper;
 import org.onosproject.api.HCPSuperMessageListener;
 import org.onosproject.api.Super.HCPSuperControllerListener;
 import org.onosproject.api.domain.HCPDomainController;
+import org.onosproject.api.domain.HCPDomainHostService;
 import org.onosproject.api.domain.HCPDomainTopoService;
 import org.onosproject.cluster.ClusterService;
 import org.onosproject.cluster.NodeId;
@@ -27,9 +28,11 @@ import org.onosproject.floodlightpof.protocol.table.OFFlowTableResource;
 import org.onosproject.floodlightpof.protocol.table.OFTableType;
 import org.onosproject.hcp.protocol.*;
 import org.onosproject.hcp.protocol.ver10.HCPForwardingRequestVer10;
+import org.onosproject.hcp.protocol.ver10.HCPIoTTypeSerializerVer10;
 import org.onosproject.hcp.protocol.ver10.HCPPacketInVer10;
 import org.onosproject.hcp.protocol.ver10.HCPResourceReplyVer10;
 import org.onosproject.hcp.types.*;
+import org.onosproject.hcp.util.HexString;
 import org.onosproject.mastership.MastershipService;
 import org.onosproject.net.*;
 import org.onosproject.net.device.DeviceAdminService;
@@ -122,6 +125,8 @@ public class HCPDomainRoutingManager {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected HCPDomainTopoService hcpDomainTopoServie;
 
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected HCPDomainHostService hcpDomainHostService;
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected LinkService LinkServie;
 
@@ -433,24 +438,24 @@ public class HCPDomainRoutingManager {
     /**
      * calculate the path between the srcHost and dstHost.
      * install the flow entry throw the path;
-     * @param srcHost
-     * @param dstHost
+     * @param srcHostConnection
+     * @param dstHostConnection
      * @param srcAddress
      * @param dstAddress
      */
-    private void processIpv4InDomain(Host srcHost, Host dstHost, IpAddress srcAddress,IpAddress dstAddress) {
-        DeviceId srcDeviceId = srcHost.location().deviceId();
-        DeviceId dstDeviceId = dstHost.location().deviceId();
+    private void processIpv4InDomain(ConnectPoint srcHostConnection, ConnectPoint dstHostConnection, IpAddress srcAddress,IpAddress dstAddress) {
+        DeviceId srcDeviceId = srcHostConnection.deviceId();
+        DeviceId dstDeviceId = dstHostConnection.deviceId();
         String srcIP = IpAddressToHexString(srcAddress).toString();
         String dstIp = IpAddressToHexString(dstAddress).toString();
         if (srcDeviceId.equals(dstDeviceId)) {
             int tableId = TableIDMap.get(srcDeviceId);
-            installFlowRule(srcDeviceId, tableId, dstIp, (int) dstHost.location().port().toLong(), 10);
-            installFlowRule(srcDeviceId,tableId,srcIP,(int)srcHost.location().port().toLong(),10);
+            installFlowRule(srcDeviceId, tableId, dstIp, (int) srcHostConnection.port().toLong(), 10);
+            installFlowRule(srcDeviceId,tableId,srcIP,(int)dstHostConnection.port().toLong(),10);
             return;
         }
         Path path=null;
-        //  qi fa shi suan fa dedao de jiguo
+        //  qi fa shi suan fa de dao de jiguo
         if (!drl_flag){
             log.info("===========srcDeviceiD:{},dstDeviceId:{}",srcDeviceId,dstDeviceId);
 
@@ -492,8 +497,8 @@ public class HCPDomainRoutingManager {
         int tableID1 = TableIDMap.get(dstDeviceId);
         int tableId2 = TableIDMap.get(srcDeviceId);
         installFlowRule(dstDeviceId, tableID1, dstIp,
-                (int) dstHost.location().port().toLong(), 10);
-        installFlowRule(srcDeviceId,tableId2,srcIP,(int)srcHost.location().port().toLong(),10);
+                (int) dstHostConnection.port().toLong(), 10);
+        installFlowRule(srcDeviceId,tableId2,srcIP,(int)srcHostConnection.port().toLong(),10);
     }
 
     /**
@@ -538,7 +543,7 @@ public class HCPDomainRoutingManager {
 //            }
 //            String deci[]=mess[1].split(",");
 //            DeviceId [] deviceIds=new DeviceId[deci.length];
-//            for(int i=0;i<mess.length;i++){
+//            for(int i=0;i<mess.length;i++){dst_iot_id = HexString.parseInboundPacket(inboundPacket,44,24);
 //                deviceIds[i]=DeviceId.deviceId("pof:"+String.format("%016x",deci[i]));
 //            }
 //            for(int i=0;i<deviceIds.length-1;i++){
@@ -749,21 +754,20 @@ public class HCPDomainRoutingManager {
 
     /**
      * send the requst to the SuperController for get the Domain routing
-     * @param srcHost  src host
-     * @param srcAddress request src Ipaddress
-     * @param targetAddress request dst Ipaddress
-     * @param connectPoint  the device of recive the request information
+     * @param srcIoT
+     * @param dstIoT
+     * @param connectPoint
+     * @param hcpFlowType
      */
-    private void SendFlowRequestToSuper(Host srcHost,IpAddress srcAddress,IpAddress targetAddress,ConnectPoint connectPoint) {
+    private void SendFlowRequestToSuper(HCPIOT srcIoT,HCPIOT dstIoT,ConnectPoint connectPoint,HCPFlowType hcpFlowType) {
+        IpAddress srcAddress = IpAddress.valueOf(srcIoT.getiPv4Address().toString());
         Map<HCPVport,Path> pathmap=ipaddressPathMap.get(srcAddress);
         if(pathmap==null){
             pathmap=new HashMap<>();
             ipaddressPathMap.put(srcAddress,pathmap);
         }
         DefaultTopology topology=(DefaultTopology)topologyService.currentTopology();
-        DeviceId srcDeviceId=srcHost.location().deviceId();
-        IPv4Address src=IPv4Address.of(srcAddress.toString());
-        IPv4Address dst=IPv4Address.of(targetAddress.toString());
+        DeviceId srcDeviceId = connectPoint.deviceId();
         List<HCPVportHop> vportHops=new ArrayList<>();
         Set<ConnectPoint> connectPointSet=hcpDomainTopoServie.getVPortConnectPoint();
         for (ConnectPoint connectPoint1:connectPointSet){
@@ -790,10 +794,18 @@ public class HCPDomainRoutingManager {
             }
         }
 //        log.info("==========IddressPathMap======={}",ipaddressPathMap.toString());
-        HCPFlowType hcpFlowType =HCPFlowType.HCP_HOST;
-        HCPForwardingRequest hcpForwardingRequest= HCPForwardingRequestVer10.of(hcpFlowType,src,dst,(int )connectPoint.port().toLong()
-                                                    ,Ethernet.TYPE_IPV4,(byte)3,vportHops);
+        HCPForwardingRequest hcpForwardingRequest = null;
+        if (hcpFlowType.equals(HCPFlowType.HCP_HOST) ){
+            IPv4Address src = srcIoT.getiPv4Address();
+            IPv4Address dst = dstIoT.getiPv4Address();
+            hcpForwardingRequest= HCPForwardingRequestVer10.of(hcpFlowType,src,dst,(int )connectPoint.port().toLong()
+                    ,Ethernet.TYPE_IPV4,(byte)3,vportHops);
 //        log.info("======================hcpForwardingRequest============={}",hcpForwardingRequest.toString());
+        }
+        if (hcpFlowType.equals(HCPFlowType.HCP_IOT)){
+            hcpForwardingRequest = HCPForwardingRequestVer10.of(hcpFlowType,srcIoT,dstIoT,(int)connectPoint.port().toLong()
+                    ,Ethernet.TYPE_IPV4,(byte)3,vportHops);
+        }
         Set<HCPSbpFlags> flagsSet = new HashSet<>();
         flagsSet.add(HCPSbpFlags.DATA_EXITS);
         HCPSbp hcpSbp=hcpfactory.buildSbp()
@@ -826,7 +838,7 @@ public class HCPDomainRoutingManager {
             if (ethernet == null || ethernet.getEtherType() == Ethernet.TYPE_LLDP) {
                 return;
             }
-
+            InboundPacket inboundPacket = packetContext.inPacket();
             PortNumber dstPort = packetContext.inPacket().receivedFrom().port();
             DeviceId dstDeviceId = packetContext.inPacket().receivedFrom().deviceId();
             ConnectPoint connectPoint = new ConnectPoint(dstDeviceId, dstPort);
@@ -841,37 +853,90 @@ public class HCPDomainRoutingManager {
                 targetAddress = Ip4Address.valueOf(((IPv4) ethernet.getPayload()).getDestinationAddress());
 //                log.info("==============srcAddress:{},targetAddress:{}======", srcAddress.toString(), targetAddress.toString());
             }
-
-            Set<Host> dsthost = hostService.getHostsByIp(targetAddress);
-            Set<Host> srchost = hostService.getHostsByIp(srcAddress);
-            if (dsthost != null && dsthost.size() > 0) {
-                if (ethernet.getEtherType() == Ethernet.TYPE_IPV4) {
-                    processIpv4InDomain((Host)srchost.toArray()[0], (Host) dsthost.toArray()[0], srcAddress,targetAddress);
+            if (!targetAddress.toString().equals("10.0.0.0")){
+                Set<Host> dsthost = hostService.getHostsByIp(targetAddress);
+                Set<Host> srchost = hostService.getHostsByIp(srcAddress);
+                if (dsthost != null && dsthost.size() > 0) {
+                    if (ethernet.getEtherType() == Ethernet.TYPE_IPV4) {
+                        processIpv4InDomain(((Host)srchost.toArray()[0]).location(), ((Host) dsthost.toArray()[0]).location(), srcAddress,targetAddress);
+                    }
+                    packetContext.block();
+                    return;
                 }
-                packetContext.block();
-                return;
-            }
-            //构建packetIn数据包发送给上层控制器
-            if (ethernet.getEtherType() == Ethernet.TYPE_ARP) {
+                //构建packetIn数据包发送给上层控制器
+                if (ethernet.getEtherType() == Ethernet.TYPE_ARP) {
 //                log.info("========arp=====",(ARP)ethernet.getPayload());
-                byte[] frames = ethernet.serialize();
-                HCPPacketIn hcpPacketIn = HCPPacketInVer10.of((int) domainTopoService.getLogicalVportNumber(connectPoint).toLong(), frames);
-                Set<HCPSbpFlags> flagsSet = new HashSet<>();
-                flagsSet.add(HCPSbpFlags.DATA_EXITS);
-                HCPSbp hcpSbp = hcpfactory.buildSbp()
-                        .setSbpCmpType(HCPSbpCmpType.PACKET_IN)
-                        .setFlags(flagsSet)
-                        .setDataLength((short) hcpPacketIn.getData().length)
-                        .setSbpXid(1)
-                        .setSbpCmpData(hcpPacketIn)
-                        .build();
-                domainController.write(hcpSbp);
-                packetContext.block();
-            } else if (ethernet.getEtherType() == Ethernet.TYPE_IPV4) {
-//                return ;
-                SendFlowRequestToSuper((Host)srchost.toArray()[0],srcAddress,targetAddress,connectPoint);
-                packetContext.block();
+                    byte[] frames = ethernet.serialize();
+                    HCPPacketIn hcpPacketIn = HCPPacketInVer10.of((int) domainTopoService.getLogicalVportNumber(connectPoint).toLong(), frames);
+                    Set<HCPSbpFlags> flagsSet = new HashSet<>();
+                    flagsSet.add(HCPSbpFlags.DATA_EXITS);
+                    HCPSbp hcpSbp = hcpfactory.buildSbp()
+                            .setSbpCmpType(HCPSbpCmpType.PACKET_IN)
+                            .setFlags(flagsSet)
+                            .setDataLength((short) hcpPacketIn.getData().length)
+                            .setSbpXid(1)
+                            .setSbpCmpData(hcpPacketIn)
+                            .build();
+                    domainController.write(hcpSbp);
+                    packetContext.block();
+                } else if (ethernet.getEtherType() == Ethernet.TYPE_IPV4) {
+                    HCPIOT srcIOT = HCPIOT.of(IPv4Address.of(srcAddress.toString()),HCPIoTType.IOT_EPC,HCPIOTID.DEFAULT,HCPIoTState.ACTIVE);
+                    HCPIOT dstIOT = HCPIOT.of(IPv4Address.of(targetAddress.toString()),HCPIoTType.IOT_EPC,HCPIOTID.DEFAULT,HCPIoTState.ACTIVE);
+                    SendFlowRequestToSuper(srcIOT,dstIOT,connectPoint,HCPFlowType.HCP_HOST);
+                    packetContext.block();
+                }
             }
+            if (targetAddress.toString().equals("10.0.0.0")){
+                byte packet_type = (byte) Integer.parseInt(HexString.parseInboundPacket(inboundPacket,42,1),16);
+                byte dst_iot_type = (byte) Integer.parseInt(HexString.parseInboundPacket(inboundPacket,43,1),16);
+                if (packet_type != 0x32){
+                    return;
+                }
+                String dst_iot_id = null;
+                String src_iot_id = null;
+                int index = 0;
+                byte src_iot_type = 0;
+                if (dst_iot_type == HCPIoTTypeSerializerVer10.IOT_EPC_VAL){
+                    dst_iot_id = HexString.parseInboundPacket(inboundPacket,44,24);
+                    src_iot_type = (byte) Integer.parseInt(HexString.parseInboundPacket(inboundPacket,68,1),16);
+                    index = 69;
+                }else if (dst_iot_type == HCPIoTTypeSerializerVer10.IOT_ECODE_VAL){
+                    dst_iot_id = HexString.parseInboundPacket(inboundPacket,44,18);
+                    src_iot_type = (byte) Integer.parseInt(HexString.parseInboundPacket(inboundPacket,61,1),16);
+                    index = 62;
+                }else if (dst_iot_type == HCPIoTTypeSerializerVer10.IOT_OID_VAL){
+                    dst_iot_id = HexString.parseInboundPacket(inboundPacket,44,16);
+                    src_iot_type = (byte) Integer.parseInt(HexString.parseInboundPacket(inboundPacket,60,1),16);
+                    index = 61;
+                }else{
+                    return;
+                }
+                if (src_iot_type == HCPIoTTypeSerializerVer10.IOT_EPC_VAL){
+                    src_iot_id = HexString.parseInboundPacket(inboundPacket,index,24);
+                }else if (src_iot_type == HCPIoTTypeSerializerVer10.IOT_ECODE_VAL){
+                    src_iot_id = HexString.parseInboundPacket(inboundPacket,index,18);
+                }else if(src_iot_type == HCPIoTTypeSerializerVer10.IOT_OID_VAL){
+                    src_iot_id = HexString.parseInboundPacket(inboundPacket,index,16);
+                }else{
+                    return;
+                }
+                HCPIOTID srcIOTID = HCPIOTID.of(src_iot_id);
+                HCPIOTID dstIOTID = HCPIOTID.of(dst_iot_id);
+                if (hcpDomainHostService.getConnectionByIoTId(dstIOTID)!= null){
+                    targetAddress = IpAddress.valueOf(hcpDomainHostService.getHCPIOTByIoTId(dstIOTID).getiPv4Address().toString());
+                    ConnectPoint dstConnectPoint = hcpDomainHostService.getConnectionByIoTId(dstIOTID);
+                    processIpv4InDomain(connectPoint,dstConnectPoint, srcAddress,targetAddress);
+                    packetContext.block();
+                    return;
+                }
+                HCPIOT srcIOT = hcpDomainHostService.getHCPIOTByIoTId(srcIOTID);
+                HCPIOT dstIOT = HCPIOT.of(IPv4Address.of("0.0.0.0"),HCPIoTTypeSerializerVer10.ofWireValue(dst_iot_type),dstIOTID,HCPIoTState.ACTIVE);
+                SendFlowRequestToSuper(srcIOT,dstIOT,connectPoint,HCPFlowType.HCP_IOT);
+                packetContext.block();
+                return ;
+
+            }
+
 
         }
     }

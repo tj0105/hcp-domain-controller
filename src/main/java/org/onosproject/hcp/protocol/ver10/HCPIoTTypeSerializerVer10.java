@@ -12,9 +12,9 @@ import org.onosproject.hcp.protocol.HCPSbpCmpType;
  * @Version 1.0
  */
 public class HCPIoTTypeSerializerVer10 {
-    public final static byte IOT_EPC_VAL = 0x1e;
-    public final static byte IOT_ECODE_VAL = 0x1f;
-    public final static byte IOT_OID_VAL = 0x20;
+    public final static byte IOT_EPC_VAL = 0x30;
+    public final static byte IOT_ECODE_VAL = 0x31;
+    public final static byte IOT_OID_VAL = 0x32;
 
     public static HCPIoTType readFrom(ChannelBuffer bb) throws HCPParseError {
         try{

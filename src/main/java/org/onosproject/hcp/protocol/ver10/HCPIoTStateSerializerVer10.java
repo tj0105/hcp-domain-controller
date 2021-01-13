@@ -11,8 +11,8 @@ import org.onosproject.hcp.protocol.HCPIoTState;
  * @Version 1.0
  */
 public class HCPIoTStateSerializerVer10 {
-    public final static byte ACTIVE_VAL=0x0;
-    public final static byte INACTIVE_VAL=0x1;
+    public final static byte ACTIVE_VAL=0x30;
+    public final static byte INACTIVE_VAL=0x31;
 
     public static HCPIoTState readFrom(ChannelBuffer bb) throws HCPParseError {
         try{

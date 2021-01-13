@@ -16,6 +16,7 @@ public class HCPIOTID implements Writeable,PrimitiveSinkable {
     private short length ;
     private byte[] IotID;
 
+    public static final HCPIOTID DEFAULT = HCPIOTID.of("000");
     private HCPIOTID(short length, byte[] IotID){
         this.length = length;
         this.IotID = IotID;

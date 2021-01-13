@@ -1,25 +1,36 @@
 package org.onosproject.system.domain;
 
 import org.apache.felix.scr.annotations.*;
-import org.onlab.packet.IpAddress;
+import org.onlab.packet.*;
 import org.onlab.util.Tools;
 import org.onosproject.api.HCPSuper;
 import org.onosproject.api.HCPSuperMessageListener;
 import org.onosproject.api.domain.HCPDomainController;
 import org.onosproject.api.Super.HCPSuperControllerListener;
+import org.onosproject.api.domain.HCPDomainHostService;
 import org.onosproject.hcp.protocol.*;
-import org.onosproject.hcp.types.HCPHost;
-import org.onosproject.hcp.types.IPv4Address;
+import org.onosproject.hcp.protocol.ver10.HCPIoTStateSerializerVer10;
+import org.onosproject.hcp.protocol.ver10.HCPIoTTypeSerializerVer10;
+import org.onosproject.hcp.types.*;
 import org.onosproject.hcp.types.MacAddress;
+import org.onosproject.hcp.util.HexString;
+import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.Host;
+import org.onosproject.net.PortNumber;
 import org.onosproject.net.host.HostEvent;
 import org.onosproject.net.host.HostListener;
 import org.onosproject.net.host.HostService;
+import org.onosproject.net.packet.InboundPacket;
+import org.onosproject.net.packet.PacketContext;
+import org.onosproject.net.packet.PacketProcessor;
+import org.onosproject.net.packet.PacketService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -31,7 +42,8 @@ import java.util.concurrent.TimeUnit;
  * @Version 1.0
  */
 @Component(immediate =true )
-public class HCPDomainHostManager {
+@Service
+public class HCPDomainHostManager implements HCPDomainHostService {
     private static final Logger log= LoggerFactory.getLogger(HCPDomainHostManager.class);
 
     private HCPVersion hcpVersion;
@@ -41,21 +53,32 @@ public class HCPDomainHostManager {
     protected HostService hostService;
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected PacketService packetService;
+
+
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected HCPDomainController domainController;
+
+    private PacketProcessor hcpiotPacketProcesser = new ReactivePacketProcessor();
 
     private HostListener hostListener=new InternalHostListener();
     private HCPSuperMessageListener hcpSuperMessageListener=new InternalHCPSuperMessageListener();
     private HCPSuperControllerListener hcpSuperControllerListener=new InternalHCPSuperControllerListener();
 
     private ScheduledExecutorService executorService;
+
+    //store the IOT
+    private Map<HCPIOTID,ConnectPoint> hcpiotidConnectPointMap = new HashMap<>();
+    private Map<HCPIOTID,HCPIOT> hcpiotidhcpiotMap = new HashMap<>();
     //判断是否 connect SuperController
     private boolean flag=false;
-
+    private final byte IOT_ONLINE = 0x30;
+    private final byte IOT_OFFLINE = 0x31;
+    private final byte IOT_COMMUNICATE = 0x32;
     @Activate
     public void activate() {
         domainController.addHCPSuperControllerListener(hcpSuperControllerListener);
         log.info("============Domain HostManager started===========");
-
     }
 
 
@@ -70,6 +93,7 @@ public class HCPDomainHostManager {
         }
         domainController.removeMessageListener(hcpSuperMessageListener);
         hostService.removeListener(hostListener);
+        packetService.removeProcessor(hcpiotPacketProcesser);
         log.info("============Domain HostManager stoped===========");
     }
 
@@ -82,6 +106,7 @@ public class HCPDomainHostManager {
 //        executorService.scheduleAtFixedRate(new HostUpdateTesk(),domainController.getPeriod(),domainController.getPeriod(), TimeUnit.SECONDS);
         domainController.addMessageListener(hcpSuperMessageListener);
         hostService.addListener(hostListener);
+        packetService.addProcessor(hcpiotPacketProcesser,1);
         log.info("Host Manager have successful activate");
     }
 
@@ -133,6 +158,16 @@ public class HCPDomainHostManager {
             hosts.add(hcpHost);
         }
         return hosts;
+    }
+
+    @Override
+    public ConnectPoint getConnectionByIoTId(HCPIOTID hcpiotid) {
+        return hcpiotidConnectPointMap.get(hcpiotid);
+    }
+
+    @Override
+    public HCPIOT getHCPIOTByIoTId(HCPIOTID hcpiotid) {
+        return hcpiotidhcpiotMap.get(hcpiotid);
     }
 
     private class InternalHostListener implements HostListener {
@@ -195,6 +230,65 @@ public class HCPDomainHostManager {
         }
     }
 
+    /**
+     * Process the IOT online and offline
+     */
+    private class ReactivePacketProcessor implements PacketProcessor{
+
+        @Override
+        public void process(PacketContext packetContext) {
+            if (packetContext.isHandled())
+                return;
+            Ethernet ethernet = packetContext.inPacket().parsed();
+            if (ethernet == null || ethernet.getEtherType() == Ethernet.TYPE_LLDP){
+                return;
+            }
+            if (ethernet.getEtherType() != Ethernet.TYPE_IPV4){
+                return ;
+            }
+            ConnectPoint connectPoint = packetContext.inPacket().receivedFrom();
+            IPv4 iPv4Packet = (IPv4) ethernet.getPayload();
+            String dstIp = Ip4Address.valueOf(iPv4Packet.getDestinationAddress()).toString();
+            if (!dstIp.equals("10.0.0.0")){
+                return ;
+            }
+            InboundPacket inboundPacket = packetContext.inPacket();
+            IPv4Address srcIp = IPv4Address.of(Ip4Address.valueOf(iPv4Packet.getSourceAddress()).toString());
+            byte packet_type = (byte) Integer.parseInt(HexString.parseInboundPacket(inboundPacket,42,1),16);
+            byte iot_type = (byte) Integer.parseInt(HexString.parseInboundPacket(inboundPacket,43,1),16);
+            if (packet_type == IOT_COMMUNICATE){
+                return ;
+            }
+            String iot_id = null;
+            if (iot_type == HCPIoTTypeSerializerVer10.IOT_EPC_VAL){
+                iot_id = HexString.parseInboundPacket(inboundPacket,44,22);
+            }else if (iot_type == HCPIoTTypeSerializerVer10.IOT_ECODE_VAL){
+                iot_id = HexString.parseInboundPacket(inboundPacket,44,18);
+            }else if (iot_type == HCPIoTTypeSerializerVer10.IOT_OID_VAL){
+                iot_id = HexString.parseInboundPacket(inboundPacket,44,16);
+            }else{
+                return ;
+            }
+            HCPIOTID hcpiotid = HCPIOTID.of(iot_id);
+            HCPIOT hcpiot = HCPIOT.of(srcIp,HCPIoTTypeSerializerVer10.ofWireValue(iot_type),hcpiotid,HCPIoTStateSerializerVer10.ofWireValue(packet_type));
+            if (packet_type == IOT_ONLINE){
+                hcpiotidConnectPointMap.put(hcpiotid,connectPoint);
+                hcpiotidhcpiotMap.put(hcpiotid,hcpiot);
+            }else if(packet_type == IOT_OFFLINE){
+
+                hcpiotidhcpiotMap.remove(hcpiotid);
+                hcpiotidConnectPointMap.remove(hcpiotid);
+            }else{
+                return ;
+            }
+            HCPIoTReply hcpIoTReply = hcpFactory.buildIoTReply()
+                    .setDomainId(domainController.getDomainId())
+                    .setIoTs(new ArrayList<HCPIOT>(){{add(hcpiot);}})
+                    .build();
+            domainController.write(hcpIoTReply);
+            packetContext.block();
+        }
+    }
     class HostUpdateTesk implements Runnable{
 
         @Override
@@ -202,4 +296,6 @@ public class HCPDomainHostManager {
             updateExisHosts(null);
         }
     }
+
+
 }

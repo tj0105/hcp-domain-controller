@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.onosproject.hcp.protocol.*;
 import org.onosproject.hcp.protocol.ver10.HCPIoTReplyVer10;
 import org.onosproject.hcp.protocol.ver10.HCPIoTRequestVer10;
+import org.onosproject.hcp.protocol.ver10.HCPIoTTypeSerializerVer10;
 import org.onosproject.hcp.protocol.ver10.HCPIoTUpdateVer10;
 import org.onosproject.hcp.types.DomainId;
 import org.onosproject.hcp.types.HCPIOT;
@@ -45,6 +46,7 @@ public class HCPIoTMsgTest {
 
     @Test
     public void HCPIoTReply() throws Exception{
+        System.out.println(HCPIoTTypeSerializerVer10.IOT_OID_VAL);
         ChannelBuffer channelBuffer = ChannelBuffers.dynamicBuffer();
         IPv4Address iPv4Address = IPv4Address.of("10.0.0.1");
         HCPIoTType hcpIoTType = HCPIoTType.IOT_EPC;

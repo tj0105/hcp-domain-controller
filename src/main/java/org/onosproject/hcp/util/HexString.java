@@ -1,5 +1,7 @@
 package org.onosproject.hcp.util;
 
+import org.onosproject.net.packet.InboundPacket;
+
 public class HexString {
 
 
@@ -43,5 +45,13 @@ public class HexString {
     }
     public static String toHexString(final long value){
         return toHexString(value,8);
+    }
+
+    public static String parseInboundPacket(InboundPacket inboundPacket, int index, int length){
+        String result = "";
+        for (int i = 0; i < length; i++) {
+            result += String.format("%02x",inboundPacket.unparsed().get(index + i)&0xff);
+        }
+        return result;
     }
 }
