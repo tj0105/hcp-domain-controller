@@ -155,7 +155,7 @@ public class HCPDomainRoutingManager {
 
     private LinkWeigher BANDWIDTH_WEIGHT = new graphBanwidthWeigth();
     private boolean flag = false;
-    private boolean drl_flag = true;
+    private boolean drl_flag = false;
 
     //DRL socket
     private Socket DRL_Socket;
@@ -465,9 +465,7 @@ public class HCPDomainRoutingManager {
 
             Topology topology = topologyService.currentTopology();
             DefaultTopology defaultTopology = (DefaultTopology) topology;
-//        log.info("==================Topology:{}{}",topology.linkCount(),topology.deviceCount());
             Set<Path> paths = defaultTopology.getPaths(srcDeviceId, dstDeviceId, BANDWIDTH_WEIGHT);
-//        log.info("===============paths:{}",paths.toString());
             if (paths == null) {
                 paths = defaultTopology.getPaths(srcDeviceId, dstDeviceId);
             }
@@ -477,9 +475,8 @@ public class HCPDomainRoutingManager {
             if (path == null) {
                 Topology topology = topologyService.currentTopology();
                 DefaultTopology defaultTopology = (DefaultTopology) topology;
-//        log.info("==================Topology:{}{}",topology.linkCount(),topology.deviceCount());
                 Set<Path> paths = defaultTopology.getPaths(srcDeviceId, dstDeviceId, BANDWIDTH_WEIGHT);
-//        log.info("===============paths:{}",paths.toString());
+
                 if (paths == null) {
                     paths = defaultTopology.getPaths(srcDeviceId, dstDeviceId);
                 }
@@ -662,7 +659,14 @@ public class HCPDomainRoutingManager {
             }
             Path path = null;
             if (!drl_flag) {
-                path = getvportPath(dstAddress, dstVPort);
+//                path = getvportPath(dstAddress, dstVPort);
+                Topology topology = topologyService.currentTopology();
+                DefaultTopology defaultTopology = (DefaultTopology) topology;
+                Set<Path> paths = defaultTopology.getPaths(srcConnectPoint.deviceId(), dstConnectPoint.deviceId(), BANDWIDTH_WEIGHT);
+                if (paths == null) {
+                    paths = defaultTopology.getPaths(srcConnectPoint.deviceId(), dstConnectPoint.deviceId());
+                }
+                path = (Path) paths.toArray()[0];
             } else {
                 path = getDRLPath(srcConnectPoint.deviceId(), dstConnectPoint.deviceId(), srcIp, dstIp);
             }
@@ -706,7 +710,14 @@ public class HCPDomainRoutingManager {
 
             Path path = null;
             if (!drl_flag) {
-                path = getvportPath(srcAddress, dstVPort);
+//                path = getvportPath(srcAddress, dstVPort);
+                Topology topology = topologyService.currentTopology();
+                DefaultTopology defaultTopology = (DefaultTopology) topology;
+                Set<Path> paths = defaultTopology.getPaths(srcConnectPoint.deviceId(), connectPoint.deviceId(), BANDWIDTH_WEIGHT);
+                if (paths == null) {
+                    paths = defaultTopology.getPaths(srcConnectPoint.deviceId(), connectPoint.deviceId());
+                }
+                path = (Path) paths.toArray()[0];
             } else {
                 path = getDRLPath(srcConnectPoint.deviceId(), connectPoint.deviceId(), srcIp, dstIp);
             }
@@ -854,7 +865,7 @@ public class HCPDomainRoutingManager {
      * if the Packet is ARP_request and ARP_reply, check the target Address whether in the domain,
      * if not ,encapsulation  the arp_request and arp_reply packet into the HCPSbp(PacketIN),then
      * send to the SuperController.
-     * if the packet the ipv4, if the target Address in the domain,calculate the source address and target
+     * if the packet is ipv4, if the target Address in the domain,calculate the source address and target
      * address path, construct the flow entry to the deviceId, if not,send to the SuperController and calculate
      * the hops from the source address to every vport.
      */
@@ -1154,12 +1165,6 @@ public class HCPDomainRoutingManager {
 
         @Override
         public Weight weight(TopologyEdge topologyEdge) {
-//            if (hcpDomainTopoServie.getResetVportCapability(topologyEdge.link().dst())<hcpDomainTopoServie.getVportMaxCapability(topologyEdge.link().dst())*0.2){
-//                return ScalarWeight.NON_VIABLE_WEIGHT;
-//            }
-//            else{
-//                return new ScalarWeight(1);
-//            }
             return new ScalarWeight(1);
 //
         }
