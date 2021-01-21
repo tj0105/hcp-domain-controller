@@ -15,10 +15,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.sql.Time;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -33,14 +30,36 @@ public class HexTest {
 //        byte c=126;
 //        int a=9;
         Map<PortNumber,Integer> portNumberIntegerMap=new HashMap<>();
-        System.out.println(portNumberIntegerMap.keySet().isEmpty());
-//        HashMap<PortNumber,Integer> hashMap=new HashMap<>();
         PortNumber port=PortNumber.portNumber(1);
         PortNumber port2=PortNumber.portNumber(2);
         portNumberIntegerMap.put(port,1);
         portNumberIntegerMap.put(port2,2);
+        if (!portNumberIntegerMap.containsKey(PortNumber.IN_PORT)){
+            System.out.println("qqqq");
+        }else{
+            System.out.println("11111");
+        }
+        System.out.println();
+        System.out.println(portNumberIntegerMap.keySet().isEmpty());
+//        HashMap<PortNumber,Integer> hashMap=new HashMap<>();
+
         System.out.println(portNumberIntegerMap.toString());
         System.out.println(new HashMap<>(portNumberIntegerMap));
+
+
+        List<Integer> list =  new ArrayList<Integer>();
+        list.add(1);
+        list.add(10);
+        list.add(100);
+        list.add(2);
+        //正序排序
+//        Collections.sort(list);
+        System.out.println(list.toString());
+        //反转之后变成倒序 排序
+        Collections.reverse(list);
+        for(Integer i:list) {
+            System.out.println(i);
+        }
 // hashMap.put(null,null);
 //        System.out.println(hashMap.size());
 //        System.out.println(b+c);

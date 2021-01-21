@@ -30,9 +30,9 @@ import java.util.concurrent.TimeUnit;
  * @Date: 20-2-29 下午9:08
  * @Version 1.0
  */
-@Component(immediate =true )
+@Component(immediate = true)
 public class HCPDomainHostManager {
-    private static final Logger log= LoggerFactory.getLogger(HCPDomainHostManager.class);
+    private static final Logger log = LoggerFactory.getLogger(HCPDomainHostManager.class);
 
     private HCPVersion hcpVersion;
     private HCPFactory hcpFactory;
@@ -43,13 +43,13 @@ public class HCPDomainHostManager {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected HCPDomainController domainController;
 
-    private HostListener hostListener=new InternalHostListener();
-    private HCPSuperMessageListener hcpSuperMessageListener=new InternalHCPSuperMessageListener();
-    private HCPSuperControllerListener hcpSuperControllerListener=new InternalHCPSuperControllerListener();
+    private HostListener hostListener = new InternalHostListener();
+    private HCPSuperMessageListener hcpSuperMessageListener = new InternalHCPSuperMessageListener();
+    private HCPSuperControllerListener hcpSuperControllerListener = new InternalHCPSuperControllerListener();
 
     private ScheduledExecutorService executorService;
     //判断是否 connect SuperController
-    private boolean flag=false;
+    private boolean flag = false;
 
     @Activate
     public void activate() {
@@ -60,12 +60,12 @@ public class HCPDomainHostManager {
 
 
     @Deactivate
-    public void deactivate(){
+    public void deactivate() {
         domainController.removeHCPSuperControllerListener(hcpSuperControllerListener);
-        if (!flag){
-            return ;
+        if (!flag) {
+            return;
         }
-        if (executorService!=null){
+        if (executorService != null) {
             executorService.shutdown();
         }
         domainController.removeMessageListener(hcpSuperMessageListener);
@@ -73,10 +73,10 @@ public class HCPDomainHostManager {
         log.info("============Domain HostManager stoped===========");
     }
 
-    public void init(){
-        flag=true;
-        hcpVersion=domainController.getHCPVersion();
-        hcpFactory=HCPFactories.getFactory(hcpVersion);
+    public void init() {
+        flag = true;
+        hcpVersion = domainController.getHCPVersion();
+        hcpFactory = HCPFactories.getFactory(hcpVersion);
 //        executorService= Executors.newSingleThreadScheduledExecutor
 //                (Tools.groupedThreads("hcp/hostupdate", "hcp-hostupdate-%d", log));
 //        executorService.scheduleAtFixedRate(new HostUpdateTesk(),domainController.getPeriod(),domainController.getPeriod(), TimeUnit.SECONDS);
@@ -85,51 +85,51 @@ public class HCPDomainHostManager {
         log.info("Host Manager have successful activate");
     }
 
-    private void updateExisHosts(HCPHostRequest hcpHostRequest){
-        List<HCPHost> hcpHosts=new ArrayList<>();
-        for (Host host:hostService.getHosts())
-            hcpHosts.addAll(toHCPHosts(host,HCPHostState.ACTIVE));
-        if (hcpHosts.isEmpty()){
-            return ;
+    private void updateExisHosts(HCPHostRequest hcpHostRequest) {
+        List<HCPHost> hcpHosts = new ArrayList<>();
+        for (Host host : hostService.getHosts())
+            hcpHosts.addAll(toHCPHosts(host, HCPHostState.ACTIVE));
+        if (hcpHosts.isEmpty()) {
+            return;
         }
-        sendHostChangeMessage(hcpHosts,hcpHostRequest);
+        sendHostChangeMessage(hcpHosts, hcpHostRequest);
     }
 
-    private void updateHost(Host host){
-        sendHostChangeMessage(toHCPHosts(host,HCPHostState.ACTIVE),null);
+    private void updateHost(Host host) {
+        sendHostChangeMessage(toHCPHosts(host, HCPHostState.ACTIVE), null);
     }
 
-    private void removeHost(Host host){
-        sendHostChangeMessage(toHCPHosts(host,HCPHostState.ACTIVE),null);
+    private void removeHost(Host host) {
+        sendHostChangeMessage(toHCPHosts(host, HCPHostState.ACTIVE), null);
     }
 
-    private void sendHostChangeMessage(List<HCPHost> hcpHosts,HCPHostRequest hcpHostRequest){
-        HCPMessage hcpMessage=null;
-        if (null != hcpHostRequest){
-            hcpMessage=hcpFactory.buildHostReply()
+    private void sendHostChangeMessage(List<HCPHost> hcpHosts, HCPHostRequest hcpHostRequest) {
+        HCPMessage hcpMessage = null;
+        if (null != hcpHostRequest) {
+            hcpMessage = hcpFactory.buildHostReply()
                     .setDomainId(domainController.getDomainId())
                     .setHosts(hcpHosts)
                     .build();
-        }else{
-            hcpMessage =hcpFactory.buildHostUpdate()
+        } else {
+            hcpMessage = hcpFactory.buildHostUpdate()
                     .setDomainId(domainController.getDomainId())
                     .setHosts(hcpHosts)
                     .build();
         }
 
-        if (!domainController.isConnectToSuper()){
+        if (!domainController.isConnectToSuper()) {
             return;
         }
 //        log.info("DomainId: {} host update, num:{}",domainController.getDomainId(),hcpHosts.size());
         domainController.write(hcpMessage);
     }
 
-    private List<HCPHost> toHCPHosts(Host host,HCPHostState hcpHostState){
-        List<HCPHost> hosts=new ArrayList<>();
-        for (IpAddress ip:host.ipAddresses()){
-            IPv4Address iPv4Address=IPv4Address.of(ip.toOctets());
-            MacAddress  macAddress=MacAddress.of(host.mac().toBytes());
-            HCPHost hcpHost=HCPHost.of(iPv4Address,macAddress, hcpHostState);
+    private List<HCPHost> toHCPHosts(Host host, HCPHostState hcpHostState) {
+        List<HCPHost> hosts = new ArrayList<>();
+        for (IpAddress ip : host.ipAddresses()) {
+            IPv4Address iPv4Address = IPv4Address.of(ip.toOctets());
+            MacAddress macAddress = MacAddress.of(host.mac().toBytes());
+            HCPHost hcpHost = HCPHost.of(iPv4Address, macAddress, hcpHostState);
             hosts.add(hcpHost);
         }
         return hosts;
@@ -155,23 +155,23 @@ public class HCPDomainHostManager {
                 default:
             }
             if (null != removedHost) {
-                hcpHosts.addAll(toHCPHosts(removedHost,HCPHostState.INACTIVE));
+                hcpHosts.addAll(toHCPHosts(removedHost, HCPHostState.INACTIVE));
             }
             if (null != updatedHost) {
-                hcpHosts.addAll(toHCPHosts(updatedHost,HCPHostState.ACTIVE));
+                hcpHosts.addAll(toHCPHosts(updatedHost, HCPHostState.ACTIVE));
             }
 //            log.info("=============hcpHost======{}",hcpHosts.toString());
-            sendHostChangeMessage(hcpHosts,null);
+            sendHostChangeMessage(hcpHosts, null);
         }
     }
 
-    private class InternalHCPSuperMessageListener implements HCPSuperMessageListener{
+    private class InternalHCPSuperMessageListener implements HCPSuperMessageListener {
 
         @Override
         public void handleIncommingMessage(HCPMessage message) {
-                if (message.getType()!=HCPType.HCP_HOST_REQUEST)
-                    return;
-                updateExisHosts((HCPHostRequest)message);
+            if (message.getType() != HCPType.HCP_HOST_REQUEST)
+                return;
+            updateExisHosts((HCPHostRequest) message);
         }
 
         @Override
@@ -180,7 +180,7 @@ public class HCPDomainHostManager {
         }
     }
 
-    private class InternalHCPSuperControllerListener implements  HCPSuperControllerListener{
+    private class InternalHCPSuperControllerListener implements HCPSuperControllerListener {
 
         @Override
         public void connectToSuperController(HCPSuper hcpSuper) {
@@ -195,7 +195,7 @@ public class HCPDomainHostManager {
         }
     }
 
-    class HostUpdateTesk implements Runnable{
+    class HostUpdateTesk implements Runnable {
 
         @Override
         public void run() {

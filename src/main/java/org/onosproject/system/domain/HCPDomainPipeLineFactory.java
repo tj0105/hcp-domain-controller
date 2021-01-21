@@ -17,32 +17,33 @@ import org.onosproject.system.HCPMessageEncoder;
  * @Date: 20-2-29 下午12:17
  * @Version 1.0
  */
-public class HCPDomainPipeLineFactory implements ChannelPipelineFactory,ExternalResourceReleasable{
+public class HCPDomainPipeLineFactory implements ChannelPipelineFactory, ExternalResourceReleasable {
     private HCPDomainController domainController;
     protected Timer timer;
     protected IdleStateHandler idleStateHandler;
     protected ReadTimeoutHandler readTimeoutHandler;
 
 
-    public HCPDomainPipeLineFactory(HCPDomainController domainController){
+    public HCPDomainPipeLineFactory(HCPDomainController domainController) {
         super();
-        this.domainController=domainController;
-        this.timer=new HashedWheelTimer();
-        this.idleStateHandler=new IdleStateHandler(timer,20,25,0);
-        this.readTimeoutHandler=new ReadTimeoutHandler(timer,30);
+        this.domainController = domainController;
+        this.timer = new HashedWheelTimer();
+        this.idleStateHandler = new IdleStateHandler(timer, 20, 25, 0);
+        this.readTimeoutHandler = new ReadTimeoutHandler(timer, 30);
 
 
     }
+
     @Override
     public ChannelPipeline getPipeline() throws Exception {
-        HCPDomainChannelHandler handler=new HCPDomainChannelHandler(domainController);
+        HCPDomainChannelHandler handler = new HCPDomainChannelHandler(domainController);
 
-        ChannelPipeline pipeline= Channels.pipeline();
-        pipeline.addLast("hcpmessageDecoder",new HCPMessageDecoder());
-        pipeline.addLast("hcpmessageEncoder",new HCPMessageEncoder());
-        pipeline.addLast("idle",idleStateHandler);
-        pipeline.addLast("timeout",readTimeoutHandler);
-        pipeline.addLast("handler",handler);
+        ChannelPipeline pipeline = Channels.pipeline();
+        pipeline.addLast("hcpmessageDecoder", new HCPMessageDecoder());
+        pipeline.addLast("hcpmessageEncoder", new HCPMessageEncoder());
+        pipeline.addLast("idle", idleStateHandler);
+        pipeline.addLast("timeout", readTimeoutHandler);
+        pipeline.addLast("handler", handler);
         return pipeline;
     }
 

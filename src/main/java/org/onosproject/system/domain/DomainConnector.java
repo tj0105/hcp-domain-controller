@@ -23,13 +23,13 @@ import static org.onlab.util.Tools.groupedThreads;
  * @Version 1.0
  */
 public class DomainConnector {
-    public static final Logger log= LoggerFactory.getLogger(DomainConnector.class);
+    public static final Logger log = LoggerFactory.getLogger(DomainConnector.class);
 
-    private static final HCPFactory FACTORY= HCPFactories.getFactory(HCPVersion.HCP_10);
+    private static final HCPFactory FACTORY = HCPFactories.getFactory(HCPVersion.HCP_10);
 
     private ChannelGroup channelGroup;
 
-    protected int workerThreads=16;
+    protected int workerThreads = 16;
 
     private NioClientSocketChannelFactory execFactory;
     private ClientBootstrap bootstrap;
@@ -37,50 +37,50 @@ public class DomainConnector {
 
     private HCPDomainController domainController;
 
-    private final static int SEND_BUUFER_SIZE=4*1024*1024;
+    private final static int SEND_BUUFER_SIZE = 4 * 1024 * 1024;
 
-    public DomainConnector(HCPDomainController domainController){
-        this.domainController=domainController;
+    public DomainConnector(HCPDomainController domainController) {
+        this.domainController = domainController;
     }
 
-    public  HCPFactory getHCPMessageFactory() {
+    public HCPFactory getHCPMessageFactory() {
         return FACTORY;
     }
 
-    public long getSystemStartTime(){
+    public long getSystemStartTime() {
         return systemStartTime;
     }
 
-    public void run(){
-        log.info("domainController superip:{} superPort:{}",domainController.getHCPSuperIp(),domainController.getHCPSuperPort());
+    public void run() {
+        log.info("domainController superip:{} superPort:{}", domainController.getHCPSuperIp(), domainController.getHCPSuperPort());
         try {
-            bootstrap=createBootStrap();
-            bootstrap.setOption("reuseAddr",true);
-            bootstrap.setOption("child.KeepAlive",true);
-            bootstrap.setOption("child.tcpNodelay",true);
-            bootstrap.setOption("child.senBufferSize",SEND_BUUFER_SIZE);
+            bootstrap = createBootStrap();
+            bootstrap.setOption("reuseAddr", true);
+            bootstrap.setOption("child.KeepAlive", true);
+            bootstrap.setOption("child.tcpNodelay", true);
+            bootstrap.setOption("child.senBufferSize", SEND_BUUFER_SIZE);
 
-            ChannelPipelineFactory channelPipelineFactory=new HCPDomainPipeLineFactory(domainController);
+            ChannelPipelineFactory channelPipelineFactory = new HCPDomainPipeLineFactory(domainController);
             bootstrap.setPipelineFactory(channelPipelineFactory);
-            channelGroup=new DefaultChannelGroup();
-            InetSocketAddress sa=new InetSocketAddress(domainController.getHCPSuperIp(),domainController.getHCPSuperPort());
+            channelGroup = new DefaultChannelGroup();
+            InetSocketAddress sa = new InetSocketAddress(domainController.getHCPSuperIp(), domainController.getHCPSuperPort());
             bootstrap.connect(sa);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("");
         }
     }
 
 
-    private ClientBootstrap createBootStrap(){
-        if (workerThreads==0){
+    private ClientBootstrap createBootStrap() {
+        if (workerThreads == 0) {
             execFactory = new NioClientSocketChannelFactory(
                     Executors.newCachedThreadPool(groupedThreads("onos/hcpdomain", "boss-%d")),
-                    Executors.newCachedThreadPool(groupedThreads("onos/hcpdomain","worker-%d")));
+                    Executors.newCachedThreadPool(groupedThreads("onos/hcpdomain", "worker-%d")));
             return new ClientBootstrap(execFactory);
-        }else {
+        } else {
             execFactory = new NioClientSocketChannelFactory(
                     Executors.newCachedThreadPool(groupedThreads("onos/hcpdomain", "boss-%d")),
-                    Executors.newCachedThreadPool(groupedThreads("onos/hcpdomain","worker-%d")),
+                    Executors.newCachedThreadPool(groupedThreads("onos/hcpdomain", "worker-%d")),
                     workerThreads);
             return new ClientBootstrap(execFactory);
         }
@@ -90,24 +90,24 @@ public class DomainConnector {
         return bootstrap;
     }
 
-    public void init(){
-        this.systemStartTime=System.currentTimeMillis();
+    public void init() {
+        this.systemStartTime = System.currentTimeMillis();
     }
 
 
-    public void start(){
+    public void start() {
         log.info("Started");
         this.init();
         this.run();
     }
 
-    public void stop(){
+    public void stop() {
         log.info("Stopped");
         execFactory.shutdown();
         channelGroup.close();
     }
 
-    public Set<HCPConfigFlags> getFlags(){
+    public Set<HCPConfigFlags> getFlags() {
         return domainController.getFlags();
     }
 
@@ -119,6 +119,7 @@ public class DomainConnector {
     public int getPeriod() {
         return domainController.getPeriod();
     }
+
     public void setPeriod(int period) {
         domainController.setPeriod(period);
     }
@@ -126,6 +127,7 @@ public class DomainConnector {
     public long getMissSendLen() {
         return domainController.getMissSendLength();
     }
+
     public void setMissSendLen(long missSendLen) {
         domainController.setMissSendLength(missSendLen);
     }

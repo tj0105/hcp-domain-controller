@@ -57,7 +57,7 @@ public class newTopologyTest {
     private String links_17="1,2:2,3:3,4:4,5:5,6:6,7:" +
             "7,8:8,9:9,10:10,11:11,12:12,1:1,13:3,14:4,15:" +
             "11,17:13,14:14,15:15,16:16,17:17,13";
-  //  @Test
+    @Test
     public void newTopologyTest() throws InterruptedException {
         init(device_number);
         System.out.println(linkSet.size());
@@ -67,66 +67,74 @@ public class newTopologyTest {
         topologyVertexArrayList = new ArrayList<>(defaultTopology.getGraph().getVertexes());
         for (TopologyVertex topologyVertex : topologyVertexArrayList) {
             List<TopologyEdge> topologyEdgeList = new ArrayList<>(defaultTopology.getGraph().getEdgesFrom(topologyVertex));
-            System.out.println(topologyEdgeList.toString());
+//            System.out.println(topologyEdgeList.toString());
             topologyVertexListHashMap.put(topologyVertex, topologyEdgeList);
         }
-        try {
-            socket = new Socket("192.168.109.213", 11000);
-//            socket=new Socket("192.168.108.100",11000);
-            inputStream = socket.getInputStream();
-            inputStreamReader = new InputStreamReader(inputStream);
-            bufferedReader = new BufferedReader(inputStreamReader);
-            outputStream = socket.getOutputStream();
-            printWriter = new PrintWriter(outputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        writeFile();
-        Thread thread = new Thread(new start_socket());
-        thread.start();
-        try {
-            System.out.println(thread.getState());
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Thread.sleep(10000);
-        while (true) {
-            try {
-                Thread.sleep(3000);
+        Set<Path> paths;
+        paths=defaultTopology.getPaths(deviceIdSet.get(0),deviceIdSet.get(2));
+        Path path = (Path) paths.toArray()[0];
+        System.out.println(path.toString());
+        Path newPath = reversePath(path);
+        System.out.println(newPath.toString());
+//        System.out.println(((Path)paths.toArray()[0]).links().size());
 
-                StringBuffer message = new StringBuffer();
-                message.append("3\n");
-                for (int i = 0; i < linkSet.size(); i++) {
-                    if (i == linkSet.size() - 1) {
-                        message.append("10:");
-                    } else {
-                        message.append("10,");
-                    }
-                }
-                message.append(9);
-                message.append(",");
-                message.append(12);
-                message.append(",");
-                message.append(5);
-                System.out.println("request:"+message.toString());
-                System.out.println("request send:" + System.currentTimeMillis());
-                printWriter.println(message.toString());
-                printWriter.flush();
-                String mess = bufferedReader.readLine();
-//                String mess1=bufferedReader.readLine();
-                System.out.println(mess);
-                System.out.println("get request result:" + System.currentTimeMillis());
-//                System.out.println(mess1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-//////        new Thread(new start_socket()).start();
+//        try {
+//            socket = new Socket("192.168.109.213", 11000);
+////            socket=new Socket("192.168.108.100",11000);
+//            inputStream = socket.getInputStream();
+//            inputStreamReader = new InputStreamReader(inputStream);
+//            bufferedReader = new BufferedReader(inputStreamReader);
+//            outputStream = socket.getOutputStream();
+//            printWriter = new PrintWriter(outputStream);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        writeFile();
+//        Thread thread = new Thread(new start_socket());
+//        thread.start();
+//        try {
+//            System.out.println(thread.getState());
+//            thread.join();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        Thread.sleep(10000);
+//        while (true) {
+//            try {
+//                Thread.sleep(3000);
 //
+//                StringBuffer message = new StringBuffer();
+//                message.append("3\n");
+//                for (int i = 0; i < linkSet.size(); i++) {
+//                    if (i == linkSet.size() - 1) {
+//                        message.append("10:");
+//                    } else {
+//                        message.append("10,");
+//                    }
+//                }
+//                message.append(9);
+//                message.append(",");
+//                message.append(12);
+//                message.append(",");
+//                message.append(5);
+//                System.out.println("request:"+message.toString());
+//                System.out.println("request send:" + System.currentTimeMillis());
+//                printWriter.println(message.toString());
+//                printWriter.flush();
+//                String mess = bufferedReader.readLine();
+////                String mess1=bufferedReader.readLine();
+//                System.out.println(mess);
+//                System.out.println("get request result:" + System.currentTimeMillis());
+////                System.out.println(mess1);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+////////        new Thread(new start_socket()).start();
+////
 //
 ////        init();
 ////        GraphDescription description=new DefaultGraphDescription(System.nanoTime(),
@@ -157,9 +165,9 @@ public class newTopologyTest {
 //////        });
 //////        System.out.println(System.currentTimeMillis()-startTime);
 //////        System.out.println("==============================================");
-////        BFSFindAllPath(new DefaultTopologyVertex(deviceIdSet.get(0)),
-////                        new DefaultTopologyVertex(deviceIdSet.get(3))
-////                        ,defaultTopology.getGraph());
+//              BFSFindAllPath(new DefaultTopologyVertex(deviceIdSet.get(0)),
+//                        new DefaultTopologyVertex(deviceIdSet.get(3))
+//                        ,defaultTopology.getGraph());
 ////        System.out.println("==============================================");
 //////        double startTime1=System.currentTimeMillis();
 //////        BFSFindAllPath1(new DefaultTopologyVertex(deviceIdSet.get(0)),
@@ -299,7 +307,26 @@ public class newTopologyTest {
 //            }
 //        }
 //
-//    }
+    }
+
+    private Path reversePath(Path path){
+        List<Link> lins = path.links();
+        List<Link> newLink = new ArrayList<>();
+        for (int i = lins.size()-1; i >=0 ; i--) {
+            ConnectPoint srcConnect = lins.get(i).src();
+            ConnectPoint dstConnect = lins.get(i).dst();
+            Link link = DefaultLink.builder()
+                    .src(dstConnect)
+                    .dst(srcConnect)
+                    .providerId(lins.get(i).providerId())
+                    .type(lins.get(i).type())
+                    .state(lins.get(i).state())
+                    .isExpected(lins.get(i).isExpected())
+                    .build();
+            newLink.add(link);
+        }
+        return new DefaultPath(RouteproviderId,newLink,new ScalarWeight(1));
+    }
     class client_listen implements Runnable{
         private Socket socket;
         private  InputStream inputStream;
