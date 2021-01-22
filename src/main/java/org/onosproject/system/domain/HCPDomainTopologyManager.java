@@ -460,6 +460,9 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
     }
 
     private void UpdateVportsToSuper() {
+        if (vportMap.keySet().isEmpty()){
+            return ;
+        }
         for (PortNumber portNumber : vportMap.values()) {
             UpdateVPortToSuper(portNumber, HCPVportState.LINK_UP, HCPVportReason.ADD);
         }
@@ -493,25 +496,6 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
                 ? 1 : (((ScalarWeight) p1.weight()).value() < ((ScalarWeight) p2.weight()).value()) ? -1 : 0);
         int hopCapability = pathList.get(0).links().size();
         srcVportMap.put(dstVport, pathList.get(0));
-//        Queue<Double> bandwidth_queuq=new LinkedList<>();
-//        Path max_bandwidth_path=null;
-//        for (Path path:paths) {
-//            double min_bandwidth=9999;
-//            for (Link link:path.links()){
-//                long banwidth=getResetVportCapability(link.dst());
-//                if (banwidth<min_bandwidth){
-//                    min_bandwidth=banwidth;
-//                }
-//            }
-//            if (bandwidth_queuq.isEmpty()){
-//                bandwidth_queuq.add(min_bandwidth);
-//            }else{
-//                if (min_bandwidth>bandwidth_queuq.peek()){
-//                    bandwidth_queuq.poll();
-//                    bandwidth_queuq.add(min_bandwidth);
-//                }
-//            }
-//        }
         HCPInternalLink hcpInternalLink = HCPInternalLink.of(srcVPort, dstVport, (long) (double) MAX_BANDWIDTH, hopCapability);
         return hcpInternalLink;
     }
@@ -604,8 +588,6 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
                 return;
             }
             HCPLLDP hcplldp = HCPLLDP.parseHCPLLDP(eth);
-//            log.info("=============hcp lldp domainId:{},deviceId:{},portID:{},Vport:{}",
-//                    hcplldp.getDomianId(),hcplldp.getDpid(),hcplldp.getPortNum(),hcplldp.getVportNum());
             if (hcplldp == null) {
                 return;
             }
@@ -616,12 +598,10 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
             ConnectPoint edgeConnectPoint = new ConnectPoint(dstDeviceId, dstPort);
 
             //如果收到LLDP数据包中域ID和控制器的域ID相同，说明是在同一个域的设备
-//            log.info("========================hcp lldp domainId :{}============",hcplldp.getDomianId());
             if (hcplldp.getDomianId() == domainController.getDomainId().getLong()) {
                 packetContext.block();
                 return;
             }
-//            log.info("=========================================================");
             //
             //如果Vport号是初始的oxffff，则说明对面控制器并没有发现Vport，则需要控制器重新构造
             //LLDP数据包发送给对端，让对端发现其是Vport（表示边界对外端口），并且上报给SuperController
@@ -642,14 +622,12 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
                 packetService.emit(outboundPacket);
                 packetContext.block();
             } else {
-//                log.info("=====================Sbp Message================");
                 //如果lldp携带了Vport号，则说明对端控制器已经发现自己域的这个对外端口，
                 // 则需要将LLDP数据包上报给SuperController，让SuperController发现域间链路
                 PortNumber exitVportNumber = getVportNum(edgeConnectPoint);
                 if (exitVportNumber == null) {
                     addOrUpdateVport(edgeConnectPoint, HCPVportState.LINK_UP, HCPVportReason.ADD);
                 }
-
                 //构造LLDP数据包，通过Sbp数据包中的的SbpCmpType中的PACKET_IN模式
                 // 封装到Sbp数据中发送给SuperController
                 HCPLLDP sbpHCPlldp = HCPLLDP.hcplldp(hcplldp.getDomianId(),
@@ -690,17 +668,7 @@ public class HCPDomainTopologyManager implements HCPDomainTopoService {
     class TopoUpdateTask implements Runnable {
         @Override
         public void run() {
-            // update vport
             UpdateVportsToSuper();
-            // update intra_links
-//            StringBuffer StringBuffer=new StringBuffer();
-//            for (ConnectPoint connectPoint:portBandwidth.keySet()){
-//                if(portBandwidth.get(connectPoint)!=0.0){
-//                    StringBuffer.append(connectPoint+"=");
-//                    StringBuffer.append(portBandwidth.get(connectPoint)+",");
-//                }
-//            }
-//            log.info("=====max_bandwidth={}======portBandwidth======{}",MAX_BANDWIDTH,StringBuffer.toString());
             UpdateTopology();
         }
     }

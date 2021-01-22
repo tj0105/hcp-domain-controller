@@ -345,7 +345,7 @@ public class HCPDomainRoutingManager implements HCPDomainRouteService {
 
     public void reMoveFlowTable(DeviceId deviceId, int tableId) {
         flowRuleService.removeFlowRulesById(applicationId);
-        log.info("++++ before removeFlowTablesByTableId: {}", tableId);
+        log.info("=======================before removeFlowTablesByTableId: {}========================", tableId);
         flowTableService.removeFlowTablesByTableId(deviceId, FlowTableId.valueOf(tableId));
 
     }
@@ -381,7 +381,7 @@ public class HCPDomainRoutingManager implements HCPDomainRouteService {
 
         flowTableService.applyFlowTables(flowTable.build());
 
-        log.info("table<{}> applied to device<{}> successfully.", tableId, deviceId.toString());
+        log.info("table <{}> applied to device <{}> successfully.", tableId, deviceId.toString());
 
         return tableId;
     }
@@ -482,9 +482,7 @@ public class HCPDomainRoutingManager implements HCPDomainRouteService {
 
             Topology topology = topologyService.currentTopology();
             DefaultTopology defaultTopology = (DefaultTopology) topology;
-//        log.info("==================Topology:{}{}",topology.linkCount(),topology.deviceCount());
             Set<Path> paths = defaultTopology.getPaths(srcDeviceId, dstDeviceId, BANDWIDTH_WEIGHT);
-//        log.info("===============paths:{}",paths.toString());
             if (paths == null) {
                 paths = defaultTopology.getPaths(srcDeviceId, dstDeviceId);
             }
@@ -494,9 +492,7 @@ public class HCPDomainRoutingManager implements HCPDomainRouteService {
             if (path == null) {
                 Topology topology = topologyService.currentTopology();
                 DefaultTopology defaultTopology = (DefaultTopology) topology;
-//        log.info("==================Topology:{}{}",topology.linkCount(),topology.deviceCount());
                 Set<Path> paths = defaultTopology.getPaths(srcDeviceId, dstDeviceId, BANDWIDTH_WEIGHT);
-//        log.info("===============paths:{}",paths.toString());
                 if (paths == null) {
                     paths = defaultTopology.getPaths(srcDeviceId, dstDeviceId);
                 }
@@ -507,7 +503,6 @@ public class HCPDomainRoutingManager implements HCPDomainRouteService {
         // install the rule for the deviceId
         log.info("===========path========={}=======", path.toString());
         for (Link link : path.links()) {
-//            log.info("==============link:{}=============",link.toString());
             DeviceId deviceId = link.src().deviceId();
             int tableId = TableIDMap.get(deviceId);
             installFlowRule(deviceId, tableId, dstIp, (int) link.src().port().toLong(), 10);
@@ -643,7 +638,7 @@ public class HCPDomainRoutingManager implements HCPDomainRouteService {
         String srcIp = IpAddressToHexString(srcAddress).toString();
         String dstIp = IpAddressToHexString(dstAddress).toString();
         if (srcVport.equals(HCPVport.IN_PORT)) {
-//            log.info("============in the in port here");
+            log.info("============in the in port here");
             ConnectPoint connectPoint = hcpDomainTopoServie.getLocationByVport(PortNumber.portNumber(dstVPort.getPortNumber()));
             Set<Host> hostSet = hostService.getHostsByIp(dstAddress);
             Host dstHost = (Host) hostSet.toArray()[0];
@@ -657,7 +652,6 @@ public class HCPDomainRoutingManager implements HCPDomainRouteService {
             Path newpath = getvportPath(dstAddress, dstVPort);
             path = reversePath(newpath);
             if (path == null) {
-//                log.info("================topology getPath================");
                 Topology topology = topologyService.currentTopology();
                 DefaultTopology defaultTopology = (DefaultTopology) topology;
                 Set<Path> paths = defaultTopology.getPaths(connectPoint.deviceId(), dstHost.location().deviceId(), BANDWIDTH_WEIGHT);
@@ -667,17 +661,14 @@ public class HCPDomainRoutingManager implements HCPDomainRouteService {
                 path = (Path) paths.toArray()[0];
             }
 
-//            log.info("=====================path========={}",path.toString());
 
             for (Link link : path.links()) {
                 if (link.src().deviceId().equals(connectPoint.deviceId())) {
                     int TableId = TableIDMap.get(link.src().deviceId());
                     installFlowRule(link.src().deviceId(), TableId, srcIp, (int) connectPoint.port().toLong(), 10);
-//                    installFlowRule(link.dst().deviceId(),TableId,dstIp,(int)link.dst().port().toLong(),10);
                 }
                 if (link.dst().deviceId().equals(dstHost.location().deviceId())) {
                     int TableId = TableIDMap.get(link.dst().deviceId());
-//                    installFlowRule(link.src().deviceId(),TableId,srcIp,(int)link.src().port().toLong(),10);
                     installFlowRule(link.dst().deviceId(), TableId, dstIp, (int) dstHost.location().port().toLong(), 10);
                 }
                 int srctableId = TableIDMap.get(link.src().deviceId());
@@ -687,7 +678,7 @@ public class HCPDomainRoutingManager implements HCPDomainRouteService {
             }
             log.info("=====================path========={}", path.toString());
         } else if (srcVport.equals(HCPVport.OUT_PORT)) {
-//            log.info("=================in the out port here");
+            log.info("=================in the out port here");
             ConnectPoint connectPoint = hcpDomainTopoServie.getLocationByVport(PortNumber.portNumber(dstVPort.getPortNumber()));
             Set<Host> hostsSet = hostService.getHostsByIp(srcAddress);
             Host srcHost = (Host) hostsSet.toArray()[0];
@@ -701,7 +692,7 @@ public class HCPDomainRoutingManager implements HCPDomainRouteService {
             log.info("=====================path========={}", path.toString());
             if (path == null) {
                 int tableId = TableIDMap.get(srcHost.location().deviceId());
-                installFlowRule(srcHost.location().deviceId(), tableId, dstIp, (int) connectPoint.port().toLong(), 10);
+                installFlowRule(srcHost.location().deviceId(), tableId, dstIp,  (int) connectPoint.port().toLong(), 10);
                 installFlowRule(srcHost.location().deviceId(), tableId, srcIp, (int) srcHost.location().port().toLong(), 10);
                 return;
             }
@@ -721,7 +712,7 @@ public class HCPDomainRoutingManager implements HCPDomainRouteService {
             }
             log.info("=====================path========={}", path.toString());
         } else {
-//            log.info("=================in the middle doamin here");
+            log.info("=================in the middle doamin here");
             ConnectPoint srcConnectPoint = hcpDomainTopoServie.getLocationByVport(PortNumber.portNumber(srcVport.getPortNumber()));
             ConnectPoint dstConnectPoint = hcpDomainTopoServie.getLocationByVport(PortNumber.portNumber(dstVPort.getPortNumber()));
             Path path = null;
@@ -811,10 +802,8 @@ public class HCPDomainRoutingManager implements HCPDomainRouteService {
                 pathmap.put(vport, path);
             }
         }
-//        log.info("==========IddressPathMap======={}",ipaddressPathMap.toString());
         HCPForwardingRequest hcpForwardingRequest = HCPForwardingRequestVer10.of(src, dst, (int) connectPoint.port().toLong()
                 , Ethernet.TYPE_IPV4, (byte) 3, vportHops);
-//        log.info("======================hcpForwardingRequest============={}",hcpForwardingRequest.toString());
         Set<HCPSbpFlags> flagsSet = new HashSet<>();
         flagsSet.add(HCPSbpFlags.DATA_EXITS);
         HCPSbp hcpSbp = hcpfactory.buildSbp()
@@ -911,12 +900,10 @@ public class HCPDomainRoutingManager implements HCPDomainRouteService {
                     HCPPacketOut hcpPacketOut = (HCPPacketOut) hcpSbp.getSbpCmpData();
                     PortNumber portNumber = PortNumber.portNumber(hcpPacketOut.getOutPort());
                     Ethernet ethernet = domainController.parseEthernet(hcpPacketOut.getData());
-//                    log.info("==========PACKET_OUT======{}===", (ARP) ethernet.getPayload());
                     processPacketOut(portNumber, ethernet);
                     break;
                 case RESOURCE_REQUEST:
                     HCPResourceRequest hcpResourceRequest = (HCPResourceRequest) hcpSbp.getSbpCmpData();
-//                    log.info("==================HCPResourceRequest==============");
                     IPv4Address srcIpv4Address = hcpResourceRequest.getSrcIpAddress();
                     IPv4Address dstIpv4Address = hcpResourceRequest.getDstIpAddress();
                     Set<HCPConfigFlags> flagsSet = hcpResourceRequest.getFlags();
