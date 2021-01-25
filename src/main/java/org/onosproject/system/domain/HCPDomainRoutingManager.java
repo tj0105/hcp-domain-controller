@@ -257,6 +257,7 @@ public class HCPDomainRoutingManager {
             DeviceId deviceId = device.id();
             int tableId = sendPofFlowTables(deviceId, "FirstEntryTable");
             TableIDMap.put(deviceId, tableId);
+            install_packetIn_FlowRule(deviceId,tableId);
         }
     }
 
@@ -338,9 +339,9 @@ public class HCPDomainRoutingManager {
         int tableId = tableStore.parseToSmallTableId(deviceId, globeTableId);
 
         OFMatch20 srcIp = new OFMatch20();
-        srcIp.setFieldId((short) DIP);
-        srcIp.setFieldName("dstIp");
-        srcIp.setOffset((short) 240);
+        srcIp.setFieldId((short) SIP);
+        srcIp.setFieldName("srcIp");
+        srcIp.setOffset((short) 208);
         srcIp.setLength((short) 32);
 
         ArrayList<OFMatch20> match20ArrayList = new ArrayList<>();
@@ -368,7 +369,79 @@ public class HCPDomainRoutingManager {
 
         return tableId;
     }
+    private void install_packetIn_FlowRule(DeviceId deviceId, int tableId){
+        TrafficSelector.Builder trafficSelector = DefaultTrafficSelector.builder();
+        ArrayList<Criterion> mathchList = new ArrayList<>();
+        mathchList.add(Criteria.matchOffsetLength(SIP, (short) 208, (short) 32, "0a000001", "00000000"));
+        trafficSelector.add(Criteria.matchOffsetLength(mathchList));
+        TrafficTreatment.Builder trafficTreatMent = DefaultTrafficTreatment.builder();
+        List<OFAction> actions = new ArrayList<>();
+        OFAction action_output = DefaultPofActions.output((short) 0, (short) 0, (short) 0, (int) PortNumber.CONTROLLER.toLong()).action();
+        actions.add(action_output);
+        trafficTreatMent.add(DefaultPofInstructions.applyActions(actions));
+        long newFlowEntryId = flowTableStore.getNewFlowEntryId(deviceId, tableId);
+        FlowRule.Builder flowRule = DefaultFlowRule.builder()
+                .forDevice(deviceId)
+                .forTable(tableId)
+                .withSelector(trafficSelector.build())
+                .withTreatment(trafficTreatMent.build())
+                .withPriority(1)
+                .withCookie(newFlowEntryId)
+                .makePermanent();
+        flowRuleService.applyFlowRules(flowRule.build());
+    }
 
+    private void install_pof_and_sr_field(DeviceId deviceId, int tableId, String srcIp, String dstIp, int outPut, int prioirty){
+        TrafficSelector.Builder trafficSelector = DefaultTrafficSelector.builder();
+        ArrayList<Criterion> mathchList = new ArrayList<>();
+        mathchList.add(Criteria.matchOffsetLength(SIP, (short) 208, (short) 32, srcIp, "FFFFFFFF"));
+        trafficSelector.add(Criteria.matchOffsetLength(mathchList));
+
+        short field_id1 = 17;
+
+        OFMatch20 FIELD_type = new OFMatch20();
+        FIELD_type.setFieldName("type");
+        FIELD_type.setFieldId((short)15);
+        FIELD_type.setOffset((short) 96);
+//        FIELD_PORT.setLength((short) 32);
+        FIELD_type.setLength((short) 16);
+
+        OFMatch20 dst_ip = new OFMatch20();
+        dst_ip.setFieldName("dst_ip");
+        dst_ip.setFieldId(DIP);
+        dst_ip.setOffset((short) 240);
+        dst_ip.setLength((short) 32);
+
+        OFAction action_setfield_typefield = DefaultPofActions.setField(FIELD_type,"0808","ffff").action();
+        OFAction action_setfield_dstipfield = DefaultPofActions.setField(dst_ip,dstIp,"ffffffff").action();
+        OFAction action_add_SRINT_field = DefaultPofActions.addField(field_id1, (short) 112, (short) 88, "02000f0301010101010000").action();
+        OFAction action_output = DefaultPofActions.output((short) 0, (short) 0, (short) 0, outPut).action();
+
+        TrafficTreatment.Builder trafficTreamt = DefaultTrafficTreatment.builder();
+        List<OFAction> actions = new ArrayList<>();
+        actions.add(action_setfield_typefield);
+        actions.add(action_setfield_dstipfield);
+        actions.add(action_add_SRINT_field);
+        actions.add(action_output);
+        trafficTreamt.add(DefaultPofInstructions.applyActions(actions));
+
+        log.info("+++++++++++++action_add_field: {}.", actions);
+
+        // apply
+        long newFlowEntryId = flowTableStore.getNewFlowEntryId(deviceId, tableId);
+        FlowRule.Builder flowRule = DefaultFlowRule.builder()
+                .forDevice(deviceId)
+                .forTable(tableId)
+                .withSelector(trafficSelector.build())
+                .withTreatment(trafficTreamt.build())
+                .withPriority(prioirty)
+                .withCookie(newFlowEntryId)
+                .makePermanent();
+        flowRuleService.applyFlowRules(flowRule.build());
+
+        log.info("install_pof_and_sr_field: apply to deviceId<{}> tableId<{}>", deviceId.toString(), tableId);
+
+    }
     private void installFlowRule(DeviceId deviceId, int tableId, String dstIp, int port, int pority) {
         TrafficSelector.Builder trafficSelector = DefaultTrafficSelector.builder();
         ArrayList<Criterion> mathchList = new ArrayList<>();
@@ -646,7 +719,10 @@ public class HCPDomainRoutingManager {
         IpAddress dstAddress = IpAddress.valueOf(dstIoT.getiPv4Address().toString());
         String srcIp = IpAddressToHexString(srcAddress).toString();
         String dstIp = IpAddressToHexString(dstAddress).toString();
-        if (srcVport.equals(HCPVport.IN_PORT)) {
+        for (DeviceId deviceId: TableIDMap.keySet()){
+            install_pof_and_sr_field(deviceId,TableIDMap.get(deviceId),srcIp,dstIp,2,10);
+        }
+        /*if (srcVport.equals(HCPVport.IN_PORT)) {
 //            log.info("============in the in port here");
             ConnectPoint srcConnectPoint = hcpDomainTopoServie.getLocationByVport(PortNumber.portNumber(dstVPort.getPortNumber()));
             ConnectPoint dstConnectPoint = null;
@@ -775,7 +851,7 @@ public class HCPDomainRoutingManager {
                 installFlowRule(link.dst().deviceId(), dstTableId, srcIp, (int) link.dst().port().toLong(), 10);
             }
             log.info("=====================path========={}", path.toString());
-        }
+        }*/
     }
 
     private void sendResourceFlowToSuper(IPv4Address dstIp, List<HCPVportHop> list) {
@@ -802,7 +878,7 @@ public class HCPDomainRoutingManager {
      * @param hcpFlowType
      */
     private void SendFlowRequestToSuper(HCPIOT srcIoT, HCPIOT dstIoT, ConnectPoint connectPoint, HCPFlowType hcpFlowType) {
-        IpAddress srcAddress = IpAddress.valueOf(srcIoT.getiPv4Address().toString());
+       /* IpAddress srcAddress = IpAddress.valueOf(srcIoT.getiPv4Address().toString());
         Map<HCPVport, Path> pathmap = ipaddressPathMap.get(srcAddress);
         if (pathmap == null) {
             pathmap = new HashMap<>();
@@ -847,6 +923,11 @@ public class HCPDomainRoutingManager {
             hcpForwardingRequest = HCPForwardingRequestVer10.of(hcpFlowType, srcIoT, dstIoT, (int) connectPoint.port().toLong()
                     , Ethernet.TYPE_IPV4, (byte) 3, vportHops);
         }
+        */
+        List<HCPVportHop> vportHops = new ArrayList<>();
+        vportHops.add(HCPVportHop.of(HCPVport.ofShort((short)1), 1));
+        HCPForwardingRequest hcpForwardingRequest = HCPForwardingRequestVer10.of(hcpFlowType, srcIoT, dstIoT, (int) connectPoint.port().toLong()
+                , Ethernet.TYPE_IPV4, (byte) 3, vportHops);
         Set<HCPSbpFlags> flagsSet = new HashSet<>();
         flagsSet.add(HCPSbpFlags.DATA_EXITS);
         HCPSbp hcpSbp = hcpfactory.buildSbp()

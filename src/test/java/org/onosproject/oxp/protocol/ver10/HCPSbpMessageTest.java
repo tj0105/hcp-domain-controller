@@ -213,8 +213,8 @@ public class HCPSbpMessageTest {
         HCPSbp hcpSbp =getMessageFactry().buildSbp()
                 .setFlags(flagsSet)
                 .setSbpCmpType(HCPSbpCmpType.FLOW_FORWARDING_REPLY)
-                .setDataLength((short)forwardingReply.getData().length)
-                .setSbpCmpData(forwardingReply)
+                .setDataLength((short)forwardingReply1.getData().length)
+                .setSbpCmpData(forwardingReply1)
                 .setSbpXid(1)
                 .build();
         hcpSbp.writeTo(buffer);
@@ -238,15 +238,15 @@ public class HCPSbpMessageTest {
         System.out.println("hcpforwardint reply srcVPort:"+hcpForwardingReply.getSrcVport());
         System.out.println("hcpforwardint reply dstVPort:"+hcpForwardingReply.getDstVport());
         HCPVport dstVport=hcpForwardingReply.getDstVport();
-        System.out.println(HCPVport.ofShort((short)1).equals(dstpport));
-        if (!mapConcurrentHashMap.containsKey(IpAddress.valueOf(hcpForwardingReply.getSrcIpAddress().toString()))){
-            System.out.println("null");
-        }
-        Map<HCPVport,String> stringMap=mapConcurrentHashMap.get(IpAddress.valueOf(hcpForwardingReply.getSrcIpAddress().toString()));
-        if (!stringMap.containsKey(dstVport)){
-            System.out.println("null1");
-        }
-        System.out.println(stringMap.get(hcpForwardingReply.getDstVport()));
+//        System.out.println(HCPVport.ofShort((short)1).equals(dstpport));
+//        if (!mapConcurrentHashMap.containsKey(IpAddress.valueOf(hcpForwardingReply.getSrcIpAddress().toString()))){
+//            System.out.println("null");
+//        }
+//        Map<HCPVport,String> stringMap=mapConcurrentHashMap.get(IpAddress.valueOf(hcpForwardingReply.getSrcIpAddress().toString()));
+//        if (!stringMap.containsKey(dstVport)){
+//            System.out.println("null1");
+//        }
+//        System.out.println(stringMap.get(hcpForwardingReply.getDstVport()));
 
     }
     @Test
