@@ -9,8 +9,5 @@
         <module name="hcp-protocol" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="hcp-protocol" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
