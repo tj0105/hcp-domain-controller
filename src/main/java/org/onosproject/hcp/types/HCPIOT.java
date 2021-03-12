@@ -16,21 +16,17 @@ import java.util.Objects;
  * @Version 1.0
  */
 public class HCPIOT implements Writeable, PrimitiveSinkable {
-    private IPv4Address iPv4Address;
     private HCPIoTType ioTType;
     private HCPIOTID hcpiotid;
     private HCPIoTState ioTState;
 
-    private  HCPIOT(IPv4Address iPv4Address, HCPIoTType hcpIoTType,HCPIOTID hcpiotid, HCPIoTState hcpIoTState){
-        this.iPv4Address = iPv4Address;
+    private  HCPIOT(HCPIoTType hcpIoTType,HCPIOTID hcpiotid, HCPIoTState hcpIoTState){
         this.ioTType = hcpIoTType;
         this.hcpiotid = hcpiotid;
         this.ioTState = hcpIoTState;
     }
 
-    public IPv4Address getiPv4Address(){
-        return iPv4Address;
-    }
+
 
     public HCPIoTType getIoTType(){
         return ioTType;
@@ -43,21 +39,17 @@ public class HCPIOT implements Writeable, PrimitiveSinkable {
         return ioTState;
     }
 
-    public static HCPIOT of (IPv4Address iPv4Address, HCPIoTType hcpIoTType, HCPIOTID hcpiotid,HCPIoTState hcpIoTState){
-        if (iPv4Address == null){
-            throw new NullPointerException("Property ipv4address must not be null");
-        }
+    public static HCPIOT of ( HCPIoTType hcpIoTType, HCPIOTID hcpiotid,HCPIoTState hcpIoTState){
         if (hcpIoTType == null){
             throw new NullPointerException("Property hcpIoTType must not be null");
         }
         if (hcpiotid == null){
             throw new NullPointerException("Property hcpiotId must not be null");
         }
-        return new HCPIOT(iPv4Address,hcpIoTType,hcpiotid,hcpIoTState);
+        return new HCPIOT(hcpIoTType,hcpiotid,hcpIoTState);
     }
     @Override
     public void writeTo(ChannelBuffer bb) {
-        iPv4Address.writeTo(bb);
         HCPIoTTypeSerializerVer10.writeTo(bb,ioTType);
         hcpiotid.writeTo(bb);
         HCPIoTStateSerializerVer10.writeTo(bb,ioTState);
@@ -73,19 +65,18 @@ public class HCPIOT implements Writeable, PrimitiveSinkable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         HCPIOT hcpiot = (HCPIOT) o;
-        return Objects.equals(iPv4Address, hcpiot.iPv4Address) && ioTType == hcpiot.ioTType && Objects.equals(hcpiotid, hcpiot.hcpiotid);
+        return ioTType == hcpiot.ioTType && Objects.equals(hcpiotid, hcpiot.hcpiotid);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(iPv4Address, ioTType, hcpiotid);
+        return Objects.hash( ioTType, hcpiotid);
     }
 
     @Override
     public String toString() {
         return "HCPIOT{" +
-                "iPv4Address=" + iPv4Address +
-                ", ioTType=" + ioTType +
+                "ioTType=" + ioTType +
                 ", hcpiotid=" + hcpiotid +
                 ", hcpiotState =" + ioTState +
                 '}';

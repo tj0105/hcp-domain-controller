@@ -21,11 +21,10 @@ abstract class HCPIoTVer10 {
 
         @Override
         public HCPIOT readFrom(ChannelBuffer bb) throws HCPParseError {
-            IPv4Address iPv4Address = IPv4Address.read4Bytes(bb);
             HCPIoTType ioTType = HCPIoTTypeSerializerVer10.readFrom(bb);
             HCPIOTID hcpiotid = HCPIOTID.read(bb);
             HCPIoTState hcpIoTState = HCPIoTStateSerializerVer10.readFrom(bb);
-            return HCPIOT.of(iPv4Address,ioTType,hcpiotid,hcpIoTState);
+            return HCPIOT.of(ioTType,hcpiotid,hcpIoTState);
         }
     }
 }

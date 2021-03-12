@@ -249,7 +249,7 @@ public class HCPDomainHostManager implements HCPDomainHostService {
             ConnectPoint connectPoint = packetContext.inPacket().receivedFrom();
             IPv4 iPv4Packet = (IPv4) ethernet.getPayload();
             String dstIp = Ip4Address.valueOf(iPv4Packet.getDestinationAddress()).toString();
-            if (!dstIp.equals("10.0.0.0")){
+            if (!dstIp.equals("192.168.108.200")){
                 return ;
             }
             InboundPacket inboundPacket = packetContext.inPacket();
@@ -261,7 +261,7 @@ public class HCPDomainHostManager implements HCPDomainHostService {
             }
             String iot_id = null;
             if (iot_type == HCPIoTTypeSerializerVer10.IOT_EPC_VAL){
-                iot_id = HexString.parseInboundPacket(inboundPacket,44,22);
+                iot_id = HexString.parseInboundPacket(inboundPacket,44,24);
             }else if (iot_type == HCPIoTTypeSerializerVer10.IOT_ECODE_VAL){
                 iot_id = HexString.parseInboundPacket(inboundPacket,44,18);
             }else if (iot_type == HCPIoTTypeSerializerVer10.IOT_OID_VAL){
@@ -270,7 +270,7 @@ public class HCPDomainHostManager implements HCPDomainHostService {
                 return ;
             }
             HCPIOTID hcpiotid = HCPIOTID.of(iot_id);
-            HCPIOT hcpiot = HCPIOT.of(srcIp,HCPIoTTypeSerializerVer10.ofWireValue(iot_type),hcpiotid,HCPIoTStateSerializerVer10.ofWireValue(packet_type));
+            HCPIOT hcpiot = HCPIOT.of(HCPIoTTypeSerializerVer10.ofWireValue(iot_type),hcpiotid,HCPIoTStateSerializerVer10.ofWireValue(packet_type));
             if (packet_type == IOT_ONLINE){
                 hcpiotidConnectPointMap.put(hcpiotid,connectPoint);
                 hcpiotidhcpiotMap.put(hcpiotid,hcpiot);

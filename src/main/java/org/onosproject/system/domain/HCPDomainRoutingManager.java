@@ -713,15 +713,15 @@ public class HCPDomainRoutingManager {
      */
     private void processFlowForwardingReply(HCPIOT srcIoT, HCPIOT dstIoT,
                                             HCPVport srcVport, HCPVport dstVPort, short type, byte qos, HCPFlowType hcpFlowType) {
-//        log.info("============================process Flow_Reply=======srcVport={}==dstVport={}============",srcVport.toString(),dstVPort.toString());
+        log.info("============================process Flow_Reply=======srcVport={}==dstVport={}============",srcVport.toString(),dstVPort.toString());
 
-        IpAddress srcAddress = IpAddress.valueOf(srcIoT.getiPv4Address().toString());
-        IpAddress dstAddress = IpAddress.valueOf(dstIoT.getiPv4Address().toString());
-        String srcIp = IpAddressToHexString(srcAddress).toString();
-        String dstIp = IpAddressToHexString(dstAddress).toString();
-        for (DeviceId deviceId: TableIDMap.keySet()){
-            install_pof_and_sr_field(deviceId,TableIDMap.get(deviceId),srcIp,dstIp,2,10);
-        }
+//        IpAddress srcAddress = IpAddress.valueOf(srcIoT.getiPv4Address().toString());
+//        IpAddress dstAddress = IpAddress.valueOf(dstIoT.getiPv4Address().toString());
+//        String srcIp = IpAddressToHexString(srcAddress).toString();
+//        String dstIp = IpAddressToHexString(dstAddress).toString();
+//        for (DeviceId deviceId: TableIDMap.keySet()){
+//            install_pof_and_sr_field(deviceId,TableIDMap.get(deviceId),srcIp,dstIp,2,10);
+//        }
         /*if (srcVport.equals(HCPVport.IN_PORT)) {
 //            log.info("============in the in port here");
             ConnectPoint srcConnectPoint = hcpDomainTopoServie.getLocationByVport(PortNumber.portNumber(dstVPort.getPortNumber()));
@@ -940,6 +940,34 @@ public class HCPDomainRoutingManager {
         domainController.write(hcpSbp);
 
     }
+    private void TestSendForwardindRequestToSuper(){
+        IpAddress ipAddress=IpAddress.valueOf("192.168.109.13");
+        IPv4Address srcipAddress=IPv4Address.of(ipAddress.toString());
+        IPv4Address dstIpaddress=IPv4Address.of("192.168.109.14");
+        List<HCPVportHop> vportHops=new ArrayList<>();
+        HCPVportHop vportHop=HCPVportHop.of(HCPVport.ofShort((short)1),0);
+//        HCPVportHop vportHop2=HCPVportHop.of(HCPVport.ofShort((short)2),6);
+        vportHops.add(vportHop);
+        HCPFlowType hcpFlowType1 = HCPFlowType.HCP_IOT;
+        HCPIOTID srcIoTId = HCPIOTID.of("10064113736123456");
+        HCPIOTID dstIoTId = HCPIOTID.of("13293A91E133D81123456789");
+        HCPIOT srcIoT = HCPIOT.of(HCPIoTType.IOT_ECODE,srcIoTId,HCPIoTState.ACTIVE);
+        HCPIOT dstIoT = HCPIOT.of(HCPIoTType.IOT_EPC,dstIoTId,HCPIoTState.ACTIVE);
+        HCPForwardingRequestVer10 forwardingRequestVer11=HCPForwardingRequestVer10
+                .of(hcpFlowType1,srcIoT,dstIoT,10,(short)2,(byte)6,vportHops);
+        Set<HCPSbpFlags> flagsSet=new HashSet<>();
+        flagsSet.add(HCPSbpFlags.DATA_EXITS);
+        HCPSbp hcpSbp =hcpfactory.buildSbp()
+                .setXid(20)
+                .setFlags(flagsSet)
+                .setSbpCmpType(HCPSbpCmpType.FLOW_FORWARDING_REQUEST)
+                .setDataLength((short)forwardingRequestVer11.getData().length)
+                .setSbpCmpData(forwardingRequestVer11)
+                .setSbpXid(11111)
+                .build();
+        domainController.write(hcpSbp);
+
+    }
 
     /**
      * Process the ARP_request,ARP_Reply and IPV4 packet.
@@ -950,6 +978,7 @@ public class HCPDomainRoutingManager {
      * address path, construct the flow entry to the deviceId, if not,send to the SuperController and calculate
      * the hops from the source address to every vport.
      */
+
     private class ReactivePacketProcessor implements PacketProcessor {
 
         @Override
@@ -976,7 +1005,7 @@ public class HCPDomainRoutingManager {
                 targetAddress = Ip4Address.valueOf(((IPv4) ethernet.getPayload()).getDestinationAddress());
 //                log.info("==============srcAddress:{},targetAddress:{}======", srcAddress.toString(), targetAddress.toString());
             }
-            if (!targetAddress.toString().equals("10.0.0.0")) {
+            if (!targetAddress.toString().equals("192.168.108.200")) {
                 Set<Host> dsthost = hostService.getHostsByIp(targetAddress);
                 Set<Host> srchost = hostService.getHostsByIp(srcAddress);
                 if (dsthost != null && dsthost.size() > 0) {
@@ -1003,13 +1032,13 @@ public class HCPDomainRoutingManager {
                     domainController.write(hcpSbp);
                     packetContext.block();
                 } else if (ethernet.getEtherType() == Ethernet.TYPE_IPV4) {
-                    HCPIOT srcIOT = HCPIOT.of(IPv4Address.of(srcAddress.toString()), HCPIoTType.IOT_EPC, HCPIOTID.DEFAULT, HCPIoTState.ACTIVE);
-                    HCPIOT dstIOT = HCPIOT.of(IPv4Address.of(targetAddress.toString()), HCPIoTType.IOT_EPC, HCPIOTID.DEFAULT, HCPIoTState.ACTIVE);
+                    HCPIOT srcIOT = HCPIOT.of( HCPIoTType.IOT_EPC, HCPIOTID.DEFAULT, HCPIoTState.ACTIVE);
+                    HCPIOT dstIOT = HCPIOT.of( HCPIoTType.IOT_EPC, HCPIOTID.DEFAULT, HCPIoTState.ACTIVE);
                     SendFlowRequestToSuper(srcIOT, dstIOT, connectPoint, HCPFlowType.HCP_HOST);
                     packetContext.block();
                 }
             }
-            if (targetAddress.toString().equals("10.0.0.0")) {
+            if (targetAddress.toString().equals("192.168.108.200")) {
                 byte packet_type = (byte) Integer.parseInt(HexString.parseInboundPacket(inboundPacket, 42, 1), 16);
                 byte dst_iot_type = (byte) Integer.parseInt(HexString.parseInboundPacket(inboundPacket, 43, 1), 16);
                 if (packet_type != 0x32) {
@@ -1024,9 +1053,9 @@ public class HCPDomainRoutingManager {
                     src_iot_type = (byte) Integer.parseInt(HexString.parseInboundPacket(inboundPacket, 68, 1), 16);
                     index = 69;
                 } else if (dst_iot_type == HCPIoTTypeSerializerVer10.IOT_ECODE_VAL) {
-                    dst_iot_id = HexString.parseInboundPacket(inboundPacket, 44, 18);
-                    src_iot_type = (byte) Integer.parseInt(HexString.parseInboundPacket(inboundPacket, 61, 1), 16);
-                    index = 62;
+                    dst_iot_id = HexString.parseInboundPacket(inboundPacket, 44, 17);
+                    src_iot_type = (byte) Integer.parseInt(HexString.parseInboundPacket(inboundPacket, 60, 1), 16);
+                    index = 61;
                 } else if (dst_iot_type == HCPIoTTypeSerializerVer10.IOT_OID_VAL) {
                     dst_iot_id = HexString.parseInboundPacket(inboundPacket, 44, 16);
                     src_iot_type = (byte) Integer.parseInt(HexString.parseInboundPacket(inboundPacket, 60, 1), 16);
@@ -1037,7 +1066,7 @@ public class HCPDomainRoutingManager {
                 if (src_iot_type == HCPIoTTypeSerializerVer10.IOT_EPC_VAL) {
                     src_iot_id = HexString.parseInboundPacket(inboundPacket, index, 24);
                 } else if (src_iot_type == HCPIoTTypeSerializerVer10.IOT_ECODE_VAL) {
-                    src_iot_id = HexString.parseInboundPacket(inboundPacket, index, 18);
+                    src_iot_id = HexString.parseInboundPacket(inboundPacket, index, 17);
                 } else if (src_iot_type == HCPIoTTypeSerializerVer10.IOT_OID_VAL) {
                     src_iot_id = HexString.parseInboundPacket(inboundPacket, index, 16);
                 } else {
@@ -1046,14 +1075,14 @@ public class HCPDomainRoutingManager {
                 HCPIOTID srcIOTID = HCPIOTID.of(src_iot_id);
                 HCPIOTID dstIOTID = HCPIOTID.of(dst_iot_id);
                 if (hcpDomainHostService.getConnectionByIoTId(dstIOTID) != null) {
-                    targetAddress = IpAddress.valueOf(hcpDomainHostService.getHCPIOTByIoTId(dstIOTID).getiPv4Address().toString());
-                    ConnectPoint dstConnectPoint = hcpDomainHostService.getConnectionByIoTId(dstIOTID);
-                    processIpv4InDomain(connectPoint, dstConnectPoint, srcAddress, targetAddress);
-                    packetContext.block();
+//                    targetAddress = IpAddress.valueOf(hcpDomainHostService.getHCPIOTByIoTId(dstIOTID).getiPv4Address().toString());
+//                    ConnectPoint dstConnectPoint = hcpDomainHostService.getConnectionByIoTId(dstIOTID);
+//                    processIpv4InDomain(connectPoint, dstConnectPoint, srcAddress, targetAddress);
+//                    packetContext.block();
                     return;
                 }
                 HCPIOT srcIOT = hcpDomainHostService.getHCPIOTByIoTId(srcIOTID);
-                HCPIOT dstIOT = HCPIOT.of(IPv4Address.of("0.0.0.0"), HCPIoTTypeSerializerVer10.ofWireValue(dst_iot_type), dstIOTID, HCPIoTState.ACTIVE);
+                HCPIOT dstIOT = HCPIOT.of(HCPIoTTypeSerializerVer10.ofWireValue(dst_iot_type), dstIOTID, HCPIoTState.ACTIVE);
                 SendFlowRequestToSuper(srcIOT, dstIOT, connectPoint, HCPFlowType.HCP_IOT);
                 packetContext.block();
                 return;
@@ -1095,8 +1124,8 @@ public class HCPDomainRoutingManager {
                     if (hcpForwardingReply.getFLowType().equals(HCPFlowType.HCP_HOST)) {
                         IPv4Address srcIpv4 = hcpForwardingReply.getSrcIpAddress();
                         IPv4Address dstIpv4 = hcpForwardingReply.getDstIpAddress();
-                        srcIoT = HCPIOT.of(srcIpv4, HCPIoTType.IOT_EPC, HCPIOTID.DEFAULT, HCPIoTState.ACTIVE);
-                        dstIoT = HCPIOT.of(dstIpv4, HCPIoTType.IOT_EPC, HCPIOTID.DEFAULT, HCPIoTState.ACTIVE);
+                        srcIoT = HCPIOT.of(HCPIoTType.IOT_EPC, HCPIOTID.DEFAULT, HCPIoTState.ACTIVE);
+                        dstIoT = HCPIOT.of(HCPIoTType.IOT_EPC, HCPIOTID.DEFAULT, HCPIoTState.ACTIVE);
                     }
                     if (hcpForwardingReply.getFLowType().equals(HCPFlowType.HCP_IOT)) {
                         srcIoT = hcpForwardingReply.getSrcIoT();
@@ -1126,6 +1155,7 @@ public class HCPDomainRoutingManager {
         public void connectToSuperController(HCPSuper hcpSuper) {
             log.info("1111111111111111111111111111111111");
             setUp();
+            TestSendForwardindRequestToSuper();
         }
 
         @Override
@@ -1133,6 +1163,7 @@ public class HCPDomainRoutingManager {
 
         }
     }
+
 
     private class InternalDeviceListener implements PofSwitchListener {
 

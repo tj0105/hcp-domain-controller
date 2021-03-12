@@ -138,6 +138,7 @@ public class HCPForwardingRequestVer10 implements HCPForwardingRequest{
 
     @Override
     public byte[] getData() {
+
         ChannelBuffer buffer= ChannelBuffers.dynamicBuffer();
         ChannelUtils.writeList(buffer,vportHopList);
         byte [] data=new byte[buffer.readableBytes()];

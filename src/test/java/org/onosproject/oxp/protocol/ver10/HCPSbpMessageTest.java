@@ -93,8 +93,8 @@ public class HCPSbpMessageTest {
         HCPFlowType hcpFlowType1 = HCPFlowType.HCP_IOT;
         HCPIOTID srcIoTId = HCPIOTID.of("ABCDEFG12345");
         HCPIOTID dstIoTId = HCPIOTID.of("12345678ABC");
-        HCPIOT srcIoT = HCPIOT.of(srcipAddress,HCPIoTType.IOT_EPC,srcIoTId,HCPIoTState.ACTIVE);
-        HCPIOT dstIoT = HCPIOT.of(dstIpaddress,HCPIoTType.IOT_EPC,dstIoTId,HCPIoTState.ACTIVE);
+        HCPIOT srcIoT = HCPIOT.of(HCPIoTType.IOT_EPC,srcIoTId,HCPIoTState.ACTIVE);
+        HCPIOT dstIoT = HCPIOT.of(HCPIoTType.IOT_EPC,dstIoTId,HCPIoTState.ACTIVE);
 
         HCPForwardingRequestVer10 forwardingRequestVer10=HCPForwardingRequestVer10
                 .of(hcpFlowType,srcipAddress,dstIpaddress,10,(short)2,(byte)6,vportHops);
@@ -107,8 +107,8 @@ public class HCPSbpMessageTest {
         HCPSbp hcpSbp =getMessageFactry().buildSbp()
                 .setFlags(flagsSet)
                 .setSbpCmpType(HCPSbpCmpType.FLOW_FORWARDING_REQUEST)
-                .setDataLength((short)forwardingRequestVer10.getData().length)
-                .setSbpCmpData(forwardingRequestVer10)
+                .setDataLength((short)forwardingRequestVer11.getData().length)
+                .setSbpCmpData(forwardingRequestVer11)
                 .setSbpXid(1)
                 .build();
         hcpSbp.writeTo(buffer);
@@ -177,6 +177,7 @@ public class HCPSbpMessageTest {
 //        });
 
     }
+
     @Test
     public void SbpForwardingReplyTest() throws HCPParseError {
         ConcurrentHashMap<IpAddress,Map<HCPVport,String>> mapConcurrentHashMap=new ConcurrentHashMap<>();
@@ -200,8 +201,8 @@ public class HCPSbpMessageTest {
         HCPFlowType hcpFlowType1 = HCPFlowType.HCP_IOT;
         HCPIOTID srcIoTId = HCPIOTID.of("ABCDEFG12345");
         HCPIOTID dstIoTId = HCPIOTID.of("12345678ABC");
-        HCPIOT srcIoT = HCPIOT.of(srcipAddress,HCPIoTType.IOT_EPC,srcIoTId,HCPIoTState.ACTIVE);
-        HCPIOT dstIoT = HCPIOT.of(dstIpaddress,HCPIoTType.IOT_EPC,dstIoTId,HCPIoTState.ACTIVE);
+        HCPIOT srcIoT = HCPIOT.of(HCPIoTType.IOT_EPC,srcIoTId,HCPIoTState.ACTIVE);
+        HCPIOT dstIoT = HCPIOT.of(HCPIoTType.IOT_EPC,dstIoTId,HCPIoTState.ACTIVE);
         HCPForwardingReply forwardingReply=HCPForwardingReplyVer10
                 .of(hcpFlowType,srcipAddress,dstIpaddress,srcvport,dstpport,Ethernet.TYPE_IPV4,(byte)6);
         HCPForwardingReply forwardingReply1=HCPForwardingReplyVer10
